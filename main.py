@@ -3,6 +3,7 @@
 import docx
 import csv
 import re
+from tqdm import tqdm
 
 from search_algorithms import *
 
@@ -55,36 +56,37 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
     answers_list = []
     answers_index_list = []
     with open(input, 'r') as f_in:
-        for line in f_in:
-            cut_query = [w for w in jieba.cut(line.rstrip())]  # 对query进行分词
-            query = line.rstrip()
+        lines = f_in.readlines()
+    for line in tqdm(lines):
+        cut_query = [w for w in jieba.cut(line.rstrip())]  # 对query进行分词
+        query = line.rstrip()
 
-            # 用不同算法搜索
-            neural_nets = NeuralNetworks()
-            if method == 'bm25':
-                result = Baselines.bm25(cut_query, cleaned_ans_json)
-            elif method == 'tfidf-sim':
-                result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
-            elif method == 'tfidf-dist':
-                result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
-            elif method == 'tfidf':
-                result = Baselines.tfidf(cut_query, cleaned_ans_txt)
-            elif method == 'bert':
-                result = neural_nets.bert_search(query, cleaned_ans_txt)
-            elif method == 'ernie':
-                result = neural_nets.ernie_search(query, cleaned_ans_txt)
-            else:
-                raise Exception('尚未支持该搜索算法！')
+        # 用不同算法搜索
+        neural_nets = NeuralNetworks()
+        if method == 'bm25':
+            result = Baselines.bm25(cut_query, cleaned_ans_json)
+        elif method == 'tfidf-sim':
+            result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
+        elif method == 'tfidf-dist':
+            result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
+        elif method == 'tfidf':
+            result = Baselines.tfidf(cut_query, cleaned_ans_txt)
+        elif method == 'bert':
+            result = neural_nets.bert_search(query, cleaned_ans_txt)
+        elif method == 'ernie':
+            result = neural_nets.ernie_search(query, cleaned_ans_txt)
+        else:
+            raise Exception('尚未支持该搜索算法！')
 
-            # ndarray -> list
-            result = result.tolist()
+        # ndarray -> list
+        result = result.tolist()
 
-            # 从文档中找出答案
-            with open(cleaned_ans_txt, 'r') as f_ans_txt:
-                text = f_ans_txt.readlines()
-            answers = [text[r].rstrip() for r in result]
-            answers_list.append(answers)
-            answers_index_list.append(result)
+        # 从文档中找出答案
+        with open(cleaned_ans_txt, 'r') as f_ans_txt:
+            text = f_ans_txt.readlines()
+        answers = [text[r].rstrip() for r in result]
+        answers_list.append(answers)
+        answers_index_list.append(result)
     return answers_list, answers_index_list
 
 
@@ -105,7 +107,7 @@ def clean_answers(ans_in, ans_idx_in, cleaned_ans_txt):
                 # 如果答案是小标题，那么下一个段落就是真正的答案
                 real_ans = text[ans_idx + 1].rstrip()
                 cleaned_ans.append(real_ans)
-                print('标题：' + ans + ' -> 内容：' + real_ans)
+                # print('标题：' + ans + ' -> 内容：' + real_ans)
             elif re.match('.+([？?])$', ans) is not None:
                 # 如果答案以问号结尾，那么就跳过
                 continue
