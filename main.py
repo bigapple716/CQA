@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import docx
-import json
-import jieba
 import csv
 import re
 
