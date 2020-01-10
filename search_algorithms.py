@@ -23,7 +23,7 @@ class Baselines:
     def bm25(query, answers_json):
         corpus = [query]
         # read from json file
-        with open(answers_json, 'r') as f_ans_json:
+        with open(answers_json, mode='r', encoding='utf-8') as f_ans_json:
             corpus += json.load(f_ans_json)
         bm25_weights = get_bm25_weights(corpus)[0]
         bm25_weights.pop(0)  # 去掉第一个元素(即query)
@@ -34,7 +34,7 @@ class Baselines:
     @staticmethod
     def tfidf_sim(query, answers_json):
         # read from json file
-        with open(answers_json, 'r') as f_ans:
+        with open(answers_json, mode='r', encoding='utf-8') as f_ans:
             corpus = json.load(f_ans)
         # 构造bag of words
         dict = Dictionary(corpus)  # fit dictionary
@@ -52,7 +52,7 @@ class Baselines:
     @staticmethod
     def tfidf_dist(query, answers_json):
         # read from json file
-        with open(answers_json, 'r') as f_ans:
+        with open(answers_json, mode='r', encoding='utf-8') as f_ans:
             corpus = json.load(f_ans)
         # 构造bag of words
         dict = Dictionary(corpus)  # fit dictionary
@@ -71,7 +71,7 @@ class Baselines:
     def tfidf(query, answers_txt):
         cut_query = ' '.join(query)  # 将列表形式的query转化成空格隔开的形式
         # read from txt file
-        with open(answers_txt, 'r') as f_ans:
+        with open(answers_txt, mode='r', encoding='utf-8') as f_ans:
             corpus = f_ans.readlines()
         # 将列表形式的corpus转化成空格隔开的形式
         cut_corpus = []
@@ -117,7 +117,7 @@ class NeuralNetworks:
         tensor_q = torch.tensor(token_id_q).unsqueeze(0)
 
         # read from txt file
-        with open(answers_txt, 'r') as f_ans:
+        with open(answers_txt, mode='r', encoding='utf-8') as f_ans:
             corpus = f_ans.readlines()
 
         # 遍历答案库
@@ -144,7 +144,7 @@ class NeuralNetworks:
         tensor_q = torch.tensor(token_id_q).unsqueeze(0)
 
         # read from txt file
-        with open(answers_txt, 'r') as f_ans:
+        with open(answers_txt, mode='r', encoding='utf-8') as f_ans:
             corpus = f_ans.readlines()
 
         # 遍历答案库
