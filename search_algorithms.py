@@ -99,6 +99,10 @@ class Baselines:
 
 class NeuralNetworks:
     def __init__(self):
+        # set device on GPU if available, else CPU
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print('Pytorch is using', device)
+
         self.bert_tokenizer = BertTokenizer.from_pretrained('./bert_pretrain')
         self.ernie_tokenizer = BertTokenizer.from_pretrained('./ERNIE_pretrain')
 
