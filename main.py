@@ -55,7 +55,7 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
     """
     answers_list = []
     answers_index_list = []
-    with open(input, 'r') as f_in:
+    with open(input, mode='r', encoding='utf-8') as f_in:
         lines = f_in.readlines()
     for line in tqdm(lines):
         cut_query = [w for w in jieba.cut(line.rstrip())]  # 对query进行分词
@@ -151,8 +151,8 @@ if __name__ == '__main__':
     supported_alg = ['bm25', 'tfidf-dist', 'tfidf-sim', 'tfidf', 'bert', 'ernie']  # 支持的算法
 
     # 以下两行只用运行一次
-    read_doc(raw_docx, answers_txt)  # 读文档
-    clean_txt(answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 清洗数据
+    # read_doc(raw_docx, answers_txt)  # 读文档
+    # clean_txt(answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 清洗数据
 
     # 清空输出文件
     with open(output_csv, 'w') as f_out:
