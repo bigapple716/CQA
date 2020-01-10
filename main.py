@@ -12,7 +12,7 @@ from search_algorithms import *
 def read_doc(input, output):
     f_raw = docx.Document(input)
     # 按段落分割，并写到一个txt文件里
-    with open(output, 'w') as f_answers:
+    with open(output, 'w', encoding='utf-8') as f_answers:
         for para in f_raw.paragraphs:
             f_answers.write(para.text)
             f_answers.write('\n')
@@ -21,7 +21,7 @@ def read_doc(input, output):
 # 清洗数据
 def clean_txt(input, output_json, output_txt):
     cleaned_answers_json = []  # 清洗过后的数据(json格式)
-    with open(input, 'r') as f_in, open(output_txt, 'w') as f_out_txt:
+    with open(input, mode='r', encoding='utf-8') as f_in, open(output_txt, 'w', encoding='utf-8') as f_out_txt:
         for line in f_in:
             # 去掉行首空格
             line = line.lstrip()
@@ -33,7 +33,7 @@ def clean_txt(input, output_json, output_txt):
             # 以json和txt两种格式保存数据
             cleaned_answers_json.append(line_json)
             f_out_txt.write(line)
-    with open(output_json, 'w') as f_out_json:
+    with open(output_json, 'w', encoding='utf-8') as f_out_json:
         json.dump(obj=cleaned_answers_json, fp=f_out_json, ensure_ascii=False)
 
 
@@ -82,7 +82,7 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
         result = result.tolist()
 
         # 从文档中找出答案
-        with open(cleaned_ans_txt, 'r') as f_ans_txt:
+        with open(cleaned_ans_txt, mode='r', encoding='utf-8') as f_ans_txt:
             text = f_ans_txt.readlines()
         answers = [text[r].rstrip() for r in result]
         answers_list.append(answers)
@@ -96,7 +96,7 @@ def clean_answers(ans_in, ans_idx_in, cleaned_ans_txt):
         raise Exception('答案列表和答案索引列表长度不一致！')
 
     # 载入答案文档
-    with open(cleaned_ans_txt, 'r') as f_ans_txt:
+    with open(cleaned_ans_txt, mode='r', encoding='utf-8') as f_ans_txt:
         text = f_ans_txt.readlines()
 
     ret = []
@@ -129,7 +129,7 @@ def print_answers(ans_list, output, print2file=True, n_result=5):
             返回前n个结果
     """
     if print2file:
-        with open(output, 'a') as f_out:
+        with open(output, 'a', encoding='utf-8') as f_out:
             writer = csv.writer(f_out, lineterminator='\n')
             for answers in ans_list:
                 writer.writerow(answers[:n_result])
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     # clean_txt(answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 清洗数据
 
     # 清空输出文件
-    with open(output_csv, 'w') as f_out:
+    with open(output_csv, 'w', encoding='utf-8') as f_out:
         pass
 
     # 从控制台输入将要使用的算法
