@@ -59,6 +59,7 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
     result : list of int
         答案在文档中的index的列表，按相关度排序
     """
+    neural_nets = NeuralNetworks()
     answers_list = []
     answers_index_list = []
     with open(input, mode='r', encoding='utf-8') as f_in:
@@ -68,7 +69,6 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
         query = line.rstrip()
 
         # 用不同算法搜索
-        neural_nets = NeuralNetworks()
         if method == 'bm25':
             result = Baselines.bm25(cut_query, cleaned_ans_json)
         elif method == 'tfidf-sim':
