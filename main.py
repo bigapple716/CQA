@@ -162,7 +162,7 @@ if __name__ == '__main__':
     with open(output_csv, 'w', encoding='utf-8') as f_out:
         pass
 
-    method = args.algorithm
+    method = args.alg
     print('current algorithm: ', method)  # 反馈当前使用的算法
 
     answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt)  # 回答问题
