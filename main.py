@@ -4,8 +4,14 @@ import docx
 import csv
 import re
 from tqdm import tqdm
+import argparse
 
 from search_algorithms import *
+
+# 载入参数
+parser = argparse.ArgumentParser()
+parser.add_argument('--algorithm', default='bm25', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
+args = parser.parse_args()
 
 
 # 载入word文档并转成txt文件
@@ -148,8 +154,6 @@ if __name__ == '__main__':
     input_txt = 'data/input.txt'
     output_csv = 'data/output.csv'
 
-    supported_alg = ['bm25', 'tfidf-dist', 'tfidf-sim', 'tfidf', 'bert', 'ernie']  # 支持的算法
-
     # 以下两行只用运行一次
     # read_doc(raw_docx, answers_txt)  # 读文档
     # clean_txt(answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 清洗数据
@@ -158,11 +162,7 @@ if __name__ == '__main__':
     with open(output_csv, 'w', encoding='utf-8') as f_out:
         pass
 
-    # 从控制台输入将要使用的算法
-    print('当前支持的算法：', supported_alg)
-    method = ''
-    while method not in supported_alg:
-        method = input('请输入搜索算法：')
+    method = args.algorithm
 
     answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt)  # 回答问题
     answers_list = clean_answers(answers_list, answer_idx_list, cleaned_answers_txt)  # 清洗答案
