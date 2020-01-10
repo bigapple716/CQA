@@ -109,7 +109,7 @@ def clean_answers(ans_in, ans_idx_in, cleaned_ans_txt):
     for answers, answer_indexes in zip(ans_in, ans_idx_in):
         cleaned_ans = []
         for ans, ans_idx in zip(answers, answer_indexes):
-            if re.match(r'\d\.\d.\d', ans) is not None:
+            if re.match(r'\d+\.\d+\.\d+', ans) is not None:
                 # 如果答案是小标题，那么下一个段落就是真正的答案
                 real_ans = text[ans_idx + 1].rstrip()
                 cleaned_ans.append(real_ans)
