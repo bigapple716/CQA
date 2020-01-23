@@ -3,7 +3,6 @@
 import docx
 import csv
 import re
-from tqdm import tqdm
 import argparse
 
 from search_algorithms import *
@@ -64,7 +63,8 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
     answers_index_list = []
     with open(input, mode='r', encoding='utf-8') as f_in:
         lines = f_in.readlines()
-    for line in tqdm(lines):
+    for i in range(len(lines)):
+        line = lines[i]
         cut_query = [w for w in jieba.cut(line.rstrip())]  # 对query进行分词
         query = line.rstrip()
 
@@ -93,6 +93,8 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
         answers = [text[r].rstrip() for r in result]
         answers_list.append(answers)
         answers_index_list.append(result)
+        if i % 10 == 0:
+            print('line' + str(i) + 'processed')
     return answers_list, answers_index_list
 
 
