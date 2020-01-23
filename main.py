@@ -9,7 +9,7 @@ from search_algorithms import *
 
 # 载入参数
 parser = argparse.ArgumentParser()
-parser.add_argument('--alg', default='bm25', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
+parser.add_argument('--alg', default='tfidf', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
 args = parser.parse_args()
 
 
@@ -93,8 +93,10 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
         answers = [text[r].rstrip() for r in result]
         answers_list.append(answers)
         answers_index_list.append(result)
-        if i % 10 == 0:
-            print('line' + str(i) + 'processed')
+
+        # 输出实时进度
+        if i % 20 == 0:
+            print('line ' + str(i) + ' processed')
     return answers_list, answers_index_list
 
 
