@@ -9,7 +9,7 @@ from search_algorithms import *
 
 # 载入参数
 parser = argparse.ArgumentParser()
-parser.add_argument('--alg', default='tfidf', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
+parser.add_argument('--alg', default='bm25', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
 args = parser.parse_args()
 
 
