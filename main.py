@@ -189,7 +189,7 @@ if __name__ == '__main__':
         pass
 
     method = args.alg
-    print('current algorithm: ', method)  # 反馈当前使用的算法
+    print('current algorithm:', method)  # 反馈当前使用的算法
 
     answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt)  # 回答问题
     answers_list = clean_answers(answers_list, answer_idx_list, cleaned_answers_txt)  # 清洗答案

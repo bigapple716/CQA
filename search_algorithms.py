@@ -28,8 +28,9 @@ class Baselines:
             corpus += json.load(f_ans_json)
         bm25_weights = get_bm25_weights(corpus)[0]
         bm25_weights.pop(0)  # 去掉第一个元素(即query)
+
+        sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分也从大到小排序
         max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
         return max_pos
 
@@ -96,7 +97,9 @@ class Baselines:
                     score += doc_tfidf[0, token]
             doc_score[doc_id] = score
 
+        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+        max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=0.5)
         return max_pos
 
 
