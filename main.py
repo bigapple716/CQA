@@ -90,7 +90,13 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
         # 从文档中找出答案
         with open(cleaned_ans_txt, mode='r', encoding='utf-8') as f_ans_txt:
             text = f_ans_txt.readlines()
-        answers = [text[r].rstrip() for r in result]
+
+        answers = []
+        for r in result:
+            if r != -1:
+                answers.append(text[r].rstrip())
+            else:
+                answers.append('-')  # 丢弃该回答
         answers_list.append(answers)
         answers_index_list.append(result)
 
