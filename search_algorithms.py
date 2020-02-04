@@ -31,7 +31,7 @@ class Baselines:
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
+        # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
         return max_pos
 
     # tf-idf相似度算法搜索
@@ -99,7 +99,7 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=0.5)
+        # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=0.5)
         return max_pos
 
 
