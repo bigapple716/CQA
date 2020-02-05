@@ -10,6 +10,7 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 parser.add_argument('--alg', default='bm25', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
+parser.add_argument('--long_ans', default=False, type=bool, help='chooses whether to use long answers')
 args = parser.parse_args()
 
 
@@ -149,11 +150,13 @@ if __name__ == '__main__':
     cleaned_answers_json = 'data/cleaned_answers.json'
     cleaned_answers_txt = 'data/cleaned_answers.txt'
     long_answers_txt = 'data/long_answers.txt'
+    long_answers_json = 'data/long_answers.json'
     input_txt = 'data/input.txt'
     output_csv = 'data/output.csv'
 
     # 以下两行只用运行一次
-    reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt, long_answers_txt)  # 实例化一个Reader类
+    reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt,
+                    long_answers_txt, long_answers_json)  # 实例化一个Reader类
     reader.preprocess()  # 预处理数据
 
     # 清空输出文件
@@ -163,6 +166,10 @@ if __name__ == '__main__':
     method = args.alg
     print('current algorithm:', method)  # 反馈当前使用的算法
 
-    answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt)  # 回答问题
-    answers_list = clean_answers(answers_list, answer_idx_list, cleaned_answers_txt)  # 清洗答案
+    if args.long_ans:
+        answers_list, answer_idx_list = search_answers(input_txt, long_answers_json, long_answers_txt)  # 回答问题
+        answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
+    else:
+        answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt)  # 回答问题
+        answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
     print_answers(answers_list, output_csv)  # 打印答案

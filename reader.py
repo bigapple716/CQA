@@ -8,12 +8,13 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt, long_ans_txt):
+    def __init__(self, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
         self.raw_docx = in_docx
         self.answers_txt = ans_txt
         self.cleaned_answers_json = cleaned_ans_json
         self.cleaned_answers_txt = cleaned_ans_txt
         self.long_answers_txt = long_ans_txt
+        self.long_answers_json = long_ans_json
 
     # 预处理数据(下面方法的集合)
     def preprocess(self):
@@ -85,6 +86,16 @@ class Reader:
             # 把短答案存档
             answers += short_answers
 
-        with open(self.long_answers_txt, 'w') as f_out:
+        # 将答案库存为txt格式
+        with open(self.long_answers_txt, 'w') as f_out_txt:
             for line in answers:
-                f_out.write(line + '\n')
+                f_out_txt.write(line + '\n')
+
+        # 将答案库存为json格式
+        answers_json = []  # json格式答案库
+        for line in answers:
+            # 分词
+            line_json = [w for w in jieba.cut(line)]
+            answers_json.append(line_json)
+        with open(self.long_answers_json, 'w') as f_out_json:
+            json.dump(obj=answers_json, fp=f_out_json, ensure_ascii=False)
