@@ -1,45 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import docx
 import csv
 import re
 import argparse
 
 from search_algorithms import *
+from reader import Reader
 
 # 载入参数
 parser = argparse.ArgumentParser()
 parser.add_argument('--alg', default='bm25', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
 args = parser.parse_args()
-
-
-# 载入word文档并转成txt文件
-def read_doc(input, output):
-    f_raw = docx.Document(input)
-    # 按段落分割，并写到一个txt文件里
-    with open(output, 'w', encoding='utf-8') as f_answers:
-        for para in f_raw.paragraphs:
-            f_answers.write(para.text)
-            f_answers.write('\n')
-
-
-# 清洗数据
-def clean_txt(input, output_json, output_txt):
-    cleaned_answers_json = []  # 清洗过后的数据(json格式)
-    with open(input, mode='r', encoding='utf-8') as f_in, open(output_txt, 'w', encoding='utf-8') as f_out_txt:
-        for line in f_in:
-            # 去掉行首空格
-            line = line.lstrip()
-            # 去掉空行
-            if line == '':
-                continue
-            # 分词
-            line_json = [w for w in jieba.cut(line)]
-            # 以json和txt两种格式保存数据
-            cleaned_answers_json.append(line_json)
-            f_out_txt.write(line)
-    with open(output_json, 'w', encoding='utf-8') as f_out_json:
-        json.dump(obj=cleaned_answers_json, fp=f_out_json, ensure_ascii=False)
 
 
 def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
@@ -181,8 +152,8 @@ if __name__ == '__main__':
     output_csv = 'data/output.csv'
 
     # 以下两行只用运行一次
-    # read_doc(raw_docx, answers_txt)  # 读文档
-    # clean_txt(answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 清洗数据
+    reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 实例化一个Reader类
+    reader.preprocess()  # 预处理数据
 
     # 清空输出文件
     with open(output_csv, 'w', encoding='utf-8') as f_out:
