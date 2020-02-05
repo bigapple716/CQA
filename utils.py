@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+
 
 # 静态工具类
 class Utils:
@@ -31,3 +33,23 @@ class Utils:
                 if score_list[i] > threshold:
                     pos_list[i] = -1
         return pos_list
+
+    # 判断一个句子是不是标题
+    @staticmethod
+    def is_heading(sentence):
+        if re.match(r'第.{1,2}节', sentence) is not None:
+            # 是节标题
+            return True
+        elif re.match(r'第.{1,2}章', sentence) is not None:
+            # 是章标题
+            return True
+        elif re.match(r'\d+\.\d+', sentence) is not None:
+            # 是2级标题
+            return True
+        elif re.match(r'\d+\.\d+\.\d+', sentence) is not None:
+            # 是3级标题
+            return True
+        else:
+            # 肯定不是标题
+            return False
+

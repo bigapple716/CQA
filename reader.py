@@ -4,6 +4,8 @@ import docx
 import jieba
 import json
 
+from utils import Utils
+
 
 class Reader:
     def __init__(self, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt):
@@ -16,7 +18,7 @@ class Reader:
     def preprocess(self):
         self.read_doc()
         self.clean_txt()
-        self.merge()
+        self.merge_add()
 
     # 载入word文档并转成txt文件
     def read_doc(self):
@@ -47,3 +49,23 @@ class Reader:
 
     # 把每个小标题下面的所有段落合成一个段落 & 加入到答案库中
     def merge_add(self):
+        long_answers = []
+
+        # 把清洗过的答案读进来
+        with open(self.cleaned_answers_txt, 'r') as f_in:
+            lines = f_in.readlines()
+
+        ans = ''  # 初始化一个用来存长答案的字符串
+        l = 0
+        while l < len(lines):
+            if Utils.is_heading(lines[l]):
+                # 这一行是标题
+                # 如果ans非空，那么说明上一行是正文，这时需要把ans存档并清空
+                if ans != '':
+                    long_answers.append(ans)
+                    ans = ''
+            else:
+                # 这一行是正文
+                # 把这一行加到ans后面就行
+                ans += lines[l]
+            l = l + 1
