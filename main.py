@@ -148,15 +148,16 @@ if __name__ == '__main__':
     answers_txt = 'data/answers.txt'
     cleaned_answers_json = 'data/cleaned_answers.json'
     cleaned_answers_txt = 'data/cleaned_answers.txt'
+    long_answers_txt = 'data/long_answers.txt'
     input_txt = 'data/input.txt'
     output_csv = 'data/output.csv'
 
     # 以下两行只用运行一次
-    reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt)  # 实例化一个Reader类
+    reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt, long_answers_txt)  # 实例化一个Reader类
     reader.preprocess()  # 预处理数据
 
     # 清空输出文件
-    with open(output_csv, 'w', encoding='utf-8') as f_out:
+    with open(output_csv, 'w') as f_out:
         pass
 
     method = args.alg

@@ -8,11 +8,12 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt):
+    def __init__(self, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt, long_ans_txt):
         self.raw_docx = in_docx
         self.answers_txt = ans_txt
         self.cleaned_answers_json = cleaned_ans_json
         self.cleaned_answers_txt = cleaned_ans_txt
+        self.long_answers_txt = long_ans_txt
 
     # 预处理数据(下面方法的集合)
     def preprocess(self):
@@ -67,5 +68,9 @@ class Reader:
             else:
                 # 这一行是正文
                 # 把这一行加到ans后面就行
-                ans += lines[l]
+                ans += lines[l].rstrip()
             l = l + 1
+
+        with open(self.long_answers_txt, 'w') as f_out:
+            for line in long_answers:
+                f_out.write(line + '\n')
