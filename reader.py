@@ -50,27 +50,41 @@ class Reader:
 
     # 把每个小标题下面的所有段落合成一个段落 & 加入到答案库中
     def merge_add(self):
-        long_answers = []
+        answers = []
 
         # 把清洗过的答案读进来
         with open(self.cleaned_answers_txt, 'r') as f_in:
             lines = f_in.readlines()
 
-        ans = ''  # 初始化一个用来存长答案的字符串
-        l = 0
+        long_ans = ''  # 用来存长答案的字符串
+        short_answers = []  # 原来的短答案
+
+        l = 0  # loop var
         while l < len(lines):
+            # 如果这一行是标题
             if Utils.is_heading(lines[l]):
-                # 这一行是标题
-                # 如果ans非空，那么说明上一行是正文，这时需要把ans存档并清空
-                if ans != '':
-                    long_answers.append(ans)
-                    ans = ''
+                # 如果ans非空，那么说明上一行是正文
+                if long_ans != '':
+                    # 把长答案存档并清空
+                    answers.append(long_ans)
+                    long_ans = ''
+                    # 把短答案存档并清空
+                    answers += short_answers
+                    short_answers = []
+                answers.append(lines[l].rstrip())  # 标题照搬到答案库里就完事了
+            # 如果这一行是正文
             else:
-                # 这一行是正文
-                # 把这一行加到ans后面就行
-                ans += lines[l].rstrip()
+                short_answers.append(lines[l].rstrip())  # 把这一行暂存到短答案表里
+                long_ans += lines[l].rstrip()  # 把这一行加到ans后面就行
             l = l + 1
 
+        # 如果ans非空，那么说明整篇文档最后一行是正文
+        if long_ans != '':
+            # 把长答案存档
+            answers.append(long_ans)
+            # 把短答案存档
+            answers += short_answers
+
         with open(self.long_answers_txt, 'w') as f_out:
-            for line in long_answers:
+            for line in answers:
                 f_out.write(line + '\n')
