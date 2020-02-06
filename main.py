@@ -155,9 +155,9 @@ if __name__ == '__main__':
     output_csv = 'data/output.csv'
 
     # 以下两行只用运行一次
-    reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt,
-                    long_answers_txt, long_answers_json)  # 实例化一个Reader类
-    reader.preprocess()  # 预处理数据
+    # reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt,
+    #                 long_answers_txt, long_answers_json)  # 实例化一个Reader类
+    # reader.preprocess()  # 预处理数据
 
     # 清空输出文件
     with open(output_csv, 'w') as f_out:
@@ -167,6 +167,7 @@ if __name__ == '__main__':
     print('current algorithm:', method)  # 反馈当前使用的算法
 
     if args.long_ans:
+        print('using long answers')
         answers_list, answer_idx_list = search_answers(input_txt, long_answers_json, long_answers_txt)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
