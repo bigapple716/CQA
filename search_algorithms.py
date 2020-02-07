@@ -19,6 +19,9 @@ PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 
 
 class Baselines:
+    def __init__(self, ans_txt):
+        self.answers_txt = ans_txt
+
     # bm25算法搜索
     @staticmethod
     def bm25(query, answers_json):
@@ -100,6 +103,11 @@ class Baselines:
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=0.5)
+        return max_pos
+
+    # 词向量平均
+    def aver_embed(self):
+
         return max_pos
 
 
