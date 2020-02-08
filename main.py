@@ -9,7 +9,7 @@ from reader import Reader
 
 # 载入参数
 parser = argparse.ArgumentParser()
-parser.add_argument('--alg', default='aver-embed', type=str,
+parser.add_argument('--alg', default='aver-pre-embed', type=str,
                     help='supported alg: bm25, tfidf, aver-pre-embed, bert and ernie')
 parser.add_argument('--long_ans', default=False, type=bool, help='chooses whether to use long answers')
 args = parser.parse_args()
@@ -177,6 +177,7 @@ if __name__ == '__main__':
         answers_list, answer_idx_list = search_answers(input_txt, long_answers_json, long_answers_txt, word2vec_pickle)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
+        print('NOT using long answers')
         answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
     print_answers(answers_list, output_csv)  # 打印答案
