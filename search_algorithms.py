@@ -8,8 +8,10 @@ from gensim.similarities import MatrixSimilarity
 from gensim.matutils import jaccard
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import jieba
 import torch
+import pickle
 
 from models import *
 from pytorch_pretrained import BertTokenizer
@@ -19,8 +21,12 @@ PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 
 
 class Baselines:
-    def __init__(self, ans_txt):
-        self.answers_txt = ans_txt
+    def __init__(self, ans_json, word2vec_file):
+        with open(ans_json, 'r') as f_json:
+            self.cut_answers = f_json.readlines()
+        with open(word2vec_file, 'r') as f_pickle:
+            self.word2vec = pickle.load(f_pickle)
+
 
     # bm25算法搜索
     @staticmethod
@@ -106,8 +112,18 @@ class Baselines:
         return max_pos
 
     # 词向量平均
-    def aver_embed(self):
+    def aver_embed(self, query):
+        doc_score = []
 
+        words = [w for w in query if w in self.word2vec.vocab]  # remove out-of-vocabulary words
+        query_token = np.mean(self.word2vec[words], axis=0)  # average embedding of words in the query
+        for ans in self.cut_answers:
+            words = [w for w in ans if w in self.word2vec.vocab]
+            ans_token = np.mean(self.word2vec[words], axis=0)
+            doc_score.append(cosine_similarity(query_token, ans_token))
+
+        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
+        max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         return max_pos
 
 

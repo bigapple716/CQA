@@ -1,2 +1,4 @@
 /ERNIE_pretrain/
 /bert_pretrain/
+/data/merge_sgns_bigram_char300.txt
+/data/word2vec.pickle

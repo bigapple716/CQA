@@ -14,7 +14,7 @@ parser.add_argument('--long_ans', default=False, type=bool, help='chooses whethe
 args = parser.parse_args()
 
 
-def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
+def search_answers(input, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl):
     """
 
     Parameters
@@ -30,7 +30,9 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
     result : list of int
         答案在文档中的index的列表，按相关度排序
     """
-    neural_nets = NeuralNetworks()
+    deep_model = NeuralNetworks()
+    baseline_model = Baselines(cleaned_ans_json, word2vec_pkl)
+
     answers_list = []
     answers_index_list = []
     with open(input, mode='r', encoding='utf-8') as f_in:
@@ -49,10 +51,12 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt):
             result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
         elif method == 'tfidf':
             result = Baselines.tfidf(cut_query, cleaned_ans_txt)
+        elif method == 'aver-embed':
+            result = baseline_model.aver_embed(cut_query)
         elif method == 'bert':
-            result = neural_nets.bert_search(query, cleaned_ans_txt)
+            result = deep_model.bert_search(query, cleaned_ans_txt)
         elif method == 'ernie':
-            result = neural_nets.ernie_search(query, cleaned_ans_txt)
+            result = deep_model.ernie_search(query, cleaned_ans_txt)
         else:
             raise Exception('尚未支持该搜索算法！')
 
@@ -151,6 +155,7 @@ if __name__ == '__main__':
     cleaned_answers_txt = 'data/cleaned_answers.txt'
     long_answers_txt = 'data/long_answers.txt'
     long_answers_json = 'data/long_answers.json'
+    word2vec_pickle = 'data/word2vec.pickle'
     input_txt = 'data/input.txt'
     output_csv = 'data/output.csv'
 
@@ -168,9 +173,9 @@ if __name__ == '__main__':
 
     if args.long_ans:
         print('using long answers')
-        answers_list, answer_idx_list = search_answers(input_txt, long_answers_json, long_answers_txt)  # 回答问题
+        answers_list, answer_idx_list = search_answers(input_txt, long_answers_json, long_answers_txt, word2vec_pickle)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
-        answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt)  # 回答问题
+        answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
     print_answers(answers_list, output_csv)  # 打印答案
