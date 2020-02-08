@@ -42,7 +42,7 @@ class Reader:
                 if line == '':
                     continue
                 # 分词
-                line_json = [w for w in jieba.cut(line)]
+                line_json = [w for w in jieba.cut(line.rstrip())]
                 # 以json和txt两种格式保存数据
                 cleaned_json.append(line_json)
                 f_out_txt.write(line)
