@@ -9,7 +9,8 @@ from reader import Reader
 
 # 载入参数
 parser = argparse.ArgumentParser()
-parser.add_argument('--alg', default='bm25', type=str, help='choose the alg from bm25, tfidf, bert and ernie')
+parser.add_argument('--alg', default='aver-embed', type=str,
+                    help='choose the alg from bm25, tfidf, aver-embed, bert and ernie')
 parser.add_argument('--long_ans', default=False, type=bool, help='chooses whether to use long answers')
 args = parser.parse_args()
 

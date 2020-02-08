@@ -25,5 +25,3 @@ def load_embed(word2vec_file):
 print(aver_len('data/input.txt'))
 print(aver_len('data/cleaned_answers.txt'))
 print(aver_len('data/long_answers.txt'))
-
-load_embed('data/merge_sgns_bigram_char300.txt')

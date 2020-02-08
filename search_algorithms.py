@@ -23,8 +23,8 @@ PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 class Baselines:
     def __init__(self, ans_json, word2vec_file):
         with open(ans_json, 'r') as f_json:
-            self.cut_answers = f_json.readlines()
-        with open(word2vec_file, 'r') as f_pickle:
+            self.cut_answers = json.load(f_json)
+        with open(word2vec_file, 'rb') as f_pickle:
             self.word2vec = pickle.load(f_pickle)
 
 
@@ -33,7 +33,7 @@ class Baselines:
     def bm25(query, answers_json):
         corpus = [query]
         # read from json file
-        with open(answers_json, mode='r', encoding='utf-8') as f_ans_json:
+        with open(answers_json, mode='r') as f_ans_json:
             corpus += json.load(f_ans_json)
         bm25_weights = get_bm25_weights(corpus)[0]
         bm25_weights.pop(0)  # 去掉第一个元素(即query)
@@ -120,7 +120,8 @@ class Baselines:
         for ans in self.cut_answers:
             words = [w for w in ans if w in self.word2vec.vocab]
             ans_token = np.mean(self.word2vec[words], axis=0)
-            doc_score.append(cosine_similarity(query_token, ans_token))
+            cos_sim = cosine_similarity(query_token.reshape(1, -1), ans_token.reshape(1, -1))
+            doc_score.append(np.asscalar(cos_sim))
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
