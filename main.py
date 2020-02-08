@@ -10,7 +10,7 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 parser.add_argument('--alg', default='aver-embed', type=str,
-                    help='choose the alg from bm25, tfidf, aver-embed, bert and ernie')
+                    help='supported alg: bm25, tfidf, aver-pre-embed, bert and ernie')
 parser.add_argument('--long_ans', default=False, type=bool, help='chooses whether to use long answers')
 args = parser.parse_args()
 
@@ -52,7 +52,7 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl):
             result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
         elif method == 'tfidf':
             result = Baselines.tfidf(cut_query, cleaned_ans_txt)
-        elif method == 'aver-embed':
+        elif method == 'aver-pre-embed':
             result = baseline_model.aver_embed(cut_query)
         elif method == 'bert':
             result = deep_model.bert_search(query, cleaned_ans_txt)
