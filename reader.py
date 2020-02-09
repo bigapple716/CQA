@@ -106,10 +106,10 @@ class Reader:
         long_ans = ''  # 用来存长答案的字符串
         short_answers = []  # 原来的短答案
 
-        l = 0  # loop var
-        while l < len(lines):
+        idx = 0  # loop var
+        while idx < len(lines):
             # 如果这一行是标题
-            if Utils.is_heading(lines[l]):
+            if Utils.is_heading(lines[idx]):
                 # 如果ans非空，那么说明上一行是正文
                 if long_ans != '':
                     # 把长答案存档并清空
@@ -118,12 +118,12 @@ class Reader:
                     # 把短答案存档并清空
                     answers += short_answers
                     short_answers = []
-                answers.append(lines[l].rstrip())  # 标题照搬到答案库里就完事了
+                answers.append(lines[idx].rstrip())  # 标题照搬到答案库里就完事了
             # 如果这一行是正文
             else:
-                short_answers.append(lines[l].rstrip())  # 把这一行暂存到短答案表里
-                long_ans += lines[l].rstrip()  # 把这一行加到ans后面就行
-            l = l + 1
+                short_answers.append(lines[idx].rstrip())  # 把这一行暂存到短答案表里
+                long_ans += lines[idx].rstrip()  # 把这一行加到ans后面就行
+            idx = idx + 1
 
         # 如果ans非空，那么说明整篇文档最后一行是正文
         if long_ans != '':
