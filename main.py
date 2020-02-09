@@ -9,18 +9,25 @@ from reader import Reader
 
 # 载入参数
 parser = argparse.ArgumentParser()
-parser.add_argument('--alg', default='aver-pre-embed', type=str,
+# 使用的算法或模型
+parser.add_argument('--alg', default='bm25', type=str,
                     help='supported alg: bm25, tfidf, aver-pre-embed, bert and ernie')
+# 要不要去掉停用词
+parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
+# 要不要加入长答案(每个小标题下所有内容的集合)
 parser.add_argument('--long_ans', default=False, type=bool, help='chooses whether to use long answers')
 args = parser.parse_args()
 
 
-def search_answers(input, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl):
+def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl):
     """
 
     Parameters
     ----------
-    input
+    cleaned_in : list of list of str
+        分词、去停用词后的输入
+    uncut_in : list of str
+        仅去停用词后的输入(没有分词)
     cleaned_ans_json
     cleaned_ans_txt
 
@@ -36,13 +43,8 @@ def search_answers(input, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl):
 
     answers_list = []
     answers_index_list = []
-    with open(input, mode='r', encoding='utf-8') as f_in:
-        lines = f_in.readlines()
-    for i in range(len(lines)):
-        line = lines[i]
-        cut_query = [w for w in jieba.cut(line.rstrip())]  # 对query进行分词
-        query = line.rstrip()
 
+    for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
         # 用不同算法搜索
         if method == 'bm25':
             result = Baselines.bm25(cut_query, cleaned_ans_json)
@@ -159,10 +161,13 @@ if __name__ == '__main__':
     word2vec_pickle = 'data/word2vec.pickle'
     input_txt = 'data/input.txt'
     output_csv = 'data/output.csv'
+    stopword_txt = 'data/stopword.txt'
 
-    # 以下两行只用运行一次
-    # reader = Reader(raw_docx, answers_txt, cleaned_answers_json, cleaned_answers_txt,
-    #                 long_answers_txt, long_answers_json)  # 实例化一个Reader类
+    reader = Reader(args, stopword_txt, input_txt, raw_docx, answers_txt,
+                    cleaned_answers_json, cleaned_answers_txt,
+                    long_answers_txt, long_answers_json)  # 实例化一个Reader类
+    cleaned_input, uncut_input = reader.clean_input()
+    # 下一行代码只用运行一次
     # reader.preprocess()  # 预处理数据
 
     # 清空输出文件
@@ -174,10 +179,10 @@ if __name__ == '__main__':
 
     if args.long_ans:
         print('using long answers')
-        answers_list, answer_idx_list = search_answers(input_txt, long_answers_json, long_answers_txt, word2vec_pickle)  # 回答问题
+        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, long_answers_json, long_answers_txt, word2vec_pickle)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
         print('NOT using long answers')
-        answers_list, answer_idx_list = search_answers(input_txt, cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)  # 回答问题
+        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)  # 回答问题
         answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
     print_answers(answers_list, output_csv)  # 打印答案

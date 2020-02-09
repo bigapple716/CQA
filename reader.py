@@ -8,7 +8,19 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
+    def __init__(self, args, stopword_txt, input, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
+        self.args = args
+
+        # 停用词表
+        with open(stopword_txt, 'r') as f_stopword:
+            doc = f_stopword.readlines()
+        self.stopwords = [line.rstrip('\n') for line in doc]
+
+        # queries
+        with open(input, 'r') as f_input:
+            doc = f_input.readlines()
+        self.input = [line.rstrip('\n') for line in doc]
+
         self.raw_docx = in_docx
         self.answers_txt = ans_txt
         self.cleaned_answers_json = cleaned_ans_json
@@ -16,18 +28,47 @@ class Reader:
         self.long_answers_txt = long_ans_txt
         self.long_answers_json = long_ans_json
 
-    # 去停用词
-    def trim_stop_words(self):
-        pass
+    # 输入去停用词
+    def clean_input(self):
+        """
+
+        Returns
+        -------
+        cleaned : list of list of str
+            分词、去停用词后的输入
+        uncut : list of str
+            仅去停用词后的输入(没有分词)
+        """
+        cleaned = []
+        uncut = []
+        for line in self.input:
+            cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
+            # 去停用词
+            if self.args.trim_stop:
+                trim_line = [w for w in cut_line if w not in self.stopwords]
+            else:
+                trim_line = cut_line
+
+            uncut_line = ''.join(trim_line)
+            cleaned.append(trim_line)
+            uncut.append(uncut_line)
+
+        if self.args.trim_stop:
+            print('stop words trimed')
+        else:
+            print('stop words NOT trimed')
+        return cleaned, uncut
 
     # 预处理数据(下面方法的集合)
     def preprocess(self):
-        self.read_doc()
-        self.clean_txt()
-        self.merge_add()
+        self.__read_doc()
+        self.__clean_txt()
+        self.__merge_add()
+
+    '''以下均为似有方法'''
 
     # 载入word文档并转成txt文件
-    def read_doc(self):
+    def __read_doc(self):
         f_raw = docx.Document(self.raw_docx)
         # 按段落分割，并写到一个txt文件里
         with open(self.answers_txt, 'w') as f_answers:
@@ -36,7 +77,7 @@ class Reader:
                 f_answers.write('\n')
 
     # 清洗数据
-    def clean_txt(self):
+    def __clean_txt(self):
         cleaned_json = []  # 清洗过后的数据(json格式)
         with open(self.answers_txt, 'r') as f_in, open(self.cleaned_answers_txt, 'w') as f_out_txt:
             for line in f_in:
@@ -50,11 +91,11 @@ class Reader:
                 # 以json和txt两种格式保存数据
                 cleaned_json.append(line_json)
                 f_out_txt.write(line)
-        with open(self.cleaned_answers_json, 'w', encoding='utf-8') as f_out_json:
+        with open(self.cleaned_answers_json, 'w') as f_out_json:
             json.dump(obj=cleaned_json, fp=f_out_json, ensure_ascii=False)
 
     # 把每个小标题下面的所有段落合成一个段落 & 加入到答案库中
-    def merge_add(self):
+    def __merge_add(self):
         answers = []
 
         # 把清洗过的答案读进来
