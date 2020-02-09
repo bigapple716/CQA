@@ -8,7 +8,8 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, args, stopword_txt, input, in_docx, ans_txt, cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
+    def __init__(self, args, stopword_txt, input, in_docx, ans_txt,
+                 cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
         self.args = args
 
         # 停用词表
