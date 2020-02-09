@@ -16,6 +16,10 @@ class Reader:
         self.long_answers_txt = long_ans_txt
         self.long_answers_json = long_ans_json
 
+    # 去停用词
+    def trim_stop_words(self):
+        pass
+
     # 预处理数据(下面方法的集合)
     def preprocess(self):
         self.read_doc()
