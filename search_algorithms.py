@@ -18,6 +18,7 @@ from pytorch_pretrained import BertTokenizer
 from utils import Utils
 
 PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
+self_trained_word2vec = 'train_embed/word2vec.kv'
 
 
 class Baselines:
@@ -31,7 +32,7 @@ class Baselines:
                 self.word2vec = pickle.load(f_pickle)
         else:
             # 用机场文档训练出的word2vec
-            self.word2vec = KeyedVectors.load(word2vec_file, mmap='r')
+            self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
     @staticmethod

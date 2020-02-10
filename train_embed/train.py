@@ -12,7 +12,7 @@ corpus_file = '../data/cleaned_answers.json'
 if __name__ == '__main__':
     with open(corpus_file, 'r') as f_corpus:
         corpus = json.load(f_corpus)
-    model = Word2Vec(corpus, size=300, min_count=1, workers=12)
+    model = Word2Vec(corpus, size=100, min_count=1, workers=12)
     model.save(model_file)  # save model
     model.wv.save(word2vec_file)  # save vectors
     # test
