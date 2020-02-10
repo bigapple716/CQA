@@ -10,8 +10,8 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
-parser.add_argument('--alg', default='bm25', type=str,
-                    help='supported alg: bm25, tfidf, aver-pre-embed, bert and ernie')
+parser.add_argument('--alg', default='aver-embed', type=str,
+                    help='supported alg: bm25, tfidf, aver-embed, bert and ernie')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
 # 要不要加入长答案(每个小标题下所有内容的集合)
@@ -54,7 +54,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
             result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
         elif method == 'tfidf':
             result = Baselines.tfidf(cut_query, cleaned_ans_txt)
-        elif method == 'aver-pre-embed':
+        elif method == 'aver-embed':
             result = baseline_model.aver_embed(cut_query)
         elif method == 'bert':
             result = deep_model.bert_search(query, cleaned_ans_txt)
