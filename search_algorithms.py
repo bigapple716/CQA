@@ -2,7 +2,7 @@
 
 import json
 from gensim.summarization.bm25 import *
-from gensim.models import TfidfModel
+from gensim.models import TfidfModel, KeyedVectors
 from gensim.corpora import Dictionary
 from gensim.similarities import MatrixSimilarity
 from gensim.matutils import jaccard
@@ -21,12 +21,17 @@ PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 
 
 class Baselines:
-    def __init__(self, ans_json, word2vec_file):
+    def __init__(self, ans_json, word2vec_file, use_pretrained_word2vec=False):
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
-        with open(word2vec_file, 'rb') as f_pickle:
-            self.word2vec = pickle.load(f_pickle)
 
+        if use_pretrained_word2vec:
+            # 用预训练好的word2vec
+            with open(word2vec_file, 'rb') as f_pickle:
+                self.word2vec = pickle.load(f_pickle)
+        else:
+            # 用机场文档训练出的word2vec
+            self.word2vec = KeyedVectors.load(word2vec_file, mmap='r')
 
     # bm25算法搜索
     @staticmethod
