@@ -22,26 +22,24 @@ self_trained_word2vec = 'train_embed/word2vec.kv'
 
 
 class Baselines:
-    def __init__(self, ans_json, word2vec_file, use_pretrained_word2vec=True):
+    def __init__(self, ans_json, word2vec_file, use_aver_embed=False, use_pretrained_word2vec=True):
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
 
-        if use_pretrained_word2vec:
-            # 用预训练好的word2vec
-            with open(word2vec_file, 'rb') as f_pickle:
-                self.word2vec = pickle.load(f_pickle)
-        else:
-            # 用机场文档训练出的word2vec
-            self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
+        if use_aver_embed:
+            if use_pretrained_word2vec:
+                # 用预训练好的word2vec
+                with open(word2vec_file, 'rb') as f_pickle:
+                    self.word2vec = pickle.load(f_pickle)
+            else:
+                # 用机场文档训练出的word2vec
+                self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
-    @staticmethod
-    def bm25(query, answers_json):
+    def bm25(self, query):
         corpus = [query]
-        # read from json file
-        with open(answers_json, mode='r') as f_ans_json:
-            corpus += json.load(f_ans_json)
-        bm25_weights = get_bm25_weights(corpus)[0]
+        corpus += self.cut_answers
+        bm25_weights = get_bm25_weights(corpus, n_jobs=6)[0]
         bm25_weights.pop(0)  # 去掉第一个元素(即query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序

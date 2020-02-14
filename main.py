@@ -47,7 +47,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
     for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
         # 用不同算法搜索
         if method == 'bm25':
-            result = Baselines.bm25(cut_query, cleaned_ans_json)
+            result = baseline_model.bm25(cut_query)
         elif method == 'tfidf-sim':
             result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
         elif method == 'tfidf-dist':
