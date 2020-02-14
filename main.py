@@ -129,7 +129,7 @@ def clean_answers(ans_in, ans_idx_in, cleaned_ans_txt):
     return ret
 
 
-def print_answers(ans_list, output, print2file=True, n_result=5):
+def print_answers(ans_list, output, print2file=True, n_result=3):
     """
         Parameters
         ----------

@@ -22,7 +22,7 @@ self_trained_word2vec = 'train_embed/word2vec.kv'
 
 
 class Baselines:
-    def __init__(self, ans_json, word2vec_file, use_pretrained_word2vec=False):
+    def __init__(self, ans_json, word2vec_file, use_pretrained_word2vec=True):
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
 
