@@ -57,7 +57,7 @@ class Utils:
     # 从字符串里提取阿拉伯数字并转成中文
     @staticmethod
     def str2cn(str):
-        pattern = r'\d+'
+        pattern = r'(?<![\d.])[0-9]+(?![\d.])'
         return re.sub(pattern, Utils.__int2cn, str, count=0)
 
     # 全角 -> 半角
