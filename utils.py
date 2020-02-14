@@ -62,12 +62,25 @@ class Utils:
 
     @staticmethod
     def __int2cn(matched):
-        return an2cn(matched.group(0), 'low')
+        return an2cn(Utils.__full2half(matched.group(0)), 'low')
+
+    # 全角 -> 半角
+    @staticmethod
+    def __full2half(full_str):
+        half_str = ''
+        for uchar in full_str:
+            code = ord(uchar)
+            if code == 12288:  # 全角空格直接转换
+                code = 32
+            elif 65281 <= code <= 65374:  # 全角字符（除空格）根据关系转化
+                code -= 65248
+            half_str += chr(code)
+        return half_str
 
 
 # for test purpose
 if __name__ == '__main__':
     input1 = '黑黑黑'
-    input2 = '囧3私21sdf45'
+    input2 = '囧3私2１sdf45'
     print(Utils.str2cn(input1))
     print(Utils.str2cn(input2))
