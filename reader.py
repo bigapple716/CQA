@@ -3,7 +3,6 @@
 import docx
 import jieba
 import json
-from cn2an import an2cn
 
 from utils import Utils
 
@@ -89,6 +88,7 @@ class Reader:
                 # 去掉空行
                 if line == '':
                     continue
+                line = Utils.full2half(line)  # 全角转半角
                 line = Utils.str2cn(line)  # 阿拉伯数字转中文
                 # 分词
                 line_json = [w for w in jieba.cut(line.rstrip())]

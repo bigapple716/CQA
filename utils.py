@@ -60,13 +60,9 @@ class Utils:
         pattern = r'\d+'
         return re.sub(pattern, Utils.__int2cn, str, count=0)
 
-    @staticmethod
-    def __int2cn(matched):
-        return an2cn(Utils.__full2half(matched.group(0)), 'low')
-
     # 全角 -> 半角
     @staticmethod
-    def __full2half(full_str):
+    def full2half(full_str):
         half_str = ''
         for uchar in full_str:
             code = ord(uchar)
@@ -77,10 +73,14 @@ class Utils:
             half_str += chr(code)
         return half_str
 
+    @staticmethod
+    def __int2cn(matched):
+        return an2cn(matched.group(0), 'low')
+
 
 # for test purpose
 if __name__ == '__main__':
     input1 = '黑黑黑'
-    input2 = '囧3私2１sdf45'
+    input2 = '囧3私21sdf4.5jj'
     print(Utils.str2cn(input1))
     print(Utils.str2cn(input2))
