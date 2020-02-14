@@ -44,7 +44,7 @@ class Reader:
         cleaned = []
         uncut = []
         for line in self.input:
-            line = an2cn(line, 'low')  # 阿拉伯数字转中文
+            line = Utils.str2cn(line)  # 阿拉伯数字转中文
             cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
             # 去停用词
             if self.args.trim_stop:
@@ -89,7 +89,7 @@ class Reader:
                 # 去掉空行
                 if line == '':
                     continue
-                line = an2cn(line, 'low')  # 阿拉伯数字转中文
+                line = Utils.str2cn(line)  # 阿拉伯数字转中文
                 # 分词
                 line_json = [w for w in jieba.cut(line.rstrip())]
                 # 以json和txt两种格式保存数据

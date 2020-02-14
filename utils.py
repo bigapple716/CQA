@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from cn2an import an2cn
 import re
 
 
@@ -53,3 +54,20 @@ class Utils:
             # 肯定不是标题
             return False
 
+    # 从字符串里提取阿拉伯数字并转成中文
+    @staticmethod
+    def str2cn(str):
+        pattern = r'\d+'
+        return re.sub(pattern, Utils.__int2cn, str, count=0)
+
+    @staticmethod
+    def __int2cn(matched):
+        return an2cn(matched.group(0), 'low')
+
+
+# for test purpose
+if __name__ == '__main__':
+    input1 = '黑黑黑'
+    input2 = '囧3私21sdf45'
+    print(Utils.str2cn(input1))
+    print(Utils.str2cn(input2))

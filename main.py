@@ -10,12 +10,12 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
-parser.add_argument('--alg', default='aver-embed', type=str,
+parser.add_argument('--alg', default='bm25', type=str,
                     help='supported alg: bm25, tfidf, aver-embed, bert and ernie')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
 # 要不要加入长答案(每个小标题下所有内容的集合)
-parser.add_argument('--long_ans', default=False, type=bool, help='chooses whether to use long answers')
+parser.add_argument('--long_ans', default=True, type=bool, help='chooses whether to use long answers')
 args = parser.parse_args()
 
 
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                     long_answers_txt, long_answers_json)  # 实例化一个Reader类
     cleaned_input, uncut_input = reader.clean_input()
     # 下一行代码只用运行一次
-    # reader.preprocess()  # 预处理数据
+    reader.preprocess()  # 预处理数据
 
     # 清空输出文件
     with open(output_csv, 'w') as f_out:
