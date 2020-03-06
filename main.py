@@ -156,6 +156,7 @@ if __name__ == '__main__':
     # 文件名
     raw_docx = 'data/长沙机场知识库(没目录图片表格).docx'
     answers_txt = 'data/answers.txt'
+    extra_txt = 'data/extra_answers.txt'
     cleaned_answers_json = 'data/cleaned_answers.json'
     cleaned_answers_txt = 'data/cleaned_answers.txt'
     long_answers_txt = 'data/long_answers.txt'
@@ -165,7 +166,7 @@ if __name__ == '__main__':
     output_csv = 'data/output.csv'
     stopword_txt = 'data/stopword.txt'
 
-    reader = Reader(args, stopword_txt, input_txt, raw_docx, answers_txt,
+    reader = Reader(args, stopword_txt, input_txt, raw_docx, answers_txt, extra_txt,
                     cleaned_answers_json, cleaned_answers_txt,
                     long_answers_txt, long_answers_json)  # 实例化一个Reader类
     cleaned_input, uncut_input = reader.clean_input()

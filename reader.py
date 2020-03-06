@@ -8,7 +8,7 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, args, stopword_txt, input, in_docx, ans_txt,
+    def __init__(self, args, stopword_txt, input, in_docx, ans_txt, extra_txt,
                  cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
         self.args = args
 
@@ -24,6 +24,7 @@ class Reader:
 
         self.raw_docx = in_docx
         self.answers_txt = ans_txt
+        self.extra_txt = extra_txt
         self.cleaned_answers_json = cleaned_ans_json
         self.cleaned_answers_txt = cleaned_ans_txt
         self.long_answers_txt = long_ans_txt
@@ -56,9 +57,9 @@ class Reader:
             uncut.append(uncut_line)
 
         if self.args.trim_stop:
-            print('stop words trimed')
+            print('stop words trimmed')
         else:
-            print('stop words NOT trimed')
+            print('stop words NOT trimmed')
         return cleaned, uncut
 
     # 预处理数据(下面方法的集合)
@@ -71,12 +72,17 @@ class Reader:
 
     # 载入word文档并转成txt文件
     def __read_doc(self):
+        # read .doc file
         f_raw = docx.Document(self.raw_docx)
+        # read extra file
+        with open(self.extra_txt, 'r') as f_extra:
+            extra_doc = f_extra.readlines()
         # 按段落分割，并写到一个txt文件里
         with open(self.answers_txt, 'w') as f_answers:
             for para in f_raw.paragraphs:
                 f_answers.write(para.text)
                 f_answers.write('\n')
+            f_answers.writelines(extra_doc)
 
     # 清洗数据
     def __clean_txt(self):
