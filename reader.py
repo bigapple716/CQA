@@ -9,7 +9,8 @@ from utils import Utils
 
 class Reader:
     def __init__(self, args, stopword_txt, input, in_docx, ans_txt, extra_txt,
-                 cleaned_ans_json, cleaned_ans_txt, long_ans_txt, long_ans_json):
+                 cleaned_ans_txt, cleaned_ans_json, long_ans_txt, long_ans_json,
+                 cleaned_extra_txt, cleaned_extra_json):
         self.args = args
 
         # 停用词表
@@ -25,8 +26,10 @@ class Reader:
         self.raw_docx = in_docx
         self.answers_txt = ans_txt
         self.extra_txt = extra_txt
-        self.cleaned_answers_json = cleaned_ans_json
         self.cleaned_answers_txt = cleaned_ans_txt
+        self.cleaned_answers_json = cleaned_ans_json
+        self.cleaned_extra_txt = cleaned_extra_txt
+        self.cleaned_extra_json = cleaned_extra_json
         self.long_answers_txt = long_ans_txt
         self.long_answers_json = long_ans_json
 
@@ -65,8 +68,10 @@ class Reader:
     # 预处理数据(下面方法的集合)
     def preprocess(self):
         self.__read_doc()
-        self.__clean_txt()
+        self.__clean_txt(self.answers_txt, self.cleaned_answers_txt, self.cleaned_answers_json)
+        self.__clean_txt(self.extra_txt, self.cleaned_extra_txt, self.cleaned_extra_json)
         self.__merge_add()
+        self.__add_extra()
 
     '''以下均为私有方法'''
 
@@ -74,20 +79,16 @@ class Reader:
     def __read_doc(self):
         # read .doc file
         f_raw = docx.Document(self.raw_docx)
-        # read extra file
-        with open(self.extra_txt, 'r') as f_extra:
-            extra_doc = f_extra.readlines()
         # 按段落分割，并写到一个txt文件里
         with open(self.answers_txt, 'w') as f_answers:
             for para in f_raw.paragraphs:
                 f_answers.write(para.text)
                 f_answers.write('\n')
-            f_answers.writelines(extra_doc)
 
     # 清洗数据
-    def __clean_txt(self):
+    def __clean_txt(self, ans_file, cleaned_txt_file, cleaned_json_file):
         cleaned_json = []  # 清洗过后的数据(json格式)
-        with open(self.answers_txt, 'r') as f_in, open(self.cleaned_answers_txt, 'w') as f_out_txt:
+        with open(ans_file, 'r') as f_in, open(cleaned_txt_file, 'w') as f_out_txt:
             for line in f_in:
                 # 去掉行首空格
                 line = line.lstrip()
@@ -101,7 +102,7 @@ class Reader:
                 # 以json和txt两种格式保存数据
                 cleaned_json.append(line_json)
                 f_out_txt.write(line)
-        with open(self.cleaned_answers_json, 'w') as f_out_json:
+        with open(cleaned_json_file, 'w') as f_out_json:
             json.dump(obj=cleaned_json, fp=f_out_json, ensure_ascii=False)
 
     # 把每个小标题下面的所有段落合成一个段落 & 加入到答案库中
@@ -154,3 +155,31 @@ class Reader:
             answers_json.append(line_json)
         with open(self.long_answers_json, 'w') as f_out_json:
             json.dump(obj=answers_json, fp=f_out_json, ensure_ascii=False)
+
+    # 把补充答案合并到cleaned_answers和long_answers里面
+    def __add_extra(self):
+        # read extra
+        with open(self.cleaned_extra_txt, 'r') as f_cleaned_extra_txt:
+            cleaned_extra_txt = f_cleaned_extra_txt.readlines()
+        # write
+        with open(self.cleaned_answers_txt, 'a') as f_cleaned_ans_txt:
+            f_cleaned_ans_txt.writelines(cleaned_extra_txt)
+        # write long version
+        with open(self.long_answers_txt, 'a') as f_long_ans_txt:
+            f_long_ans_txt.writelines(cleaned_extra_txt)
+
+        # read extra
+        with open(self.cleaned_extra_json, 'r') as f_cleaned_extra_json:
+            cleaned_extra_json = json.load(f_cleaned_extra_json)
+        # write
+        with open(self.cleaned_answers_json, 'r') as f_cleaned_ans_json:
+            cleaned_ans_json = json.load(f_cleaned_ans_json)
+            merged_json = cleaned_ans_json + cleaned_extra_json
+        with open(self.cleaned_answers_json, 'w') as f_cleaned_ans_json:
+            json.dump(obj=merged_json, fp=f_cleaned_ans_json, ensure_ascii=False)
+        # write long version
+        with open(self.long_answers_json, 'r') as f_long_ans_json:
+            cleaned_ans_json = json.load(f_long_ans_json)
+            merged_json = cleaned_ans_json + cleaned_extra_json
+        with open(self.long_answers_json, 'w') as f_long_ans_json:
+            json.dump(obj=merged_json, fp=f_long_ans_json, ensure_ascii=False)

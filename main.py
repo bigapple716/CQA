@@ -159,6 +159,8 @@ if __name__ == '__main__':
     extra_txt = 'data/extra_answers.txt'
     cleaned_answers_json = 'data/cleaned_answers.json'
     cleaned_answers_txt = 'data/cleaned_answers.txt'
+    cleaned_extra_txt = 'data/cleaned_extra.txt'
+    cleaned_extra_json = 'data/cleaned_extra.json'
     long_answers_txt = 'data/long_answers.txt'
     long_answers_json = 'data/long_answers.json'
     word2vec_pickle = 'data/word2vec.pickle'
@@ -167,8 +169,9 @@ if __name__ == '__main__':
     stopword_txt = 'data/stopword.txt'
 
     reader = Reader(args, stopword_txt, input_txt, raw_docx, answers_txt, extra_txt,
-                    cleaned_answers_json, cleaned_answers_txt,
-                    long_answers_txt, long_answers_json)  # 实例化一个Reader类
+                    cleaned_answers_txt, cleaned_answers_json,
+                    long_answers_txt, long_answers_json,
+                    cleaned_extra_txt, cleaned_extra_json)  # 实例化一个Reader类
     cleaned_input, uncut_input = reader.clean_input()
     # 下一行代码只用运行一次
     reader.preprocess()  # 预处理数据
