@@ -12,6 +12,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import jieba
 import torch
 import pickle
+from nltk.lm.preprocessing import *
+from nltk.lm.models import KneserNeyInterpolated
 
 from models import *
 from pytorch_pretrained import BertTokenizer
@@ -126,6 +128,25 @@ class Baselines:
             ans_token = np.mean(self.word2vec[words], axis=0)
             cos_sim = cosine_similarity(query_token.reshape(1, -1), ans_token.reshape(1, -1))
             doc_score.append(np.asscalar(cos_sim))
+
+        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
+        max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+        return max_pos
+
+    # Language Model
+    def language_model(self, query):
+        doc_score = []
+        for text in self.cut_answers:
+            train, vocab = padded_everygram_pipeline(order=1, text=text)
+
+            lm = KneserNeyInterpolated(1)  # 实例化模型
+            lm.fit(train, vocab)  # 喂训练数据
+
+            score = 1
+            for word in query:
+                score *= lm.score(word)
+
+            doc_score.append(score)
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
