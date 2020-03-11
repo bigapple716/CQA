@@ -153,7 +153,7 @@ class Baselines:
         return max_pos
 
     # 问题-问题匹配
-    def qq_match(self, query, base_ques_file='base_questions.json'):
+    def qq_match(self, query, base_ques_file='data/base_questions.json'):
         # 读入base_questions.json
         with open(base_ques_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)

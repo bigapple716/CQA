@@ -10,8 +10,8 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
-parser.add_argument('--alg', default='bm25', type=str,
-                    help='supported alg: bm25, tfidf, aver-embed, lm, bert and ernie')
+parser.add_argument('--alg', default='qq-match', type=str,
+                    help='supported alg: bm25, qq-match, tfidf, aver-embed, lm, bert and ernie')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
 # 要不要加入长答案(每个小标题下所有内容的集合)
