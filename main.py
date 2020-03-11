@@ -232,4 +232,8 @@ if __name__ == '__main__':
         if method != 'qq-match':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
 
-    print_answers(answers_list, output_csv)  # 打印答案
+    if method == 'qq-match':
+        # 多打印一列，因为第一列是系统给出的hit1
+        print_answers(answers_list, output_csv, n_result=4)  # 打印答案
+    else:
+        print_answers(answers_list, output_csv)  # 打印答案
