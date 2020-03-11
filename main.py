@@ -19,7 +19,8 @@ parser.add_argument('--long_ans', default=True, type=bool, help='chooses whether
 args = parser.parse_args()
 
 
-def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl):
+def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl,
+                   queries_file='data/queries.json'):
     """
 
     Parameters
@@ -41,6 +42,10 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
     # 从文档中找出答案
     with open(cleaned_ans_txt, 'r') as f_ans_txt:
         text = f_ans_txt.readlines()
+
+    # 读入queries
+    with open(queries_file, 'r') as f_queries:
+        queries = json.load(f_queries)
 
     deep_model = NeuralNetworks()
     baseline_model = Baselines(cleaned_ans_json, word2vec_pkl)
@@ -79,6 +84,14 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         if method == 'qq-match':
             answers = []
             questions = []
+
+            # 检查top answer是不是正确答案
+            idx = result[0]
+            if baseline_model.base_questions[idx]['sentence'] == queries['sentence']:
+                answers.append(1)
+            else:
+                answers.append(0)
+
             for r in result:
                 if r != -1:
                     answers.append(baseline_model.base_questions[r]['sentence'])
