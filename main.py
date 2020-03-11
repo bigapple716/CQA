@@ -200,6 +200,8 @@ if __name__ == '__main__':
     # 清空输出文件
     with open(output_csv, 'w') as f_out:
         pass
+    with open('data/output_questions.csv', 'w') as f_tmp:
+        pass
 
     method = args.alg
     print('current algorithm:', method)  # 反馈当前使用的算法
