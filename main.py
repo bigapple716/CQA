@@ -114,7 +114,7 @@ def clean_answers(ans_in, ans_idx_in, cleaned_ans_txt):
         raise Exception('答案列表和答案索引列表长度不一致！')
 
     # 载入答案文档
-    with open(cleaned_ans_txt, mode='r', encoding='utf-8') as f_ans_txt:
+    with open(cleaned_ans_txt, 'r') as f_ans_txt:
         text = f_ans_txt.readlines()
 
     ret = []
@@ -163,7 +163,7 @@ def print_answers(ans_list, output, print2file=True, n_result=3):
             返回前n个结果
     """
     if print2file:
-        with open(output, 'a', encoding='utf-8') as f_out:
+        with open(output, 'a') as f_out:
             writer = csv.writer(f_out, lineterminator='\n')
             for answers in ans_list:
                 writer.writerow(answers[:n_result])
