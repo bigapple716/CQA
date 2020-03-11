@@ -47,7 +47,11 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
     for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
         # 用不同算法搜索
         if method == 'bm25':
-            result = baseline_model.bm25(cut_query)
+            result = baseline_model.bm25(cut_query, baseline_model.cut_answers)
+        elif method == 'qq-match':
+            # qq-match属于特殊情况，result直接就是最终答案，处理完直接return
+            result = baseline_model.qq_match(cut_query)
+            return result
         elif method == 'tfidf-sim':
             result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
         elif method == 'tfidf-dist':
@@ -185,10 +189,15 @@ if __name__ == '__main__':
 
     if args.long_ans:
         print('using long answers')
-        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, long_answers_json, long_answers_txt, word2vec_pickle)  # 回答问题
-        answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
+        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input,
+                                                       long_answers_json, long_answers_txt, word2vec_pickle)
+        if method != 'qq-match':
+            answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
         print('NOT using long answers')
-        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)  # 回答问题
-        answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
+        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input,
+                                                       cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)
+        if method != 'qq-match':
+            answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
+
     print_answers(answers_list, output_csv)  # 打印答案

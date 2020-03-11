@@ -38,9 +38,9 @@ class Baselines:
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
-    def bm25(self, query):
+    def bm25(self, query, sentences):
         corpus = [query]
-        corpus += self.cut_answers
+        corpus += sentences
         bm25_weights = get_bm25_weights(corpus, n_jobs=6)[0]
         bm25_weights.pop(0)  # 去掉第一个元素(即query)
 
@@ -151,6 +151,25 @@ class Baselines:
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         return max_pos
+
+    # 问题-问题匹配
+    def qq_match(self, query, base_ques_file='base_questions.json'):
+        # 读入base_questions.json
+        with open(base_ques_file, 'r') as f_base_ques:
+            self.base_questions = json.load(f_base_ques)
+
+        # 把被匹配的问题分词，制作一个纯list
+        base_ques_list = []
+        for base_ques in self.base_questions:
+            line = [w for w in jieba.cut(base_ques['question'])]
+            base_ques_list.append(line)
+
+        # 输入bm25，得到从大到小排列的index list
+        max_pos = self.bm25(query, base_ques_list).tolist()
+
+        answers = []
+        for r in max_pos:
+            answers.append(self.base_questions[r]['sentence'])
 
 
 class NeuralNetworks:
