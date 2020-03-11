@@ -87,7 +87,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
 
             # 检查top answer是不是正确答案
             idx = result[0]
-            if baseline_model.base_questions[idx]['sentence'] == queries['sentence']:
+            if baseline_model.base_questions[idx]['sentence'] == queries[i]['sentence']:
                 answers.append(1)
             else:
                 answers.append(0)
