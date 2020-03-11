@@ -165,11 +165,8 @@ class Baselines:
             base_ques_list.append(line)
 
         # 输入bm25，得到从大到小排列的index list
-        max_pos = self.bm25(query, base_ques_list).tolist()
-
-        answers = []
-        for r in max_pos:
-            answers.append(self.base_questions[r]['sentence'])
+        max_pos = self.bm25(query, base_ques_list)
+        return max_pos
 
 
 class NeuralNetworks:

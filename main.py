@@ -38,6 +38,10 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
     result : list of int
         答案在文档中的index的列表，按相关度排序
     """
+    # 从文档中找出答案
+    with open(cleaned_ans_txt, 'r') as f_ans_txt:
+        text = f_ans_txt.readlines()
+
     deep_model = NeuralNetworks()
     baseline_model = Baselines(cleaned_ans_json, word2vec_pkl)
 
@@ -49,9 +53,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         if method == 'bm25':
             result = baseline_model.bm25(cut_query, baseline_model.cut_answers)
         elif method == 'qq-match':
-            # qq-match属于特殊情况，result直接就是最终答案，处理完直接return
             result = baseline_model.qq_match(cut_query)
-            return result
         elif method == 'tfidf-sim':
             result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
         elif method == 'tfidf-dist':
@@ -72,18 +74,25 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         # ndarray -> list
         result = result.tolist()
 
-        # 从文档中找出答案
-        with open(cleaned_ans_txt, mode='r', encoding='utf-8') as f_ans_txt:
-            text = f_ans_txt.readlines()
+        # 特殊处理qq-match的情况
+        if method == 'qq-match':
+            answers = []
+            for r in result:
+                if r != -1:
+                    answers.append(baseline_model.base_questions[r]['sentence'])
+                else:
+                    answers.append('-')  # 丢弃该回答
+            answers_list.append(answers)
 
-        answers = []
-        for r in result:
-            if r != -1:
-                answers.append(text[r].rstrip())
-            else:
-                answers.append('-')  # 丢弃该回答
-        answers_list.append(answers)
-        answers_index_list.append(result)
+        else:
+            answers = []
+            for r in result:
+                if r != -1:
+                    answers.append(text[r].rstrip())
+                else:
+                    answers.append('-')  # 丢弃该回答
+            answers_list.append(answers)
+            answers_index_list.append(result)
 
         # 输出实时进度
         if i % 20 == 0:
