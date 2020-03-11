@@ -47,6 +47,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
 
     answers_list = []
     answers_index_list = []
+    questions_list = []
 
     for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
         # 用不同算法搜索
@@ -77,12 +78,16 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         # 特殊处理qq-match的情况
         if method == 'qq-match':
             answers = []
+            questions = []
             for r in result:
                 if r != -1:
                     answers.append(baseline_model.base_questions[r]['sentence'])
+                    questions.append(baseline_model.base_questions[r]['question'])
                 else:
                     answers.append('-')  # 丢弃该回答
+                    questions.append('-')
             answers_list.append(answers)
+            questions_list.append(questions)
 
         else:
             answers = []
@@ -97,6 +102,9 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         # 输出实时进度
         if i % 20 == 0:
             print('line ' + str(i) + ' processed')
+
+    if method == 'qq-match':
+        print_answers(questions_list, 'data/output_questions.csv')
     return answers_list, answers_index_list
 
 
