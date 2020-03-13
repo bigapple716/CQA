@@ -77,6 +77,16 @@ class Utils:
             half_str += chr(code)
         return half_str
 
+    # 去掉小标题(交差时才会用到)
+    @staticmethod
+    def delete_titles(file_in, file_out):
+        with open(file_in, 'r') as f_in:
+            text = f_in.readlines()
+        with open(file_out, 'w') as f_out:
+            for line in text:
+                if not Utils.is_heading(line):
+                    f_out.write(line)
+
     @staticmethod
     def __int2cn(matched):
         return an2cn(matched.group(0), 'low')
@@ -84,7 +94,4 @@ class Utils:
 
 # for test purpose
 if __name__ == '__main__':
-    input1 = '黑黑黑'
-    input2 = '囧3私21sdf4.5jj'
-    print(Utils.str2cn(input1))
-    print(Utils.str2cn(input2))
+    Utils.delete_titles('data/long_answers.txt', 'data/tmp.txt')
