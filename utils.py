@@ -38,6 +38,7 @@ class Utils:
     # 判断一个句子是不是标题
     @staticmethod
     def is_heading(sentence):
+        # 长沙文档的标题
         if re.match(r'第.{1,2}节', sentence) is not None:
             # 是节标题
             return True
@@ -49,6 +50,9 @@ class Utils:
             return True
         elif re.match(r'\d+\.\d+\.\d+', sentence) is not None:
             # 是3级标题
+            return True
+        # 96566机场文档的标题
+        elif re.match(r'\(.\)、', sentence) is not None:
             return True
         else:
             # 肯定不是标题

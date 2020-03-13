@@ -188,7 +188,8 @@ def print_answers(ans_list, output, print2file=True, n_result=3):
 
 if __name__ == '__main__':
     # 文件名
-    raw_docx = 'data/长沙机场知识库(没目录图片表格).docx'
+    raw_docx1 = 'data/长沙机场知识库(没目录图片表格).docx'
+    raw_docx2 = 'data/96566机场问询资料.docx'
     answers_txt = 'data/answers.txt'
     extra_txt = 'data/extra_answers.txt'
     cleaned_answers_json = 'data/cleaned_answers.json'
@@ -202,7 +203,7 @@ if __name__ == '__main__':
     output_csv = 'data/output.csv'
     stopword_txt = 'data/stopword.txt'
 
-    reader = Reader(args, stopword_txt, input_txt, raw_docx, answers_txt, extra_txt,
+    reader = Reader(args, stopword_txt, input_txt, [raw_docx1, raw_docx2], answers_txt, extra_txt,
                     cleaned_answers_txt, cleaned_answers_json,
                     long_answers_txt, long_answers_json,
                     cleaned_extra_txt, cleaned_extra_json)  # 实例化一个Reader类

@@ -8,7 +8,7 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, args, stopword_txt, input, in_docx, ans_txt, extra_txt,
+    def __init__(self, args, stopword_txt, input, docx_list, ans_txt, extra_txt,
                  cleaned_ans_txt, cleaned_ans_json, long_ans_txt, long_ans_json,
                  cleaned_extra_txt, cleaned_extra_json):
         self.args = args
@@ -23,7 +23,7 @@ class Reader:
             doc = f_input.readlines()
         self.input = [line.rstrip('\n') for line in doc]
 
-        self.raw_docx = in_docx
+        self.raw_docx_list = docx_list
         self.answers_txt = ans_txt
         self.extra_txt = extra_txt
         self.cleaned_answers_txt = cleaned_ans_txt
@@ -67,7 +67,7 @@ class Reader:
 
     # 预处理数据(下面方法的集合)
     def preprocess(self):
-        self.__read_doc()
+        self.__read_docs()
         self.__clean_txt(self.answers_txt, self.cleaned_answers_txt, self.cleaned_answers_json)
         self.__clean_txt(self.extra_txt, self.cleaned_extra_txt, self.cleaned_extra_json)
         self.__merge_add()
@@ -76,14 +76,15 @@ class Reader:
     '''以下均为私有方法'''
 
     # 载入word文档并转成txt文件
-    def __read_doc(self):
-        # read .doc file
-        f_raw = docx.Document(self.raw_docx)
-        # 按段落分割，并写到一个txt文件里
+    def __read_docs(self):
         with open(self.answers_txt, 'w') as f_answers:
-            for para in f_raw.paragraphs:
-                f_answers.write(para.text)
-                f_answers.write('\n')
+            for raw_docx in self.raw_docx_list:
+                # read .doc file
+                f_raw = docx.Document(raw_docx)
+                # 按段落分割，并写到一个txt文件里
+                for para in f_raw.paragraphs:
+                    f_answers.write(para.text)
+                    f_answers.write('\n')
 
     # 清洗数据
     def __clean_txt(self, ans_file, cleaned_txt_file, cleaned_json_file):
@@ -95,6 +96,7 @@ class Reader:
                 # 去掉空行
                 if line == '':
                     continue
+                line = line.replace('\t', '')  # 去掉\t
                 line = Utils.full2half(line)  # 全角转半角
                 line = Utils.str2cn(line)  # 阿拉伯数字转中文
                 # 分词
