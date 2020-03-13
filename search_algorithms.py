@@ -41,7 +41,7 @@ class Baselines:
     def bm25(self, query, sentences):
         corpus = [query]
         corpus += sentences
-        bm25_weights = get_bm25_weights(corpus, n_jobs=6)[0]
+        bm25_weights = get_bm25_weights(corpus, n_jobs=10)[0]
         bm25_weights.pop(0)  # 去掉第一个元素(即query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
