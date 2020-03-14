@@ -144,6 +144,8 @@ class Reader:
             # 把短答案存档
             answers += short_answers
 
+        answers = self.__remove_dup(answers)
+
         # 将答案库存为txt格式
         with open(self.long_answers_txt, 'w') as f_out_txt:
             for line in answers:
@@ -185,3 +187,7 @@ class Reader:
             merged_json = cleaned_ans_json + cleaned_extra_json
         with open(self.long_answers_json, 'w') as f_long_ans_json:
             json.dump(obj=merged_json, fp=f_long_ans_json, ensure_ascii=False)
+
+    # 给list of str去重
+    def __remove_dup(self, list_in):
+        return list(dict.fromkeys(list_in))
