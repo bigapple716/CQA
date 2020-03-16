@@ -10,7 +10,7 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
-parser.add_argument('--alg', default='bm25', type=str,
+parser.add_argument('--alg', default='mix', type=str,
                     help='supported alg: bm25, qq-match, mix, tfidf, aver-embed, lm, bert, ernie')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
