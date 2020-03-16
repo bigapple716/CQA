@@ -18,9 +18,13 @@ class PreProcessor:
     match_qid_file = 'data/match_qid.txt'
     match_question_file = 'data/match_question.txt'
     match_gold_file = 'data/match_gold.txt'
+    input_txt = 'data/input.txt'
 
     # 根据问题ID找问答对
     def qid2qa(self, input_file='data/qid.txt', output_file='data/base_questions.json'):
+        # constants
+        ratio = 0.7
+
         # 读文件
         with open(self.match_qid_file, 'r') as f_qid:
             qid_list = f_qid.readlines()
@@ -49,13 +53,22 @@ class PreProcessor:
         # 匹配
         small_qa_dict = {i: qa_dict[i] for i in ids}
 
-        # 整理格式，写到json里
+        # 整理格式
         qa_list = []
         for key in small_qa_dict:
             dict = {'question': small_qa_dict[key]['question'], 'sentence': small_qa_dict[key]['gold']}
             qa_list.append(dict)
+        # 划分base_questions和queries
+        random.shuffle(qa_list)
+        split = round(len(qa_list) * ratio)
+        base_questions = qa_list[:split]
+        queries = qa_list[split:]
+        # 写到json里
         with open(output_file, 'w') as f_out:
-            json.dump(qa_list, f_out, ensure_ascii=False)
+            json.dump(base_questions, f_out, ensure_ascii=False)
+        with open(self.input_txt, 'w') as f_query:
+            for dict in queries:
+                f_query.write(dict['question'] + '\n')
 
     def qa_match(self):
         questions, golds, answers = self.__read(self.question_file, self.gold_file, self.answer_file,
