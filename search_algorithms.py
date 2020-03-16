@@ -4,7 +4,7 @@ import json
 from gensim.summarization.bm25 import *
 from gensim.models import TfidfModel, KeyedVectors
 from gensim.corpora import Dictionary
-from gensim.similarities import MatrixSimilarity
+from gensim.similarities import SparseMatrixSimilarity
 from gensim.matutils import jaccard
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -61,8 +61,8 @@ class Baselines:
             line = [w for w in jieba.cut(base_ques['question'])]
             base_ques_list.append(line)
 
-        # 输入bm25，得到从大到小排列的index list
-        return self.bm25(query, base_ques_list)
+        # 输入tfidf，得到从大到小排列的index list
+        return self.tfidf_sim(query, base_ques_list)
 
     # QQ匹配和QA匹配混合
     def qq_qa_mix(self, query, threshold=40):
@@ -76,21 +76,22 @@ class Baselines:
 
     # tf-idf相似度算法搜索
     @staticmethod
-    def tfidf_sim(query, answers_json):
-        # read from json file
-        with open(answers_json, mode='r', encoding='utf-8') as f_ans:
-            corpus = json.load(f_ans)
+    def tfidf_sim(query, corpus):
         # 构造bag of words
         dict = Dictionary(corpus)  # fit dictionary
+        n_features = len(dict.token2id)
         bow = [dict.doc2bow(line) for line in corpus]  # convert corpus to BoW format
         query_bow = [dict.doc2bow(query)]
         # 构造tf-idf模型
         model = TfidfModel(bow)  # fit model
-        tfidf_weights = model[bow]  # apply model
+        text_tfidf = model[bow]  # apply model
         query_tfidf = model[query_bow]
-        sim_index = MatrixSimilarity(tfidf_weights)
-        max_pos = np.argsort(sim_index[query_tfidf][0])[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        return max_pos
+        sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
+        similarities = sim_index.get_similarities(query_tfidf)[0]
+
+        sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
+        max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+        return max_pos, sorted_scores
 
     # tf-idf算法搜索
     @staticmethod
