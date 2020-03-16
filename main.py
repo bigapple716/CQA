@@ -61,7 +61,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         elif method == 'qq-match':
             result = baseline_model.qq_match(cut_query)
         elif method == 'mix':
-            result = baseline_model.qq_qa_mix()
+            result = baseline_model.qq_qa_mix(cut_query)
         elif method == 'tfidf-sim':
             result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
         elif method == 'tfidf-dist':
