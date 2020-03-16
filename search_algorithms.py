@@ -49,6 +49,26 @@ class Baselines:
         # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
         return max_pos
 
+    # 问题-问题匹配
+    def qq_match(self, query, base_ques_file='data/base_questions.json'):
+        # 读入base_questions.json
+        with open(base_ques_file, 'r') as f_base_ques:
+            self.base_questions = json.load(f_base_ques)
+
+        # 把被匹配的问题分词，制作一个纯list
+        base_ques_list = []
+        for base_ques in self.base_questions:
+            line = [w for w in jieba.cut(base_ques['question'])]
+            base_ques_list.append(line)
+
+        # 输入bm25，得到从大到小排列的index list
+        max_pos = self.bm25(query, base_ques_list)
+        return max_pos
+
+    # QQ匹配和QA匹配混合
+    def qq_qa_mix(self, query, base_ques_file='data/base_questions.json'):
+        pass
+
     # tf-idf相似度算法搜索
     @staticmethod
     def tfidf_sim(query, answers_json):
@@ -150,22 +170,6 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        return max_pos
-
-    # 问题-问题匹配
-    def qq_match(self, query, base_ques_file='data/base_questions.json'):
-        # 读入base_questions.json
-        with open(base_ques_file, 'r') as f_base_ques:
-            self.base_questions = json.load(f_base_ques)
-
-        # 把被匹配的问题分词，制作一个纯list
-        base_ques_list = []
-        for base_ques in self.base_questions:
-            line = [w for w in jieba.cut(base_ques['question'])]
-            base_ques_list.append(line)
-
-        # 输入bm25，得到从大到小排列的index list
-        max_pos = self.bm25(query, base_ques_list)
         return max_pos
 
 

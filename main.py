@@ -11,7 +11,7 @@ from reader import Reader
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
 parser.add_argument('--alg', default='bm25', type=str,
-                    help='supported alg: bm25, qq-match, tfidf, aver-embed, lm, bert and ernie')
+                    help='supported alg: bm25, qq-match, mix, tfidf, aver-embed, lm, bert, ernie')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
 # 要不要加入长答案(每个小标题下所有内容的集合)
@@ -60,6 +60,8 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
             result = baseline_model.bm25(cut_query, baseline_model.cut_answers)
         elif method == 'qq-match':
             result = baseline_model.qq_match(cut_query)
+        elif method == 'mix':
+            result = baseline_model.qq_qa_mix()
         elif method == 'tfidf-sim':
             result = Baselines.tfidf_sim(cut_query, cleaned_ans_json)
         elif method == 'tfidf-dist':
