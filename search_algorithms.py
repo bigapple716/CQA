@@ -38,7 +38,13 @@ class Baselines:
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
-    def bm25(self, query, sentences):
+    def bm25(self, query, sentences, scores=False):
+        """
+        Parameters
+        ----------
+        scores : bool
+            是否输出每个回答的得分(按照从大到小的顺序)
+        """
         corpus = [query]
         corpus += sentences
         bm25_weights = get_bm25_weights(corpus, n_jobs=12)[0]
@@ -47,10 +53,13 @@ class Baselines:
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
-        return max_pos
+        if scores:
+            return sorted_scores  # 返回得分
+        else:
+            return max_pos  # 返回index
 
     # 问题-问题匹配
-    def qq_match(self, query, base_ques_file='data/base_questions.json'):
+    def qq_match(self, query, base_ques_file='data/base_questions.json', scores=False):
         # 读入base_questions.json
         with open(base_ques_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
@@ -62,12 +71,15 @@ class Baselines:
             base_ques_list.append(line)
 
         # 输入bm25，得到从大到小排列的index list
-        max_pos = self.bm25(query, base_ques_list)
+        max_pos = self.bm25(query, base_ques_list, scores)
         return max_pos
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, base_ques_file='data/base_questions.json'):
-        pass
+    def qq_qa_mix(self, query, threshold=0.1):
+        sorted_scores = self.qq_match(query, scores=True)
+        # 如果qq匹配top1的得分都小于阈值的话，就放弃掉QQ匹配，改用QA匹配
+        if sorted_scores[0] < threshold:
+            return self.bm25(query, self.cut_answers)
 
     # tf-idf相似度算法搜索
     @staticmethod
