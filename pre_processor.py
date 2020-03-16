@@ -58,11 +58,13 @@ class PreProcessor:
         for key in small_qa_dict:
             dict = {'question': small_qa_dict[key]['question'], 'sentence': small_qa_dict[key]['gold']}
             qa_list.append(dict)
+
         # 划分base_questions和queries
         random.shuffle(qa_list)
         split = round(len(qa_list) * ratio)
         base_questions = qa_list[:split]
         queries = qa_list[split:]
+
         # 写到json里
         with open(output_file, 'w') as f_out:
             json.dump(base_questions, f_out, ensure_ascii=False)
