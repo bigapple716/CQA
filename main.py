@@ -57,9 +57,9 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
     for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
         # 用不同算法搜索
         if method == 'bm25':
-            result = baseline_model.bm25(cut_query, baseline_model.cut_answers)
+            result, _ = baseline_model.bm25(cut_query, baseline_model.cut_answers)
         elif method == 'qq-match':
-            result = baseline_model.qq_match(cut_query)
+            result, _ = baseline_model.qq_match(cut_query)
         elif method == 'mix':
             result = baseline_model.qq_qa_mix(cut_query)
         elif method == 'tfidf-sim':
