@@ -37,6 +37,9 @@ class Baselines:
                 # 用机场文档训练出的word2vec
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
+        self.qq_count = 0
+        self.qa_count = 0
+
     # bm25算法搜索
     def bm25(self, query, sentences):
         corpus = [query]
@@ -70,8 +73,10 @@ class Baselines:
         # 如果qq匹配top1的得分都小于阈值的话，就放弃掉QQ匹配，改用QA匹配
         if sorted_scores[0] < threshold:
             qa_result, _ = self.bm25(query, self.cut_answers)
+            self.qa_count += 1
             return qa_result
         else:
+            self.qq_count += 1
             return max_pos
 
     # tf-idf相似度算法搜索

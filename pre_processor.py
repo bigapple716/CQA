@@ -23,7 +23,7 @@ class PreProcessor:
     # 根据问题ID找问答对
     def qid2qa(self, input_file='data/qid.txt', output_file='data/base_questions.json'):
         # constants
-        ratio = 0.7
+        ratio = 0.95
 
         # 读文件
         with open(self.match_qid_file, 'r') as f_qid:

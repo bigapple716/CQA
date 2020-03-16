@@ -118,6 +118,9 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         if i % 20 == 0:
             print('line ' + str(i) + ' processed')
 
+    if method == 'mix':
+        print('QQ count: ' + baseline_model.qq_count)
+        print('QA count: ' + baseline_model.qa_count)
     if method == 'qq-match':
         print_answers(questions_list, 'data/output_questions.csv')
     return answers_list, answers_index_list
