@@ -69,7 +69,8 @@ class Baselines:
         max_pos, sorted_scores = self.qq_match(query)
         # 如果qq匹配top1的得分都小于阈值的话，就放弃掉QQ匹配，改用QA匹配
         if sorted_scores[0] < threshold:
-            return self.bm25(query, self.cut_answers)
+            qa_result, _ = self.bm25(query, self.cut_answers)
+            return qa_result
         else:
             return max_pos
 
