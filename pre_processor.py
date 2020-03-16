@@ -9,18 +9,60 @@ random.seed(0)
 
 class PreProcessor:
     # file names
-    question_file = 'question.txt'
-    gold_file = 'gold.txt'
-    # answer_file = 'cleaned_answers.txt'
-    answer_file = 'long_answers.txt'
-    queries_file = 'queries.txt'
+    question_file = 'data/question.txt'
+    gold_file = 'data/gold.txt'
+    # answer_file = 'data/cleaned_answers.txt'
+    answer_file = 'data/long_answers.txt'
+    queries_file = 'data/queries.txt'
+
+    match_qid_file = 'data/match_qid.txt'
+    match_question_file = 'data/match_question.txt'
+    match_gold_file = 'data/match_gold.txt'
+
+    # 根据问题ID找问答对
+    def qid2qa(self, input_file='data/qid.txt', output_file='data/base_questions.json'):
+        # 读文件
+        with open(self.match_qid_file, 'r') as f_qid:
+            qid_list = f_qid.readlines()
+            qid_list = [line.rstrip('\n') for line in qid_list]
+        with open(self.match_question_file, 'r') as f_ques:
+            ques_list = f_ques.readlines()
+            ques_list = [line.rstrip('\n') for line in ques_list]
+        with open(self.match_gold_file, 'r') as f_gold:
+            gold_list = f_gold.readlines()
+            gold_list = [line.rstrip('\n') for line in gold_list]
+
+        # 判断上面3个list长度一致
+        if not (len(qid_list) == len(ques_list) == len(gold_list)):
+            raise Exception('数据长度不一致！')
+
+        # 制作字典
+        qa_dict = {}
+        for qid, ques, gold in zip(qid_list, ques_list, gold_list):
+            qa_dict[qid] = {'question': ques, 'gold': gold}
+
+        # 读待匹配的问题ID
+        with open(input_file, 'r') as f_in:
+            ids = f_in.readlines()
+            ids = [line.rstrip('\n') for line in ids]
+
+        # 匹配
+        small_qa_dict = {i: qa_dict[i] for i in ids}
+
+        # 整理格式，写到json里
+        qa_list = []
+        for key in small_qa_dict:
+            dict = {'question': small_qa_dict[key]['question'], 'sentence': small_qa_dict[key]['gold']}
+            qa_list.append(dict)
+        with open(output_file, 'w') as f_out:
+            json.dump(qa_list, f_out, ensure_ascii=False)
 
     def qa_match(self):
         questions, golds, answers = self.__read(self.question_file, self.gold_file, self.answer_file,
                                                 read_gold=True, read_answer=True)
         print('answer pool length:', len(answers))
         train, dev, test, test_questions = self.__create_qa_data(questions, golds, answers,
-                                                              mode='mix', train_dev_ratio=0.9)
+                                                                 mode='mix', train_dev_ratio=0.9)
 
         # 写数据到.tsv文件
         self.__write_data(train, 'train.tsv')
@@ -53,7 +95,6 @@ class PreProcessor:
             json.dump(queries, f_queries, ensure_ascii=False)
         with open('base_questions.json', 'w') as f_base_ques:
             json.dump(base_questions, f_base_ques, ensure_ascii=False)
-
 
     def __read(self, question_file, gold_file, answer_file, read_gold=True, read_answer=True):
         # read questions
@@ -189,5 +230,7 @@ class PreProcessor:
 
 if __name__ == "__main__":
     pre_processor = PreProcessor()
-    pre_processor.qq_match()
+
+    pre_processor.qid2qa()
+    # pre_processor.qq_match()
     # pre_processor.qa_match()
