@@ -18,7 +18,7 @@ from utils import Utils
 
 PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 self_trained_word2vec = 'train_embed/word2vec.kv'
-
+stopword_txt = 'data/stopword.txt'
 
 class Baselines:
     def __init__(self, ans_json, ans_txt, use_aver_embed=False, use_pretrained_word2vec=True):
@@ -26,8 +26,12 @@ class Baselines:
         self.base_ques_file = 'data/base_questions.json'
         self.small_ans_file = 'data/small_answers.txt'
 
+        with open(stopword_txt, 'r') as f_stopword:
+            doc = f_stopword.readlines()
+        self.stopwords = [line.rstrip('\n') for line in doc]
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
+            self.cut_answers = [[ele for ele in answer if ele not in self.stopwords] for answer in self.cut_answers]
         with open(ans_txt, 'r') as f_ans_txt:
             uncut_answers = f_ans_txt.readlines()
             self.uncut_answers = [line.rstrip('\n') for line in uncut_answers]
@@ -92,11 +96,20 @@ class Baselines:
             # base_question给出实际的答案
             sorted_scores, max_pos, _ = self.bm25(query, self.cut_small_answers)
             answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
-            return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
+            qa_threshold = 3.0
+            filter_answers = []
+            for answer,score in zip(answers[:3],sorted_scores[:3]):
+                if score > qa_threshold:
+                    filter_answers.append(answer)
+            return sorted_scores, max_pos, filter_answers, []  # questions的位置返回一个空list
         else:
             # QQ匹配效果不错，直接返回结果
             self.qq_count += 1
-            return sorted_scores, max_pos, answers, questions
+            filter_answers = []
+            for answer,score in zip(answers[:3],sorted_scores[:3]):
+                if score >= threshold:
+                    filter_answers.append(answer)
+            return sorted_scores, max_pos, filter_answers, questions
 
     # tf-idf相似度算法搜索
     def tfidf_sim(self, query, corpus):
