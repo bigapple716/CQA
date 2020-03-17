@@ -58,8 +58,8 @@ class Baselines:
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
-        answers = self.__max_pos2answers(max_pos)
-        return sorted_scores, max_pos, answers  # 返回scores, index, answers
+        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        return sorted_scores, max_pos, answers
 
     # 问题-问题匹配
     def qq_match(self, query):
@@ -76,14 +76,19 @@ class Baselines:
 
     # QQ匹配和QA匹配混合
     def qq_qa_mix(self, query, threshold=0.99):
-        sorted_scores, max_pos, answers, questions = self.qq_match(query)
-        # 如果qq匹配top1的得分都小于阈值的话，就放弃掉QQ匹配，改用QA匹配
+        sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
         if sorted_scores[0] < threshold:
+            # QQ匹配的得分小于阈值，放弃掉QQ匹配，改用QA匹配
             self.qa_count += 1
+            # QA匹配暂时选用bm25算法
+            # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
+            # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
+            # base_question给出实际的答案
             sorted_scores, max_pos, _ = self.bm25(query, self.base_questions)
             answers, _ = self.__max_pos2answers_questions(max_pos)
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
         else:
+            # QQ匹配效果不错，直接返回结果
             self.qq_count += 1
             return sorted_scores, max_pos, answers, questions
 
@@ -103,8 +108,8 @@ class Baselines:
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos)
-        return sorted_scores, max_pos, answers  # 返回scores, index, answers
+        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        return sorted_scores, max_pos, answers
 
     # tf-idf算法搜索(停止维护)
     @staticmethod
@@ -170,8 +175,8 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos)
-        return sorted_scores, max_pos, answers  # 返回scores, index, answers
+        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        return sorted_scores, max_pos, answers
 
     # Language Model
     def language_model(self, query):
@@ -190,9 +195,10 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos)
-        return sorted_scores, max_pos, answers  # 返回scores, index, answers
+        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        return sorted_scores, max_pos, answers
 
+    # 根据max_pos从答案库里把真正的答案抽出来
     def __max_pos2answers(self, max_pos):
         max_pos = max_pos.tolist()  # ndarray -> list
         answers = []
