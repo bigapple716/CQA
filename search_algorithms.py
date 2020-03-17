@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from gensim.summarization.bm25 import *
+from gensim.summarization.bm25 import BM25
 from gensim.models import TfidfModel, KeyedVectors
 from gensim.corpora import Dictionary
 from gensim.similarities import SparseMatrixSimilarity
@@ -62,13 +62,12 @@ class Baselines:
         self.qa_count = 0
 
     # bm25算法搜索
-    def bm25(self, query, sentences):
-        corpus = [query]
-        corpus += sentences
-        bm25_weights = get_bm25_weights(corpus, n_jobs=12)[0]
-        bm25_weights.pop(0)  # 去掉第一个元素(即query)
+    def bm25(self, query, corpus):
+        bm25 = BM25(corpus)
+        bm25_weights = bm25.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
+        sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
         answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
@@ -82,7 +81,7 @@ class Baselines:
         return sorted_scores, max_pos, answers, questions
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, threshold=0.6):
+    def qq_qa_mix(self, query, threshold=0.7):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
         if sorted_scores[0] < threshold:
             # QQ匹配的得分小于阈值，放弃掉QQ匹配，改用QA匹配
