@@ -8,10 +8,10 @@ from utils import Utils
 
 
 class Reader:
-    def __init__(self, args, stopword_txt, input, docx_list, ans_txt, extra_txt,
+    def __init__(self, trim_stop, stopword_txt, input, docx_list, ans_txt, extra_txt,
                  cleaned_ans_txt, cleaned_ans_json, long_ans_txt, long_ans_json,
                  cleaned_extra_txt, cleaned_extra_json):
-        self.args = args
+        self.trim_stop = trim_stop
 
         # 停用词表
         with open(stopword_txt, 'r') as f_stopword:
@@ -50,7 +50,7 @@ class Reader:
             line = Utils.str2cn(line)  # 阿拉伯数字转中文
             cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
             # 去停用词
-            if self.args.trim_stop:
+            if self.trim_stop:
                 trim_line = [w for w in cut_line if w not in self.stopwords]
             else:
                 trim_line = cut_line
@@ -59,7 +59,7 @@ class Reader:
             cleaned.append(trim_line)
             uncut.append(uncut_line)
 
-        if self.args.trim_stop:
+        if self.trim_stop:
             print('stop words trimmed')
         else:
             print('stop words NOT trimmed')

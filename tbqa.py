@@ -7,11 +7,11 @@ from reader import Reader
 
 
 class TBQA:
-    def __init__(self,method='mix', trim_stop=True, long_ans=True, topn=3, qq_threshold=0.6, qa_threshold=5.0):
+    def __init__(self, method='mix', trim_stop=True, long_ans=True, top_n=3, qq_threshold=0.6, qa_threshold=5.0):
         self.method = method
         self.trim_stop = trim_stop
         self.long_ans = long_ans
-        self.topn = topn
+        self.top_n = top_n
         self.qa_threshold = qa_threshold
         self.qq_threshold = qq_threshold
 
@@ -29,15 +29,15 @@ class TBQA:
         output_csv = 'data/output.csv'
         stopword_txt = 'data/stopword.txt'
 
-        self.reader = Reader(self, stopword_txt, input_txt, [raw_docx1, raw_docx2], answers_txt, extra_txt,
-                    cleaned_answers_txt, cleaned_answers_json,
-                    long_answers_txt, long_answers_json,
-                    cleaned_extra_txt, cleaned_extra_json)  # 实例化一个Reader类
+        self.reader = Reader(self.trim_stop, stopword_txt, input_txt, [raw_docx1, raw_docx2], answers_txt, extra_txt,
+                             cleaned_answers_txt, cleaned_answers_json,
+                             long_answers_txt, long_answers_json,
+                             cleaned_extra_txt, cleaned_extra_json)  # 实例化一个Reader类
         #print('init reader')
         #self.reader.preprocess()
         #print('finish reader')
 
-    def _search_answers(self,cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
+    def search_answers(self,cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
         baseline_model = Baselines(cleaned_ans_json, cleaned_ans_txt)
     
         sorted_scores_list = []
@@ -84,7 +84,7 @@ class TBQA:
         '''
         return answers_list, answers_index_list, sorted_scores_list
 
-    def _clean_answers(self,ans_in, ans_idx_in, cleaned_ans_txt):
+    def clean_answers(self,ans_in, ans_idx_in, cleaned_ans_txt):
         # 入参检查
         if len(ans_in) != len(ans_idx_in):
             raise Exception('答案列表和答案索引列表长度不一致！')
@@ -137,15 +137,15 @@ class TBQA:
         if self.long_ans:
             #print('using long answers')
             answers_list, answer_idx_list, sorted_scores_list = \
-                self._search_answers(cleaned_input, uncut_input,self.reader.long_answers_json,self.reader.long_answers_txt)
+                self.search_answers(cleaned_input, uncut_input,self.reader.long_answers_json,self.reader.long_answers_txt)
             if self.method != 'qq-match' and self.method != 'mix':
                 answers_list = clean_answers(list(answers_list), list(answer_idx_list), self.reader.long_answers_txt)  # 清洗答案
         else:
             #print('NOT using long answers')
             answers_list, answer_idx_list, sorted_scores_list = \
-                self._search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
+                self.search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
             if method != 'qq-match' and method != 'mix':
-                answers_list = self._clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
+                answers_list = self.clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
         answers = answers_list[0]
         scores = sorted_scores_list[0]
         print(scores[:3])
