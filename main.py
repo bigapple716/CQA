@@ -152,7 +152,11 @@ if __name__ == '__main__':
                     cleaned_answers_txt, cleaned_answers_json,
                     long_answers_txt, long_answers_json,
                     cleaned_extra_txt, cleaned_extra_json)  # 实例化一个Reader类
-    cleaned_input, uncut_input = reader.clean_input()
+    # queries
+    with open(input_txt, 'r') as f_input:
+        input = f_input.readlines()
+        input = [line.rstrip('\n') for line in input]
+    cleaned_input, uncut_input = reader.clean_input(input)
     # 下一行代码只用运行一次
     reader.preprocess()  # 预处理数据
 
