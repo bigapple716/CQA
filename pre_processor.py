@@ -43,6 +43,9 @@ class PreProcessor:
         # 制作字典
         base_questions = []
         for ques, gold in zip(ques_list, gold_list):
+            if '五一广场' in gold or '黄花' in gold or '小吃' in gold or '宜居' in gold or '长沙' in gold:
+                print(gold)
+                continue
             # 只要问题不在input里面而且带答案的
             if (ques not in queries) and (gold != ''):
                 base_questions.append({'question': ques, 'sentence': gold})
