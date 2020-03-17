@@ -37,7 +37,7 @@ class TBQA:
         #self.reader.preprocess()
         #print('finish reader')
 
-    def search_answers(self,cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
+    def search_answers(self, cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
         baseline_model = Baselines(cleaned_ans_json, cleaned_ans_txt)
     
         sorted_scores_list = []
@@ -126,6 +126,7 @@ class TBQA:
     
             ret.append(cleaned_ans)
         return ret
+
     def get_answer(self,question):
         """
 
@@ -137,15 +138,15 @@ class TBQA:
         if self.long_ans:
             #print('using long answers')
             answers_list, answer_idx_list, sorted_scores_list = \
-                self.search_answers(cleaned_input, uncut_input,self.reader.long_answers_json,self.reader.long_answers_txt)
+                self.search_answers(cleaned_input, uncut_input, self.reader.long_answers_json, self.reader.long_answers_txt)
             if self.method != 'qq-match' and self.method != 'mix':
-                answers_list = clean_answers(list(answers_list), list(answer_idx_list), self.reader.long_answers_txt)  # 清洗答案
+                answers_list = self.clean_answers(list(answers_list), list(answer_idx_list), self.reader.long_answers_txt)  # 清洗答案
         else:
             #print('NOT using long answers')
             answers_list, answer_idx_list, sorted_scores_list = \
-                self.search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
-            if method != 'qq-match' and method != 'mix':
-                answers_list = self.clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
+                self.search_answers(cleaned_input, uncut_input, self.reader.cleaned_answers_json, self.reader.cleaned_answers_txt)
+            if self.method != 'qq-match' and self.method != 'mix':
+                answers_list = self.clean_answers(list(answers_list), list(answer_idx_list), self.reader.cleaned_answers_txt)  # 清洗答案
         answers = answers_list[0]
         scores = sorted_scores_list[0]
         print(scores[:3])
