@@ -153,6 +153,7 @@ class TBQA:
             answers.append(-1)
         return answers
 
+
 if __name__ == '__main__':
     tbqa = TBQA()
     questions = ['接机攻略']
