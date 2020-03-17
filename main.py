@@ -10,7 +10,7 @@ from reader import Reader
 # 载入参数
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
-parser.add_argument('--alg', default='mix', type=str,
+parser.add_argument('--alg', default='qq-match', type=str,
                     help='supported alg: bm25, qq-match, mix, tfidf, aver-embed, lm')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
@@ -171,7 +171,7 @@ if __name__ == '__main__':
         print('using long answers')
         answers_list, answer_idx_list, sorted_scores_list = \
             search_answers(cleaned_input, uncut_input, long_answers_json, long_answers_txt)
-        if method != 'qq-match' or 'mix':
+        if method != 'qq-match' and method != 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
         else:
             print_answers(sorted_scores_list, 'data/scores.csv')
@@ -179,7 +179,7 @@ if __name__ == '__main__':
         print('NOT using long answers')
         answers_list, answer_idx_list, sorted_scores_list = \
             search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
-        if method != 'qq-match' or 'mix':
+        if method != 'qq-match' and method != 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
         else:
             print_answers(sorted_scores_list, 'data/scores.csv')
