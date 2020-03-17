@@ -24,23 +24,30 @@ class Baselines:
     def __init__(self, ans_json, ans_txt, use_aver_embed=False, use_pretrained_word2vec=True):
         self.word2vec_pickle = 'data/word2vec.pickle'
         self.base_ques_file = 'data/base_questions.json'
+        self.small_ans_file = 'data/small_answers.txt'
 
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
         with open(ans_txt, 'r') as f_ans_txt:
-            self.uncut_answers = f_ans_txt.readlines()
-        # 读入base_questions.json
+            uncut_answers = f_ans_txt.readlines()
+            self.uncut_answers = [line.rstrip('\n') for line in uncut_answers]
         with open(self.base_ques_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
+        with open(self.small_ans_file, 'r') as f_small_ans:
+            small_ans_txt = f_small_ans.readlines()
+            self.uncut_small_answers = [line.rstrip('\n') for line in small_ans_txt]
 
-        # 把被匹配的问题和答案分词，制作2个纯list
+        # 把small answer分词
+        self.cut_small_answers = []
+        for ans in self.uncut_small_answers:
+            line = [w for w in jieba.cut(ans)]
+            self.cut_small_answers.append(line)
+
+        # 把被匹配的问题分词，制作一个纯list
         self.base_ques_list = []
-        self.base_ans_list = []
         for base_ques in self.base_questions:
             line = [w for w in jieba.cut(base_ques['question'])]
             self.base_ques_list.append(line)
-            line = [w for w in jieba.cut(base_ques['sentence'])]
-            self.base_ans_list.append(line)
 
         if use_aver_embed:
             if use_pretrained_word2vec:
@@ -64,7 +71,7 @@ class Baselines:
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
-        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
     # 问题-问题匹配
@@ -84,8 +91,8 @@ class Baselines:
             # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
             # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
             # base_question给出实际的答案
-            sorted_scores, max_pos, _ = self.bm25(query, self.base_ans_list)
-            answers, _ = self.__max_pos2answers_questions(max_pos)
+            sorted_scores, max_pos, _ = self.bm25(query, self.cut_small_answers)
+            answers, _ = self.__max_pos2answers(max_pos, self.uncut_small_answers)
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
         else:
             # QQ匹配效果不错，直接返回结果
@@ -108,7 +115,7 @@ class Baselines:
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
     # tf-idf算法搜索(停止维护)
@@ -175,7 +182,7 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
     # Language Model
@@ -195,16 +202,16 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
     # 根据max_pos从答案库里把真正的答案抽出来
-    def __max_pos2answers(self, max_pos):
+    def __max_pos2answers(self, max_pos, answer_base):
         max_pos = max_pos.tolist()  # ndarray -> list
         answers = []
         for r in max_pos:
             if r != -1:
-                answers.append(self.uncut_answers[r].rstrip())
+                answers.append(answer_base[r])
             else:
                 answers.append('-')  # 丢弃该回答
         return answers
