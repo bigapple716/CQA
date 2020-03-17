@@ -19,7 +19,7 @@ parser.add_argument('--long_ans', default=True, type=bool, help='chooses whether
 args = parser.parse_args()
 
 
-def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word2vec_pkl,
+def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt,
                    queries_file='data/queries.json'):
     """
 
@@ -48,7 +48,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt, word
         queries = json.load(f_queries)
 
     deep_model = NeuralNetworks()
-    baseline_model = Baselines(cleaned_ans_json, word2vec_pkl)
+    baseline_model = Baselines(cleaned_ans_json)
 
     answers_list = []
     answers_index_list = []
@@ -203,7 +203,6 @@ if __name__ == '__main__':
     cleaned_extra_json = 'data/cleaned_extra.json'
     long_answers_txt = 'data/long_answers.txt'
     long_answers_json = 'data/long_answers.json'
-    word2vec_pickle = 'data/word2vec.pickle'
     input_txt = 'data/input.txt'
     output_csv = 'data/output.csv'
     stopword_txt = 'data/stopword.txt'
@@ -228,14 +227,14 @@ if __name__ == '__main__':
     if args.long_ans:
         print('using long answers')
         answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input,
-                                                       long_answers_json, long_answers_txt, word2vec_pickle)
-        if method != 'qq-match':
+                                                       long_answers_json, long_answers_txt)
+        if method != 'qq-match' or 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
         print('NOT using long answers')
         answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input,
-                                                       cleaned_answers_json, cleaned_answers_txt, word2vec_pickle)
-        if method != 'qq-match':
+                                                       cleaned_answers_json, cleaned_answers_txt)
+        if method != 'qq-match' or 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
 
     if method == 'qq-match':

@@ -24,14 +24,20 @@ self_trained_word2vec = 'train_embed/word2vec.kv'
 
 
 class Baselines:
-    def __init__(self, ans_json, word2vec_file, use_aver_embed=False, use_pretrained_word2vec=True):
+    def __init__(self, ans_json, use_aver_embed=False, use_pretrained_word2vec=True):
+        self.word2vec_pickle = 'data/word2vec.pickle'
+        self.base_ques_file = 'data/base_questions.json'
+
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
+        # 读入base_questions.json
+        with open(self.base_ques_file, 'r') as f_base_ques:
+            self.base_questions = json.load(f_base_ques)
 
         if use_aver_embed:
             if use_pretrained_word2vec:
                 # 用预训练好的word2vec
-                with open(word2vec_file, 'rb') as f_pickle:
+                with open(self.word2vec_pickle, 'rb') as f_pickle:
                     self.word2vec = pickle.load(f_pickle)
             else:
                 # 用机场文档训练出的word2vec
@@ -53,11 +59,7 @@ class Baselines:
         return max_pos, sorted_scores  # 返回index + 得分
 
     # 问题-问题匹配
-    def qq_match(self, query, base_ques_file='data/base_questions.json'):
-        # 读入base_questions.json
-        with open(base_ques_file, 'r') as f_base_ques:
-            self.base_questions = json.load(f_base_ques)
-
+    def qq_match(self, query):
         # 把被匹配的问题分词，制作一个纯list
         base_ques_list = []
         for base_ques in self.base_questions:
@@ -68,11 +70,11 @@ class Baselines:
         return self.tfidf_sim(query, base_ques_list)
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, threshold=0.9):
+    def qq_qa_mix(self, query, threshold=0.99):
         max_pos, sorted_scores = self.qq_match(query)
         # 如果qq匹配top1的得分都小于阈值的话，就放弃掉QQ匹配，改用QA匹配
         if sorted_scores[0] < threshold:
-            qa_result, _ = self.bm25(query, self.cut_answers)
+            qa_result, _ = self.bm25(query, self.base_questions)
             self.qa_count += 1
             return qa_result
         else:
@@ -182,6 +184,14 @@ class Baselines:
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         return max_pos
+
+    def __scores2answers(self, scores):
+        answers = []
+        for r in scores:
+            if r != -1:
+                answers.append(self.cut_answers[r].rstrip())
+            else:
+                answers.append('-')  # 丢弃该回答
 
 
 class NeuralNetworks:
