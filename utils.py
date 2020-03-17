@@ -2,6 +2,8 @@
 
 from cn2an import an2cn
 import re
+from gensim.models import KeyedVectors
+import pickle
 
 
 # 静态工具类
@@ -87,6 +89,26 @@ class Utils:
                 if not Utils.is_heading(line):
                     f_out.write(line)
 
+    # 统计文件里平均行长度
+    @staticmethod
+    def aver_len(input_file):
+        with open(input_file, 'r') as f_in:
+            text = f_in.readlines()
+
+        total_len = 0
+        for line in text:
+            total_len += len(line.rstrip())
+        return total_len / len(text)
+
+    # load word2vec text file and dump it to pickle
+    @staticmethod
+    def load_embed(word2vec_file):
+        word2vec = KeyedVectors.load_word2vec_format(word2vec_file, binary=False)
+        with open('data/word2vec.pickle', 'wb') as f_pickle:
+            pickle.dump(word2vec, f_pickle)
+
+    '''以下均为私有方法'''
+
     @staticmethod
     def __int2cn(matched):
         return an2cn(matched.group(0), 'low')
@@ -94,4 +116,7 @@ class Utils:
 
 # for test purpose
 if __name__ == '__main__':
-    Utils.delete_titles('data/long_answers.txt', 'data/tmp.txt')
+    # Utils.delete_titles('data/long_answers.txt', 'data/tmp.txt')
+    print(Utils.aver_len('data/input.txt'))
+    print(Utils.aver_len('data/cleaned_answers.txt'))
+    print(Utils.aver_len('data/long_answers.txt'))
