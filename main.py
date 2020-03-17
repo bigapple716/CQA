@@ -20,26 +20,9 @@ args = parser.parse_args()
 
 
 def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
-    """
-
-    Parameters
-    ----------
-    cleaned_in : list of list of str
-        分词、去停用词后的输入
-    uncut_in : list of str
-        仅去停用词后的输入(没有分词)
-    cleaned_ans_json
-    cleaned_ans_txt
-
-    Returns
-    -------
-    answers_list : list of string
-        答案的列表，按相关度排序
-    result : list of int
-        答案在文档中的index的列表，按相关度排序
-    """
     baseline_model = Baselines(cleaned_ans_json, cleaned_ans_txt)
 
+    sorted_scores_list = []
     answers_list = []
     answers_index_list = []
     questions_list = []
@@ -67,6 +50,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
         else:
             raise Exception('尚未支持该搜索算法！')
 
+        sorted_scores_list.append(sorted_scores)
         answers_list.append(answers)
         answers_index_list.append(max_pos)
 
@@ -80,7 +64,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
     if method == 'qq-match' or 'mix':
         print_answers(questions_list, 'data/output_questions.csv')
 
-    return answers_list, answers_index_list
+    return answers_list, answers_index_list, sorted_scores_list
 
 
 def clean_answers(ans_in, ans_idx_in, cleaned_ans_txt):
@@ -177,19 +161,27 @@ if __name__ == '__main__':
         pass
     with open('data/output_questions.csv', 'w') as f_tmp:
         pass
+    with open('data/scores.csv', 'w') as f_score:
+        pass
 
     method = args.alg
     print('current algorithm:', method)  # 反馈当前使用的算法
 
     if args.long_ans:
         print('using long answers')
-        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, long_answers_json, long_answers_txt)
+        answers_list, answer_idx_list, sorted_scores_list = \
+            search_answers(cleaned_input, uncut_input, long_answers_json, long_answers_txt)
         if method != 'qq-match' or 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
+        else:
+            print_answers(sorted_scores_list, 'data/scores.csv')
     else:
         print('NOT using long answers')
-        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
+        answers_list, answer_idx_list, sorted_scores_list = \
+            search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
         if method != 'qq-match' or 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
+        else:
+            print_answers(sorted_scores_list, 'data/scores.csv')
 
     print_answers(answers_list, output_csv)  # 打印答案
