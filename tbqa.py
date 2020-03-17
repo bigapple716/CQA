@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import csv
 import re
-import argparse
-
 from search_algorithms import *
 from reader import Reader
 
