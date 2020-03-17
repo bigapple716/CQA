@@ -21,11 +21,11 @@ class PreProcessor:
     input_txt = 'data/input.txt'
 
     # 根据问题ID找问答对
-    def qid2qa(self, input_file='data/qid.txt', output_file='data/base_questions.json'):
-        # constants
-        ratio = 0.95
-
+    def qid2qa(self, query_file='data/input.txt', output_file='data/base_questions.json'):
         # 读文件
+        with open(query_file, 'r') as f_query:
+            queries = f_query.readlines()
+            queries = [line.rstrip('\n') for line in queries]
         with open(self.match_qid_file, 'r') as f_qid:
             qid_list = f_qid.readlines()
             qid_list = [line.rstrip('\n') for line in qid_list]
@@ -41,36 +41,15 @@ class PreProcessor:
             raise Exception('数据长度不一致！')
 
         # 制作字典
-        qa_dict = {}
-        for qid, ques, gold in zip(qid_list, ques_list, gold_list):
-            qa_dict[qid] = {'question': ques, 'gold': gold}
-
-        # 读待匹配的问题ID
-        with open(input_file, 'r') as f_in:
-            ids = f_in.readlines()
-            ids = [line.rstrip('\n') for line in ids]
-
-        # 匹配
-        small_qa_dict = {i: qa_dict[i] for i in ids}
-
-        # 整理格式
-        qa_list = []
-        for key in small_qa_dict:
-            dict = {'question': small_qa_dict[key]['question'], 'sentence': small_qa_dict[key]['gold']}
-            qa_list.append(dict)
-
-        # 划分base_questions和queries
-        random.shuffle(qa_list)
-        split = round(len(qa_list) * ratio)
-        base_questions = qa_list[:split]
-        queries = qa_list[split:]
+        base_questions = []
+        for ques, gold in zip(ques_list, gold_list):
+            # 只要问题不在input里面而且带答案的
+            if (ques not in queries) and (gold != ''):
+                base_questions.append({'question': ques, 'gold': gold})
 
         # 写到json里
         with open(output_file, 'w') as f_out:
             json.dump(base_questions, f_out, ensure_ascii=False)
-        with open(self.input_txt, 'w') as f_query:
-            for dict in queries:
-                f_query.write(dict['question'] + '\n')
 
     def qa_match(self):
         questions, golds, answers = self.__read(self.question_file, self.gold_file, self.answer_file,
