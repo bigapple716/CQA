@@ -11,7 +11,7 @@ from reader import Reader
 parser = argparse.ArgumentParser()
 # 使用的算法或模型
 parser.add_argument('--alg', default='mix', type=str,
-                    help='supported alg: bm25, qq-match, mix, tfidf, aver-embed, lm, bert, ernie')
+                    help='supported alg: bm25, qq-match, mix, tfidf, aver-embed, lm')
 # 要不要去掉停用词
 parser.add_argument('--trim_stop', default=False, type=bool, help='trim stopwords or not')
 # 要不要加入长答案(每个小标题下所有内容的集合)
@@ -19,8 +19,7 @@ parser.add_argument('--long_ans', default=True, type=bool, help='chooses whether
 args = parser.parse_args()
 
 
-def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt,
-                   queries_file='data/queries.json'):
+def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
     """
 
     Parameters
@@ -39,16 +38,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt,
     result : list of int
         答案在文档中的index的列表，按相关度排序
     """
-    # 从文档中找出答案
-    with open(cleaned_ans_txt, 'r') as f_ans_txt:
-        text = f_ans_txt.readlines()
-
-    # 读入queries
-    with open(queries_file, 'r') as f_queries:
-        queries = json.load(f_queries)
-
-    deep_model = NeuralNetworks()
-    baseline_model = Baselines(cleaned_ans_json)
+    baseline_model = Baselines(cleaned_ans_json, cleaned_ans_txt)
 
     answers_list = []
     answers_index_list = []
@@ -57,62 +47,28 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt,
     for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
         # 用不同算法搜索
         if method == 'bm25':
-            result, _ = baseline_model.bm25(cut_query, baseline_model.cut_answers)
+            sorted_scores, max_pos, answers = baseline_model.bm25(cut_query, baseline_model.cut_answers)
         elif method == 'qq-match':
-            result, _ = baseline_model.qq_match(cut_query)
+            sorted_scores, max_pos, answers, questions = baseline_model.qq_match(cut_query)
+            questions_list.append(questions)
         elif method == 'mix':
-            result = baseline_model.qq_qa_mix(cut_query)
+            sorted_scores, max_pos, answers, questions = baseline_model.qq_qa_mix(cut_query)
+            questions_list.append(questions)
         elif method == 'tfidf-sim':
-            result, _ = Baselines.tfidf_sim(cut_query, baseline_model.cut_answers)
-        elif method == 'tfidf-dist':
-            result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
-        elif method == 'tfidf':
-            result = Baselines.tfidf(cut_query, cleaned_ans_txt)
+            sorted_scores, max_pos, answers = Baselines.tfidf_sim(cut_query, baseline_model.cut_answers)
+        # elif method == 'tfidf-dist':
+        #     result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
+        # elif method == 'tfidf':
+        #     result = Baselines.tfidf(cut_query, cleaned_ans_txt)
         elif method == 'aver-embed':
-            result = baseline_model.aver_embed(cut_query)
+            sorted_scores, max_pos, answers = baseline_model.aver_embed(cut_query)
         elif method == 'lm':
-            result = baseline_model.language_model(cut_query)
-        elif method == 'bert':
-            result = deep_model.bert_search(query, cleaned_ans_txt)
-        elif method == 'ernie':
-            result = deep_model.ernie_search(query, cleaned_ans_txt)
+            sorted_scores, max_pos, answers = baseline_model.language_model(cut_query)
         else:
             raise Exception('尚未支持该搜索算法！')
 
-        # ndarray -> list
-        result = result.tolist()
-
-        # 特殊处理qq-match的情况
-        if method == 'qq-match':
-            answers = []
-            questions = []
-
-            # 检查top answer是不是正确答案
-            idx = result[0]
-            if baseline_model.base_questions[idx]['sentence'] == queries[i]['sentence']:
-                answers.append(1)
-            else:
-                answers.append(0)
-
-            for r in result:
-                if r != -1:
-                    answers.append(baseline_model.base_questions[r]['sentence'])
-                    questions.append(baseline_model.base_questions[r]['question'])
-                else:
-                    answers.append('-')  # 丢弃该回答
-                    questions.append('-')
-            answers_list.append(answers)
-            questions_list.append(questions)
-
-        else:
-            answers = []
-            for r in result:
-                if r != -1:
-                    answers.append(text[r].rstrip())
-                else:
-                    answers.append('-')  # 丢弃该回答
-            answers_list.append(answers)
-            answers_index_list.append(result)
+        answers_list.append(answers)
+        answers_index_list.append(max_pos)
 
         # 输出实时进度
         if i % 20 == 0:
@@ -121,8 +77,9 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt,
     if method == 'mix':
         print('QQ count:', baseline_model.qq_count)
         print('QA count:', baseline_model.qa_count)
-    if method == 'qq-match':
+    if method == 'qq-match' or 'mix':
         print_answers(questions_list, 'data/output_questions.csv')
+
     return answers_list, answers_index_list
 
 
@@ -226,19 +183,13 @@ if __name__ == '__main__':
 
     if args.long_ans:
         print('using long answers')
-        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input,
-                                                       long_answers_json, long_answers_txt)
+        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, long_answers_json, long_answers_txt)
         if method != 'qq-match' or 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
     else:
         print('NOT using long answers')
-        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input,
-                                                       cleaned_answers_json, cleaned_answers_txt)
+        answers_list, answer_idx_list = search_answers(cleaned_input, uncut_input, cleaned_answers_json, cleaned_answers_txt)
         if method != 'qq-match' or 'mix':
             answers_list = clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
 
-    if method == 'qq-match':
-        # 多打印一列，因为第一列是系统给出的hit1
-        print_answers(answers_list, output_csv, n_result=4)  # 打印答案
-    else:
-        print_answers(answers_list, output_csv)  # 打印答案
+    print_answers(answers_list, output_csv)  # 打印答案
