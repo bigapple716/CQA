@@ -33,11 +33,14 @@ class Baselines:
         with open(self.base_ques_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
 
-        # 把被匹配的问题分词，制作一个纯list
+        # 把被匹配的问题和答案分词，制作2个纯list
         self.base_ques_list = []
+        self.base_ans_list = []
         for base_ques in self.base_questions:
             line = [w for w in jieba.cut(base_ques['question'])]
             self.base_ques_list.append(line)
+            line = [w for w in jieba.cut(base_ques['sentence'])]
+            self.base_ans_list.append(line)
 
         if use_aver_embed:
             if use_pretrained_word2vec:
@@ -81,7 +84,7 @@ class Baselines:
             # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
             # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
             # base_question给出实际的答案
-            sorted_scores, max_pos, _ = self.bm25(query, self.base_ques_list)
+            sorted_scores, max_pos, _ = self.bm25(query, self.base_ans_list)
             answers, _ = self.__max_pos2answers_questions(max_pos)
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
         else:

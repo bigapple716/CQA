@@ -55,7 +55,7 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
             sorted_scores, max_pos, answers, questions = baseline_model.qq_qa_mix(cut_query)
             questions_list.append(questions)
         elif method == 'tfidf-sim':
-            sorted_scores, max_pos, answers = Baselines.tfidf_sim(cut_query, baseline_model.cut_answers)
+            sorted_scores, max_pos, answers = baseline_model.tfidf_sim(cut_query, baseline_model.cut_answers)
         # elif method == 'tfidf-dist':
         #     result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
         # elif method == 'tfidf':
