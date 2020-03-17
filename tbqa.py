@@ -159,8 +159,6 @@ if __name__ == '__main__':
     tbqa = TBQA()
     questions = ['接机攻略']
     
-
-    #question='长沙黄花机场可以直接买飞机票吗'
     for question in questions:
         print('question',question)
         answers = tbqa.get_answer(question)
