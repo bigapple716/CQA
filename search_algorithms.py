@@ -92,7 +92,7 @@ class Baselines:
             # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
             # base_question给出实际的答案
             sorted_scores, max_pos, _ = self.bm25(query, self.cut_small_answers)
-            answers, _ = self.__max_pos2answers(max_pos, self.uncut_small_answers)
+            answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
         else:
             # QQ匹配效果不错，直接返回结果
