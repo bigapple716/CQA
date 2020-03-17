@@ -34,7 +34,7 @@ class Reader:
         self.long_answers_json = long_ans_json
 
     # 输入去停用词
-    def clean_input(self):
+    def clean_input(self, text):
         """
 
         Returns
@@ -46,7 +46,7 @@ class Reader:
         """
         cleaned = []
         uncut = []
-        for line in self.input:
+        for line in text:
             line = Utils.str2cn(line)  # 阿拉伯数字转中文
             cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
             # 去停用词
