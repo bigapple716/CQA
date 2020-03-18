@@ -22,9 +22,6 @@ self_trained_word2vec = 'train_embed/word2vec.kv'
 
 class Baselines:
     def __init__(self, use_aver_embed=False, use_pretrained_word2vec=True):
-        self.word2vec_pickle = 'data/word2vec.pickle'
-        self.base_ques_file = 'data/base_questions.json'
-
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
@@ -44,7 +41,7 @@ class Baselines:
         with open(ans_txt, 'r') as f_ans_txt:
             uncut_answers = f_ans_txt.readlines()
             self.uncut_answers = [line.rstrip('\n') for line in uncut_answers]
-        with open(self.base_ques_file, 'r') as f_base_ques:
+        with open(FilePool.base_question_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
         with open(FilePool.small_answers_txt, 'r') as f_small_ans:
             small_ans_txt = f_small_ans.readlines()
@@ -67,7 +64,7 @@ class Baselines:
         if use_aver_embed:
             if use_pretrained_word2vec:
                 # 用预训练好的word2vec
-                with open(self.word2vec_pickle, 'rb') as f_pickle:
+                with open(FilePool.word2vec_pickle, 'rb') as f_pickle:
                     self.word2vec = pickle.load(f_pickle)
             else:
                 # 用机场文档训练出的word2vec

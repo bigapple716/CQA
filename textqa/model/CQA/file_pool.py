@@ -24,6 +24,8 @@ class FilePool:
     long_answers_txt = os.path.join(project_dir, 'data/long_answers.txt')  # 长答案(没分词)
     long_answers_json = os.path.join(project_dir, 'data/long_answers.json')  # 长答案(已分词)
 
+    base_question_file = os.path.join(project_dir, 'data/base_questions.json')
+
     # 输入输出
     input_txt = os.path.join(project_dir, 'data/input.txt')  # 问题queries，仅在批量测试时用
     output_csv = os.path.join(project_dir, 'data/output.csv')  # 输出的回答，仅在批量测试时用
@@ -31,3 +33,5 @@ class FilePool:
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
 
     docx_list = [raw_docx1, raw_docx2]
+
+    word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')
