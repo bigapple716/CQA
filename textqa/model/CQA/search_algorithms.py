@@ -24,7 +24,6 @@ class Baselines:
     def __init__(self, use_aver_embed=False, use_pretrained_word2vec=True):
         self.word2vec_pickle = 'data/word2vec.pickle'
         self.base_ques_file = 'data/base_questions.json'
-        self.small_ans_file = 'data/small_answers.txt'
 
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
@@ -47,7 +46,7 @@ class Baselines:
             self.uncut_answers = [line.rstrip('\n') for line in uncut_answers]
         with open(self.base_ques_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
-        with open(self.small_ans_file, 'r') as f_small_ans:
+        with open(FilePool.small_answers_txt, 'r') as f_small_ans:
             small_ans_txt = f_small_ans.readlines()
             self.uncut_small_answers = [line.rstrip('\n') for line in small_ans_txt]
 

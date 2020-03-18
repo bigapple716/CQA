@@ -16,6 +16,7 @@ class FilePool:
     extra_txt = os.path.join(project_dir, 'data/extra_answers.txt')  # 补充知识文档
 
     # 清洗过的答案库
+    small_answers_txt = os.path.join(project_dir, 'data/small_answers.txt')  # 全部答案 - 长沙机场(没分词)
     cleaned_answers_txt = os.path.join(project_dir, 'data/cleaned_answers.txt')  # 短答案(没分词)
     cleaned_answers_json = os.path.join(project_dir, 'data/cleaned_answers.json')  # 短答案(已分词)
     cleaned_extra_txt = os.path.join(project_dir, 'data/cleaned_extra.txt')  # 补充答案(没分词)
