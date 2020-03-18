@@ -113,7 +113,7 @@ class TBQA:
             if len(ans) == 0:
                 ans.append(-1)
 
-        return answers_list
+        self.post_processor.print_answers(answers_list, FilePool.output_csv)
 
 
 if __name__ == '__main__':
