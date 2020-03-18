@@ -17,7 +17,7 @@ class Reader:
         self.stopwords = [line.rstrip('\n') for line in doc]
 
         # queries
-        with open(FilePool.input, 'r') as f_input:
+        with open(FilePool.input_txt, 'r') as f_input:
             doc = f_input.readlines()
         self.input = [line.rstrip('\n') for line in doc]
 
