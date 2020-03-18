@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import csv
-import re
 from search_algorithms import *
 from reader import Reader
 from post_processor import PostProcessor
@@ -35,9 +33,7 @@ class TBQA:
                              cleaned_answers_txt, cleaned_answers_json,
                              long_answers_txt, long_answers_json,
                              cleaned_extra_txt, cleaned_extra_json)  # 实例化一个Reader类
-        #print('init reader')
-        #self.reader.preprocess()
-        #print('finish reader')
+        self.reader.preprocess()
 
         self.post_processor = PostProcessor()
 
