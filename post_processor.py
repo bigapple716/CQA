@@ -48,8 +48,8 @@ class PostProcessor:
             ret.append(cleaned_ans)
         return ret
 
-    def print_answers(self, ans_list, output, n_result=3):
+    def print_answers(self, ans_list, output):
         with open(output, 'a') as f_out:
             writer = csv.writer(f_out, lineterminator='\n')
             for answers in ans_list:
-                writer.writerow(answers[:n_result])
+                writer.writerow(answers)
