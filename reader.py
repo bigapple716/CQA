@@ -56,11 +56,6 @@ class Reader:
             uncut_line = ''.join(trim_line)
             cleaned.append(trim_line)
             uncut.append(uncut_line)
-
-        if self.trim_stop:
-            print('stop words trimmed')
-        else:
-            print('stop words NOT trimmed')
         return cleaned, uncut
 
     # 预处理数据(下面方法的集合)

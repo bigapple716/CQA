@@ -17,7 +17,16 @@ class TBQA:
         self.reader = Reader(self.trim_stop)  # 实例化一个Reader类
         self.reader.preprocess()
 
-        self.post_processor = PostProcessor()
+        self.post_processor = PostProcessor()  # 实例化一个后处理类
+
+        # 反馈参数设置情况
+        print('==========> TBQA settings <==========')
+        print('method:', self.method)
+        print('trim stop words:', self.trim_stop)
+        print('use long answers:', self.long_ans)
+        print('return top ' + str(self.top_n) + 'results')
+        print('QQ threshold:', self.qq_threshold)
+        print('QA threshold:', self.qa_threshold)
 
     def search_answers(self, cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
         baseline_model = Baselines(cleaned_ans_json, cleaned_ans_txt)
@@ -92,6 +101,6 @@ if __name__ == '__main__':
     tbqa = TBQA()
     question = '接机攻略'
     
-    print('question', question)
+    print('question:', question)
     answer = tbqa.get_one_answer(question)
     print(answer)

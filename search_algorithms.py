@@ -53,6 +53,8 @@ class Baselines:
             line = [w for w in jieba.cut(base_ques['question'])]
             self.base_ques_list.append(line)
 
+        self.bm25_model = BM25(self.cut_answers)
+
         if use_aver_embed:
             if use_pretrained_word2vec:
                 # 用预训练好的word2vec
