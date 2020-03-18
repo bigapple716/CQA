@@ -88,7 +88,7 @@ class TBQA:
                 answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list), self.reader.cleaned_answers_txt)  # 清洗答案
         answers = answers_list[0]
         scores = sorted_scores_list[0]
-        print(scores[:3])
+        print(scores[:self.top_n])
         if len(answers) == 0:
             answers.append(-1)
         return answers

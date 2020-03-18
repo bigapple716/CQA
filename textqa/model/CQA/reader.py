@@ -21,16 +21,6 @@ class Reader:
             doc = f_input.readlines()
         self.input = [line.rstrip('\n') for line in doc]
 
-        self.raw_docx_list = FilePool.docx_list
-        self.answers_txt = FilePool.answers_txt
-        self.extra_txt = FilePool.extra_txt
-        self.cleaned_answers_txt = FilePool.cleaned_answers_txt
-        self.cleaned_answers_json = FilePool.cleaned_answers_json
-        self.cleaned_extra_txt = FilePool.cleaned_extra_txt
-        self.cleaned_extra_json = FilePool.cleaned_extra_json
-        self.long_answers_txt = FilePool.long_answers_txt
-        self.long_answers_json = FilePool.long_answers_json
-
     # 输入去停用词
     def clean_input(self, text):
         """
@@ -61,8 +51,8 @@ class Reader:
     # 预处理数据(下面方法的集合)
     def preprocess(self):
         self.__read_docs()
-        self.__clean_txt(self.answers_txt, self.cleaned_answers_txt, self.cleaned_answers_json)
-        self.__clean_txt(self.extra_txt, self.cleaned_extra_txt, self.cleaned_extra_json)
+        self.__clean_txt(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
+        self.__clean_txt(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
         self.__merge_add()
         self.__add_extra()
 
@@ -70,8 +60,8 @@ class Reader:
 
     # 载入word文档并转成txt文件
     def __read_docs(self):
-        with open(self.answers_txt, 'w') as f_answers:
-            for raw_docx in self.raw_docx_list:
+        with open(FilePool.answers_txt, 'w') as f_answers:
+            for raw_docx in FilePool.docx_list:
                 # read .doc file
                 f_raw = docx.Document(raw_docx)
                 # 按段落分割，并写到一个txt文件里
@@ -105,7 +95,7 @@ class Reader:
         answers = []
 
         # 把清洗过的答案读进来
-        with open(self.cleaned_answers_txt, 'r') as f_in:
+        with open(FilePool.cleaned_answers_txt, 'r') as f_in:
             lines = f_in.readlines()
 
         long_ans = ''  # 用来存长答案的字符串
@@ -140,7 +130,7 @@ class Reader:
         answers = self.__remove_dup(answers)
 
         # 将答案库存为txt格式
-        with open(self.long_answers_txt, 'w') as f_out_txt:
+        with open(FilePool.long_answers_txt, 'w') as f_out_txt:
             for line in answers:
                 f_out_txt.write(line + '\n')
 
@@ -150,35 +140,35 @@ class Reader:
             # 分词
             line_json = [w for w in jieba.cut(line)]
             answers_json.append(line_json)
-        with open(self.long_answers_json, 'w') as f_out_json:
+        with open(FilePool.long_answers_json, 'w') as f_out_json:
             json.dump(obj=answers_json, fp=f_out_json, ensure_ascii=False)
 
     # 把补充答案合并到cleaned_answers和long_answers里面
     def __add_extra(self):
         # read extra
-        with open(self.cleaned_extra_txt, 'r') as f_cleaned_extra_txt:
+        with open(FilePool.cleaned_extra_txt, 'r') as f_cleaned_extra_txt:
             cleaned_extra_txt = f_cleaned_extra_txt.readlines()
         # write
-        with open(self.cleaned_answers_txt, 'a') as f_cleaned_ans_txt:
+        with open(FilePool.cleaned_answers_txt, 'a') as f_cleaned_ans_txt:
             f_cleaned_ans_txt.writelines(cleaned_extra_txt)
         # write long version
-        with open(self.long_answers_txt, 'a') as f_long_ans_txt:
+        with open(FilePool.long_answers_txt, 'a') as f_long_ans_txt:
             f_long_ans_txt.writelines(cleaned_extra_txt)
 
         # read extra
-        with open(self.cleaned_extra_json, 'r') as f_cleaned_extra_json:
+        with open(FilePool.cleaned_extra_json, 'r') as f_cleaned_extra_json:
             cleaned_extra_json = json.load(f_cleaned_extra_json)
         # write
-        with open(self.cleaned_answers_json, 'r') as f_cleaned_ans_json:
+        with open(FilePool.cleaned_answers_json, 'r') as f_cleaned_ans_json:
             cleaned_ans_json = json.load(f_cleaned_ans_json)
             merged_json = cleaned_ans_json + cleaned_extra_json
-        with open(self.cleaned_answers_json, 'w') as f_cleaned_ans_json:
+        with open(FilePool.cleaned_answers_json, 'w') as f_cleaned_ans_json:
             json.dump(obj=merged_json, fp=f_cleaned_ans_json, ensure_ascii=False)
         # write long version
-        with open(self.long_answers_json, 'r') as f_long_ans_json:
+        with open(FilePool.long_answers_json, 'r') as f_long_ans_json:
             cleaned_ans_json = json.load(f_long_ans_json)
             merged_json = cleaned_ans_json + cleaned_extra_json
-        with open(self.long_answers_json, 'w') as f_long_ans_json:
+        with open(FilePool.long_answers_json, 'w') as f_long_ans_json:
             json.dump(obj=merged_json, fp=f_long_ans_json, ensure_ascii=False)
 
     # 给list of str去重
