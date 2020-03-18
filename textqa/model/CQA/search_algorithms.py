@@ -62,7 +62,7 @@ class Baselines:
             line = [w for w in jieba.cut(base_ques['question'])]
             self.base_ques_list.append(line)
 
-        self.bm25_model = BM25(self.cut_answers)
+        self.bm25_model = BM25(self.cut_answers)  # 为后续性能优化作准备，暂时没有用
 
         if use_aver_embed:
             if use_pretrained_word2vec:
@@ -72,9 +72,6 @@ class Baselines:
             else:
                 # 用机场文档训练出的word2vec
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
-
-        self.qq_count = 0
-        self.qa_count = 0
 
     # bm25算法搜索
     def bm25(self, query, corpus):
@@ -98,28 +95,29 @@ class Baselines:
     # QQ匹配和QA匹配混合
     def qq_qa_mix(self, query):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
-        if sorted_scores[0] < args.qq_threshold:
-            # QQ匹配的得分小于阈值，放弃掉QQ匹配，改用QA匹配
-            self.qa_count += 1
+
+        # 用QQ匹配的阈值过滤一遍结果
+        sorted_scores, max_pos, answers, questions = \
+            self.__filter_by_threshold(sorted_scores, max_pos, answers, questions, args.qq_threshold)
+
+        if len(sorted_scores) > 0:
+            # QQ匹配效果不错，直接返回结果
+            return sorted_scores, max_pos, answers, questions
+        else:
+            # 截断之后啥也不剩了，说明QQ匹配没有一个得分到阈值的
+            # 果断放弃，改用QA匹配
             # QA匹配暂时选用bm25算法
             # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
             # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
             # base_question给出实际的答案
             sorted_scores, max_pos, _ = self.bm25(query, self.cut_small_answers)
             answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
-            filter_answers = []
-            for answer, score in zip(answers[:3], sorted_scores[:3]):
-                if score > args.qa_threshold:
-                    filter_answers.append(answer)
-            return sorted_scores, max_pos, filter_answers, []  # questions的位置返回一个空list
-        else:
-            # QQ匹配效果不错，直接返回结果
-            self.qq_count += 1
-            filter_answers = []
-            for answer, score in zip(answers[:3], sorted_scores[:3]):
-                if score >= args.qq_threshold:
-                    filter_answers.append(answer)
-            return sorted_scores, max_pos, filter_answers, questions
+
+            # 用QA匹配的阈值过滤一遍结果
+            sorted_scores, max_pos, answers, _ = \
+                self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.qa_threshold)
+
+            return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
 
     # tf-idf相似度算法搜索
     def tfidf_sim(self, query, corpus):
@@ -182,10 +180,7 @@ class Baselines:
         max_pos = max_pos.tolist()  # ndarray -> list
         answers = []
         for r in max_pos:
-            if r != -1:
-                answers.append(answer_base[r])
-            else:
-                answers.append('-')  # 丢弃该回答
+            answers.append(answer_base[r])
         return answers
 
     def __max_pos2answers_questions(self, max_pos):
@@ -193,10 +188,21 @@ class Baselines:
         answers = []
         questions = []
         for r in max_pos:
-            if r != -1:
-                answers.append(self.base_questions[r]['sentence'])
-                questions.append(self.base_questions[r]['question'])
-            else:
-                answers.append('-')  # 丢弃该回答
-                questions.append('-')  # 丢弃该问题
+            answers.append(self.base_questions[r]['sentence'])
+            questions.append(self.base_questions[r]['question'])
         return answers, questions
+
+    # 根据阈值对结果进行截断
+    def __filter_by_threshold(self, sorted_scores, max_pos, answers, questions, threshold):
+        cut_point = 10000  # 截断位置，先初始化一个很大的值
+        for i, score in enumerate(sorted_scores):
+            # 如果第i个score小于阈值，那么后面的一定都小于阈值，从这里截断就行
+            if score < threshold:
+                cut_point = i  # 把截断位置设为i
+                break
+        # 进行截断操作
+        sorted_scores = sorted_scores[:cut_point]
+        max_pos = max_pos[:cut_point]
+        answers = answers[:cut_point]
+        questions = questions[:cut_point]
+        return sorted_scores, max_pos, answers, questions
