@@ -21,15 +21,15 @@ class Reader:
             doc = f_input.readlines()
         self.input = [line.rstrip('\n') for line in doc]
 
-    # 输入去停用词
+    # 清洗text
     def clean_input(self, text):
         """
         Returns
         -------
         cleaned : list of list of str
-            分词、去停用词后的输入
+            清洗、分词后的输入
         uncut : list of str
-            仅去停用词后的输入(没有分词)
+            仅清洗后的输入(没有分词)
         """
         cleaned = []
         uncut = []
