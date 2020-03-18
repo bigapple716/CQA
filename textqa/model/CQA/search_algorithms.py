@@ -15,13 +15,13 @@ from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.utils import Utils
+from textqa.model.CQA import args
 
-PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 self_trained_word2vec = 'train_embed/word2vec.kv'
 
 
 class Baselines:
-    def __init__(self, ans_json, ans_txt, use_aver_embed=False, use_pretrained_word2vec=True):
+    def __init__(self, use_aver_embed=False, use_pretrained_word2vec=True):
         self.word2vec_pickle = 'data/word2vec.pickle'
         self.base_ques_file = 'data/base_questions.json'
         self.small_ans_file = 'data/small_answers.txt'
@@ -29,6 +29,16 @@ class Baselines:
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
+
+        if args.long_ans:
+            # 使用长答案
+            ans_json = FilePool.long_answers_json
+            ans_txt = FilePool.long_answers_txt
+        else:
+            # 使用短答案
+            ans_json = FilePool.cleaned_answers_json
+            ans_txt = FilePool.cleaned_answers_txt
+
         with open(ans_json, 'r') as f_json:
             self.cut_answers = json.load(f_json)
             self.cut_answers = [[ele for ele in answer if ele not in self.stopwords] for answer in self.cut_answers]
