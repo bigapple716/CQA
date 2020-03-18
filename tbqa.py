@@ -16,6 +16,7 @@ class TBQA:
         self.qa_threshold = qa_threshold
         self.qq_threshold = qq_threshold
 
+        # 文件名
         raw_docx1 = 'data/长沙机场知识库(没目录图片表格).docx'
         raw_docx2 = 'data/96566机场问询资料.docx'
         answers_txt = 'data/answers.txt'
@@ -87,7 +88,7 @@ class TBQA:
         '''
         return answers_list, answers_index_list, sorted_scores_list
 
-    def get_answer(self, question):
+    def get_one_answer(self, question):
         """
 
         Returns
@@ -96,13 +97,13 @@ class TBQA:
         """
         cleaned_input, uncut_input = self.reader.clean_input([question])
         if self.long_ans:
-            #print('using long answers')
+            # using long answers
             answers_list, answer_idx_list, sorted_scores_list = \
                 self.search_answers(cleaned_input, uncut_input, self.reader.long_answers_json, self.reader.long_answers_txt)
             if self.method != 'qq-match' and self.method != 'mix':
                 answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list), self.reader.long_answers_txt)  # 清洗答案
         else:
-            #print('NOT using long answers')
+            # NOT using long answers
             answers_list, answer_idx_list, sorted_scores_list = \
                 self.search_answers(cleaned_input, uncut_input, self.reader.cleaned_answers_json, self.reader.cleaned_answers_txt)
             if self.method != 'qq-match' and self.method != 'mix':
@@ -121,6 +122,5 @@ if __name__ == '__main__':
     
     for question in questions:
         print('question', question)
-        answers = tbqa.get_answer(question)
-        for ele in answers:
-            print(ele)
+        answer = tbqa.get_one_answer(question)
+        print(answer)

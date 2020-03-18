@@ -63,30 +63,9 @@ def search_answers(cleaned_in, uncut_in, cleaned_ans_json, cleaned_ans_txt):
         print('QQ count:', baseline_model.qq_count)
         print('QA count:', baseline_model.qa_count)
     if method == 'qq-match' or 'mix':
-        print_answers(questions_list, 'data/output_questions.csv')
+        post_processor.print_answers(questions_list, 'data/output_questions.csv')
 
     return answers_list, answers_index_list, sorted_scores_list
-
-
-def print_answers(ans_list, output, print2file=True, n_result=3):
-    """
-        Parameters
-        ----------
-        ans_list
-        output
-        print2file
-        n_result : int
-            返回前n个结果
-    """
-    if print2file:
-        with open(output, 'a') as f_out:
-            writer = csv.writer(f_out, lineterminator='\n')
-            for answers in ans_list:
-                writer.writerow(answers[:n_result])
-    else:
-        for answers in ans_list:
-            print('搜索结果(前' + str(n_result) + '个)：')
-            print(' '.join(answers))
 
 
 if __name__ == '__main__':
@@ -137,7 +116,7 @@ if __name__ == '__main__':
         if method != 'qq-match' and method != 'mix':
             answers_list = post_processor.clean_answers(list(answers_list), list(answer_idx_list), long_answers_txt)  # 清洗答案
         else:
-            print_answers(sorted_scores_list, 'data/scores.csv')
+            post_processor.print_answers(sorted_scores_list, 'data/scores.csv')
     else:
         print('NOT using long answers')
         answers_list, answer_idx_list, sorted_scores_list = \
@@ -145,6 +124,6 @@ if __name__ == '__main__':
         if method != 'qq-match' and method != 'mix':
             answers_list = post_processor.clean_answers(list(answers_list), list(answer_idx_list), cleaned_answers_txt)  # 清洗答案
         else:
-            print_answers(sorted_scores_list, 'data/scores.csv')
+            post_processor.print_answers(sorted_scores_list, 'data/scores.csv')
 
-    print_answers(answers_list, output_csv)  # 打印答案
+    post_processor.print_answers(answers_list, output_csv)  # 打印答案
