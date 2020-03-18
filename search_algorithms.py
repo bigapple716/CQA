@@ -98,7 +98,7 @@ class Baselines:
             answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
             qa_threshold = 3.0
             filter_answers = []
-            for answer,score in zip(answers[:3],sorted_scores[:3]):
+            for answer, score in zip(answers[:3], sorted_scores[:3]):
                 if score > qa_threshold:
                     filter_answers.append(answer)
             return sorted_scores, max_pos, filter_answers, []  # questions的位置返回一个空list
@@ -106,7 +106,7 @@ class Baselines:
             # QQ匹配效果不错，直接返回结果
             self.qq_count += 1
             filter_answers = []
-            for answer,score in zip(answers[:3],sorted_scores[:3]):
+            for answer, score in zip(answers[:3], sorted_scores[:3]):
                 if score >= threshold:
                     filter_answers.append(answer)
             return sorted_scores, max_pos, filter_answers, questions
