@@ -13,12 +13,12 @@ import jieba
 import pickle
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
-
+from file_pool import FilePool
 from utils import Utils
 
 PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 self_trained_word2vec = 'train_embed/word2vec.kv'
-stopword_txt = 'data/stopword.txt'
+
 
 class Baselines:
     def __init__(self, ans_json, ans_txt, use_aver_embed=False, use_pretrained_word2vec=True):
@@ -26,7 +26,7 @@ class Baselines:
         self.base_ques_file = 'data/base_questions.json'
         self.small_ans_file = 'data/small_answers.txt'
 
-        with open(stopword_txt, 'r') as f_stopword:
+        with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
         with open(ans_json, 'r') as f_json:

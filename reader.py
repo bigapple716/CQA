@@ -3,35 +3,33 @@
 import docx
 import jieba
 import json
-
 from utils import Utils
+from file_pool import FilePool
 
 
 class Reader:
-    def __init__(self, trim_stop, stopword_txt, input, docx_list, ans_txt, extra_txt,
-                 cleaned_ans_txt, cleaned_ans_json, long_ans_txt, long_ans_json,
-                 cleaned_extra_txt, cleaned_extra_json):
+    def __init__(self, trim_stop):
         self.trim_stop = trim_stop
 
         # 停用词表
-        with open(stopword_txt, 'r') as f_stopword:
+        with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
 
         # queries
-        with open(input, 'r') as f_input:
+        with open(FilePool.input, 'r') as f_input:
             doc = f_input.readlines()
         self.input = [line.rstrip('\n') for line in doc]
 
-        self.raw_docx_list = docx_list
-        self.answers_txt = ans_txt
-        self.extra_txt = extra_txt
-        self.cleaned_answers_txt = cleaned_ans_txt
-        self.cleaned_answers_json = cleaned_ans_json
-        self.cleaned_extra_txt = cleaned_extra_txt
-        self.cleaned_extra_json = cleaned_extra_json
-        self.long_answers_txt = long_ans_txt
-        self.long_answers_json = long_ans_json
+        self.raw_docx_list = FilePool.docx_list
+        self.answers_txt = FilePool.answers_txt
+        self.extra_txt = FilePool.extra_txt
+        self.cleaned_answers_txt = FilePool.cleaned_answers_txt
+        self.cleaned_answers_json = FilePool.cleaned_answers_json
+        self.cleaned_extra_txt = FilePool.cleaned_extra_txt
+        self.cleaned_extra_json = FilePool.cleaned_extra_json
+        self.long_answers_txt = FilePool.long_answers_txt
+        self.long_answers_json = FilePool.long_answers_json
 
     # 输入去停用词
     def clean_input(self, text):
