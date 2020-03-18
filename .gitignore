@@ -1,4 +1,4 @@
-/ERNIE_pretrain/
-/bert_pretrain/
-/data/merge_sgns_bigram_char300.txt
-/data/word2vec.pickle
+textqa/model/CQA/ERNIE_pretrain/
+textqa/model/CQA/bert_pretrain
+textqa/model/CQA/data/merge_sgns_bigram_char300.txt
+textqa/model/CQA/data/word2vec.pickle
