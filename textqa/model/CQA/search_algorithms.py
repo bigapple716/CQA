@@ -96,9 +96,9 @@ class Baselines:
         return sorted_scores, max_pos, answers, questions
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, threshold=0.7):
+    def qq_qa_mix(self, query):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
-        if sorted_scores[0] < threshold:
+        if sorted_scores[0] < args.qq_threshold:
             # QQ匹配的得分小于阈值，放弃掉QQ匹配，改用QA匹配
             self.qa_count += 1
             # QA匹配暂时选用bm25算法
@@ -107,10 +107,9 @@ class Baselines:
             # base_question给出实际的答案
             sorted_scores, max_pos, _ = self.bm25(query, self.cut_small_answers)
             answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
-            qa_threshold = 3.0
             filter_answers = []
             for answer, score in zip(answers[:3], sorted_scores[:3]):
-                if score > qa_threshold:
+                if score > args.qa_threshold:
                     filter_answers.append(answer)
             return sorted_scores, max_pos, filter_answers, []  # questions的位置返回一个空list
         else:
@@ -118,7 +117,7 @@ class Baselines:
             self.qq_count += 1
             filter_answers = []
             for answer, score in zip(answers[:3], sorted_scores[:3]):
-                if score >= threshold:
+                if score >= args.qq_threshold:
                     filter_answers.append(answer)
             return sorted_scores, max_pos, filter_answers, questions
 

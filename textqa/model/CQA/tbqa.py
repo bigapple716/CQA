@@ -7,14 +7,12 @@ from textqa.model.CQA import args
 
 
 class TBQA:
-    def __init__(self, method='mix', trim_stop=True, long_ans=True, top_n=3, qq_threshold=0.6, qa_threshold=5.0):
+    def __init__(self, method='mix', trim_stop=True, long_ans=True, top_n=3):
         args.method = method
         args.trim_stop = trim_stop
         args.long_ans = long_ans
         args.top_n = top_n
 
-        self.qa_threshold = qa_threshold
-        self.qq_threshold = qq_threshold
 
         self.reader = Reader(args.trim_stop)  # 实例化一个Reader类
         self.reader.preprocess()
@@ -27,8 +25,8 @@ class TBQA:
         print('trim stop words:', args.trim_stop)
         print('use long answers:', args.long_ans)
         print('return top ' + str(args.top_n) + 'results')
-        print('QQ threshold:', self.qq_threshold)
-        print('QA threshold:', self.qa_threshold)
+        print('QQ threshold:', args.qq_threshold)
+        print('QA threshold:', args.qa_threshold)
         print('=====================================')
 
     def search_answers(self, cleaned_in, uncut_in,):
