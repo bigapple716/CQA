@@ -6,11 +6,7 @@ import platform
 
 # 文件名集合
 class FilePool:
-    if platform.system() == 'Darwin' or 'Windows':
-        relative_path = ''  # 在本地跑的时候用这个
-    else:
-        relative_path = 'textqa/model/CQA/'  # 在正式环境(Linux)跑用这个
-
+    relative_path = 'textqa/model/CQA/'
     project_dir = os.path.join(os.getcwd(), relative_path)
 
     # 原始文档
