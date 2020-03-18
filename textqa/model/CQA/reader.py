@@ -16,11 +16,6 @@ class Reader:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
 
-        # queries
-        with open(FilePool.input_txt, 'r') as f_input:
-            doc = f_input.readlines()
-        self.input = [line.rstrip('\n') for line in doc]
-
     # 清洗text
     def clean_input(self, text):
         """

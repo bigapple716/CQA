@@ -93,13 +93,34 @@ class TBQA:
 
     # 测试用接口，批量回答问题
     def get_multi_answers(self):
-        pass
+        # 读入输入问题
+        with open(FilePool.input_txt, 'r') as f_input:
+            doc = f_input.readlines()
+        questions = [line.rstrip('\n') for line in doc]
+
+        # 清洗输入
+        cleaned_input, uncut_input = self.reader.clean_input(questions)
+
+        # 检索答案
+        answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
+
+        # 清洗答案
+        if args.method != 'qq-match' and args.method != 'mix':
+            answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
+
+        for scores, ans in zip(sorted_scores_list, answers_list):
+            print('scores:', scores[:args.top_n])
+            if len(ans) == 0:
+                ans.append(-1)
+
+        return answers_list
 
 
 if __name__ == '__main__':
     tbqa = TBQA()
+
     question = '接机攻略'
-    
-    print('question:', question)
-    answer = tbqa.get_answer(question)
-    print('answer:', answer)
+    # answer = tbqa.get_answer(question)
+    # print('answer:', answer)
+
+    tbqa.get_multi_answers()
