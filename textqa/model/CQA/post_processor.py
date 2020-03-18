@@ -2,16 +2,22 @@
 
 import re
 import csv
+from textqa.model.CQA import args
+from textqa.model.CQA.file_pool import FilePool
 
 
 class PostProcessor:
-    def clean_answers(self, ans_in, ans_idx_in, cleaned_ans_txt):
+    def clean_answers(self, ans_in, ans_idx_in):
         # 入参检查
         if len(ans_in) != len(ans_idx_in):
             raise Exception('答案列表和答案索引列表长度不一致！')
 
         # 载入答案文档
-        with open(cleaned_ans_txt, 'r') as f_ans_txt:
+        if args.long_ans:
+            ans_txt = FilePool.long_answers_txt
+        else:
+            ans_txt = FilePool.cleaned_answers_txt
+        with open(ans_txt, 'r') as f_ans_txt:
             text = f_ans_txt.readlines()
 
         ret = []

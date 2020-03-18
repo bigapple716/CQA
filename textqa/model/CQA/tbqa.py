@@ -78,18 +78,9 @@ class TBQA:
     def get_answer(self, question):
         cleaned_input, uncut_input = self.reader.clean_input([question])
 
-        if args.long_ans:
-            # using long answers
-            answers_list, answer_idx_list, sorted_scores_list = \
-                self.search_answers(cleaned_input, uncut_input)
-            if args.method != 'qq-match' and args.method != 'mix':
-                answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list), FilePool.long_answers_txt)  # 清洗答案
-        else:
-            # NOT using long answers
-            answers_list, answer_idx_list, sorted_scores_list = \
-                self.search_answers(cleaned_input, uncut_input)
-            if args.method != 'qq-match' and args.method != 'mix':
-                answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list), FilePool.cleaned_answers_txt)  # 清洗答案
+        answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
+        if args.method != 'qq-match' and args.method != 'mix':
+            answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
 
         answers = answers_list[0]
         scores = sorted_scores_list[0]

@@ -24,7 +24,6 @@ class Reader:
     # 输入去停用词
     def clean_input(self, text):
         """
-
         Returns
         -------
         cleaned : list of list of str
