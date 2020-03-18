@@ -59,7 +59,11 @@ class Baselines:
             line = [w for w in jieba.cut(base_ques['question'])]
             self.base_ques_list.append(line)
 
-        self.bm25_model = BM25(self.cut_answers)  # 为后续性能优化作准备，暂时没有用
+        # 提前实例化bm25模型，提升性能
+        if args.method == 'mix':
+            self.bm25_model = BM25(self.cut_small_answers)
+        else:
+            self.bm25_model = BM25(self.cut_answers)
 
         if use_aver_embed:
             if use_pretrained_word2vec:
@@ -71,9 +75,8 @@ class Baselines:
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
-    def bm25(self, query, corpus):
-        bm25 = BM25(corpus)
-        bm25_weights = bm25.get_scores(query)
+    def bm25(self, query):
+        bm25_weights = self.bm25_model.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
@@ -107,7 +110,7 @@ class Baselines:
             # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
             # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
             # base_question给出实际的答案
-            sorted_scores, max_pos, _ = self.bm25(query, self.cut_small_answers)
+            sorted_scores, max_pos, _ = self.bm25(query)
             answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
 
             # 用QA匹配的阈值过滤一遍结果
