@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from search_algorithms import *
-from reader import Reader
-from post_processor import PostProcessor
+from textqa.model.CQA.search_algorithms import *
+from textqa.model.CQA.reader import Reader
+from textqa.model.CQA.post_processor import PostProcessor
 
 
 class TBQA:

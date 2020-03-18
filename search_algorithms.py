@@ -13,8 +13,8 @@ import jieba
 import pickle
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
-from file_pool import FilePool
-from utils import Utils
+from textqa.model.CQA.file_pool import FilePool
+from textqa.model.CQA.utils import Utils
 
 PAD, CLS = '[PAD]', '[CLS]'  # padding符号, bert中综合信息符号
 self_trained_word2vec = 'train_embed/word2vec.kv'

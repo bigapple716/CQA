@@ -3,8 +3,8 @@
 import docx
 import jieba
 import json
-from utils import Utils
-from file_pool import FilePool
+from textqa.model.CQA.utils import Utils
+from textqa.model.CQA.file_pool import FilePool
 
 
 class Reader:
