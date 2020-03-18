@@ -51,10 +51,6 @@ class TBQA:
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
                 sorted_scores, max_pos, answers = baseline_model.tfidf_sim(cut_query, baseline_model.cut_answers)
-            # elif args.method == 'tfidf-dist':
-            #     result = Baselines.tfidf_dist(cut_query, cleaned_ans_json)
-            # elif args.method == 'tfidf':
-            #     result = Baselines.tfidf(cut_query, cleaned_ans_txt)
             elif args.method == 'aver-embed':
                 sorted_scores, max_pos, answers = baseline_model.aver_embed(cut_query)
             elif args.method == 'lm':

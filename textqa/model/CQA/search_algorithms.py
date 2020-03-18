@@ -142,56 +142,6 @@ class Baselines:
         answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
-    # tf-idf算法搜索(停止维护)
-    @staticmethod
-    def tfidf_dist(query, answers_json):
-        # read from json file
-        with open(answers_json, mode='r', encoding='utf-8') as f_ans:
-            corpus = json.load(f_ans)
-        # 构造bag of words
-        dict = Dictionary(corpus)  # fit dictionary
-        bow = [dict.doc2bow(line) for line in corpus]  # convert corpus to BoW format
-        query_bow = [dict.doc2bow(query)]
-        # 构造tf-idf模型
-        model = TfidfModel(bow)  # fit model
-        tfidf_weights = model[bow]  # apply model
-        query_tfidf = model[query_bow]
-        distances = [jaccard(query_tfidf[0], tfidf_weights[i]) for i in range(len(tfidf_weights))]  # 计算Jaccard距离
-        max_pos = np.argsort(distances)  # 从小到大排序(注意不是从大到小，因为Jaccard距离越小越近)
-        return max_pos
-
-    # tf-idf(停止维护)
-    @staticmethod
-    def tfidf(query, answers_txt):
-        cut_query = ' '.join(query)  # 将列表形式的query转化成空格隔开的形式
-        # read from txt file
-        with open(answers_txt, mode='r', encoding='utf-8') as f_ans:
-            corpus = f_ans.readlines()
-        # 将列表形式的corpus转化成空格隔开的形式
-        cut_corpus = []
-        for line in corpus:
-            cut_corpus.append(' '.join(jieba.cut(line.rstrip())))
-
-        doc_score = [0] * len(corpus)  # 每个doc的得分 = query里每个词在这个doc里面的得分之和
-
-        model = TfidfVectorizer(token_pattern=r'\b\w+\b')  # 实例化一个TfidfVectorizer
-        model.fit(cut_corpus)
-        query_tokens = model.transform([cut_query]).indices  # 将query转化为token表示
-        for doc_id in range(len(cut_corpus)):  # 遍历每个doc
-            score = 0  # 初始得分为0
-            doc_tfidf = model.transform([cut_corpus[doc_id]])  # 计算doc里每个词在这个doc里的tfidf得分
-            doc_tokens = doc_tfidf.indices  # 将doc转化为token表示
-            for token in query_tokens:  # 遍历query里的每个词
-                # 如果query里的这个词在这个doc里面，那么tfidf得分就不是0，可以加到score里
-                if token in doc_tokens:
-                    score += doc_tfidf[0, token]
-            doc_score[doc_id] = score
-
-        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
-        max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=0.5)
-        return max_pos
-
     # 词向量平均
     def aver_embed(self, query):
         doc_score = []
