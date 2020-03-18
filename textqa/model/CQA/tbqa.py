@@ -29,6 +29,7 @@ class TBQA:
         print('return top ' + str(args.top_n) + 'results')
         print('QQ threshold:', self.qq_threshold)
         print('QA threshold:', self.qa_threshold)
+        print('=====================================')
 
     def search_answers(self, cleaned_in, uncut_in,):
         baseline_model = Baselines()
@@ -76,19 +77,24 @@ class TBQA:
 
     # 对外接口，输入1个问题给出1个回答
     def get_answer(self, question):
+        # 清洗输入
         cleaned_input, uncut_input = self.reader.clean_input([question])
 
+        # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
+
+        # 清洗答案
         if args.method != 'qq-match' and args.method != 'mix':
             answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
 
         answers = answers_list[0]
         scores = sorted_scores_list[0]
 
-        print(scores[:args.top_n])
+        print('scores:', scores[:args.top_n])
 
         if len(answers) == 0:
             answers.append(-1)
+
         return answers
 
     # 测试用接口，批量回答问题
