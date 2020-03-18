@@ -75,7 +75,7 @@ class TBQA:
         '''
         return answers_list, answers_index_list, sorted_scores_list
 
-    def get_one_answer(self, question):
+    def get_answer(self, question):
         cleaned_input, uncut_input = self.reader.clean_input([question])
         if self.long_ans:
             # using long answers
@@ -102,5 +102,5 @@ if __name__ == '__main__':
     question = '接机攻略'
     
     print('question:', question)
-    answer = tbqa.get_one_answer(question)
+    answer = tbqa.get_answer(question)
     print(answer)
