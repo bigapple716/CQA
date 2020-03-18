@@ -41,17 +41,17 @@ class Utils:
     @staticmethod
     def is_heading(sentence):
         # 长沙文档的标题
+        # 节标题
         if re.match(r'第.{1,2}节', sentence) is not None:
-            # 是节标题
             return True
+        # 章标题
         elif re.match(r'第.{1,2}章', sentence) is not None:
-            # 是章标题
             return True
+        # 2级标题
         elif re.match(r'\d+\.\d+', sentence) is not None:
-            # 是2级标题
             return True
+        # 3级标题
         elif re.match(r'\d+\.\d+\.\d+', sentence) is not None:
-            # 是3级标题
             return True
         # 96566机场文档的标题
         elif re.match(r'\(.\)、', sentence) is not None:
