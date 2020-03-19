@@ -86,13 +86,14 @@ class Reader:
 
     # 把每个小标题下面的所有段落合成一个段落 & 加入到答案库中
     def __merge_add(self):
-        answers = []
+        long_answers = []
 
         # 把清洗过的答案读进来
         with open(FilePool.cleaned_answers_txt, 'r') as f_in:
             lines = f_in.readlines()
+            lines = [line.rstrip('\n') for line in lines]
 
-        long_ans = ''  # 用来存长答案的字符串
+        one_long_ans = ''  # 用来存1条长答案的字符串
         short_answers = []  # 原来的短答案
 
         idx = 0  # loop var
@@ -100,42 +101,42 @@ class Reader:
             # 如果这一行是标题
             if Utils.is_heading(lines[idx]):
                 # 如果ans非空，那么说明上一行是正文
-                if long_ans != '':
+                if one_long_ans != '':
                     # 把长答案存档并清空
-                    answers.append(long_ans)
-                    long_ans = ''
+                    long_answers.append(one_long_ans)
+                    one_long_ans = ''
                     # 把短答案存档并清空
-                    answers += short_answers
+                    long_answers += short_answers
                     short_answers = []
-                answers.append(lines[idx].rstrip())  # 标题照搬到答案库里就完事了
+                long_answers.append(lines[idx])  # 标题照搬到答案库里就完事了
             # 如果这一行是正文
             else:
-                short_answers.append(lines[idx].rstrip())  # 把这一行暂存到短答案表里
-                long_ans += lines[idx].rstrip()  # 把这一行加到ans后面就行
-            idx = idx + 1
+                short_answers.append(lines[idx])  # 把这一行暂存到短答案表里
+                one_long_ans += lines[idx]  # 把这一行加到ans后面就行
+            idx += 1
 
         # 如果ans非空，那么说明整篇文档最后一行是正文
-        if long_ans != '':
+        if one_long_ans != '':
             # 把长答案存档
-            answers.append(long_ans)
+            long_answers.append(one_long_ans)
             # 把短答案存档
-            answers += short_answers
+            long_answers += short_answers
 
-        answers = self.__remove_dup(answers)
+        long_answers = self.__remove_dup(long_answers)  # 去重
 
-        # 将答案库存为txt格式
+        # 将长答案存为txt格式
         with open(FilePool.long_answers_txt, 'w') as f_out_txt:
-            for line in answers:
+            for line in long_answers:
                 f_out_txt.write(line + '\n')
 
         # 将答案库存为json格式
-        answers_json = []  # json格式答案库
-        for line in answers:
+        long_answers_json = []  # json格式答案库
+        for line in long_answers:
             # 分词
             line_json = [w for w in jieba.cut(line)]
-            answers_json.append(line_json)
+            long_answers_json.append(line_json)
         with open(FilePool.long_answers_json, 'w') as f_out_json:
-            json.dump(obj=answers_json, fp=f_out_json, ensure_ascii=False)
+            json.dump(obj=long_answers_json, fp=f_out_json, ensure_ascii=False)
 
     # 把补充答案合并到cleaned_answers和long_answers里面
     def __add_extra(self):
