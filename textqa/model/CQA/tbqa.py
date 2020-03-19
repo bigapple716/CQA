@@ -118,7 +118,7 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    question = '接机攻略'
+    # question = '接机攻略'
     # answer = tbqa.get_answer(question)
     # print('answer:', answer)
 
