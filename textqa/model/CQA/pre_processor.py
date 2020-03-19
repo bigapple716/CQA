@@ -44,7 +44,7 @@ class PreProcessor:
         base_questions = []
         for ques, gold in zip(ques_list, gold_list):
             if '五一广场' in gold or '黄花' in gold or '小吃' in gold or '宜居' in gold or '长沙' in gold:
-                print(gold)
+                #print(gold)
                 continue
             # 只要问题不在input里面而且带答案的
             if (ques not in queries) and (gold != ''):
@@ -57,7 +57,7 @@ class PreProcessor:
     def qa_match(self):
         questions, golds, answers = self.__read(self.question_file, self.gold_file, self.answer_file,
                                                 read_gold=True, read_answer=True)
-        print('answer pool length:', len(answers))
+        #print('answer pool length:', len(answers))
         train, dev, test, test_questions = self.__create_qa_data(questions, golds, answers,
                                                                  mode='mix', train_dev_ratio=0.9)
 
