@@ -14,7 +14,7 @@ class TBQA:
         args.top_n = top_n
 
         self.reader = Reader(args.trim_stop)  # 实例化一个Reader类
-        self.reader.preprocess()
+        # self.reader.preprocess()
 
         self.post_processor = PostProcessor()  # 实例化一个后处理类
 
