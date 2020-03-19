@@ -18,19 +18,19 @@ class TBQA:
         self.reader.preprocess()
 
         self.post_processor = PostProcessor()  # 实例化一个后处理类
-
+        self.baseline_model = Baselines()
         # 反馈参数设置情况
-        print('==========> TBQA settings <==========')
-        print('method:', args.method)
-        print('trim stop words:', args.trim_stop)
-        print('use long answers:', args.long_ans)
-        print('return top ' + str(args.top_n) + 'results')
-        print('QQ threshold:', args.qq_threshold)
-        print('QA threshold:', args.qa_threshold)
-        print('=====================================')
+        #print('==========> TBQA settings <==========')
+        #print('method:', args.method)
+        #print('trim stop words:', args.trim_stop)
+        #print('use long answers:', args.long_ans)
+        #print('return top ' + str(args.top_n) + 'results')
+        #print('QQ threshold:', args.qq_threshold)
+        #print('QA threshold:', args.qa_threshold)
+        #print('=====================================')
 
     def search_answers(self, cleaned_in, uncut_in,):
-        baseline_model = Baselines()
+        
     
         sorted_scores_list = []
         answers_list = []
@@ -40,19 +40,19 @@ class TBQA:
         for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
             # 用不同算法搜索
             if args.method == 'bm25':
-                sorted_scores, max_pos, answers = baseline_model.bm25(cut_query)
+                sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query)
             elif args.method == 'qq-match':
-                sorted_scores, max_pos, answers, questions = baseline_model.qq_match(cut_query)
+                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
             elif args.method == 'mix':
-                sorted_scores, max_pos, answers, questions = baseline_model.qq_qa_mix(cut_query)
+                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query)
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
-                sorted_scores, max_pos, answers = baseline_model.tfidf_sim(cut_query, baseline_model.cut_answers)
+                sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query, baseline_model.cut_answers)
             elif args.method == 'aver-embed':
-                sorted_scores, max_pos, answers = baseline_model.aver_embed(cut_query)
+                sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
             elif args.method == 'lm':
-                sorted_scores, max_pos, answers = baseline_model.language_model(cut_query)
+                sorted_scores, max_pos, answers = self.baseline_model.language_model(cut_query)
             else:
                 raise Exception('尚未支持该搜索算法！')
     
@@ -84,7 +84,7 @@ class TBQA:
         answers = answers_list[0]
         scores = sorted_scores_list[0]
 
-        print('scores:', scores[:args.top_n])
+        #print('scores:', scores[:args.top_n])
 
         if len(answers) == 0:
             answers.append(-1)
@@ -109,7 +109,7 @@ class TBQA:
             answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
 
         for scores, ans in zip(sorted_scores_list, answers_list):
-            print('scores:', scores[:args.top_n])
+            #print('scores:', scores[:args.top_n])
             if len(ans) == 0:
                 ans.append(-1)
 
