@@ -40,7 +40,7 @@ class TBQA:
         for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
             # 用不同算法搜索
             if args.method == 'bm25':
-                sorted_scores, max_pos, answers = baseline_model.bm25(cut_query, baseline_model.cut_answers)
+                sorted_scores, max_pos, answers = baseline_model.bm25(cut_query)
             elif args.method == 'qq-match':
                 sorted_scores, max_pos, answers, questions = baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
