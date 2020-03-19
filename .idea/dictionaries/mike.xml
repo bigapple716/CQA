@@ -2,6 +2,7 @@
   <dictionary name="mike">
     <words>
       <w>tbqa</w>
+      <w>tfidf</w>
     </words>
   </dictionary>
 </component>

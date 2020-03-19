@@ -47,7 +47,7 @@ class TBQA:
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query)
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
-                sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query, self.baseline_model.cut_answers)
+                sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
             elif args.method == 'aver-embed':
                 sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
             elif args.method == 'lm':

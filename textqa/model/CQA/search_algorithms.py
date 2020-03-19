@@ -59,11 +59,27 @@ class Baselines:
             line = [w for w in jieba.cut(base_ques['question'])]
             self.base_ques_list.append(line)
 
-        # 提前实例化bm25模型，提升性能
+        # 提前实例化bm25和tfidf模型，提升性能
         if args.method == 'mix':
             self.bm25_model = BM25(self.cut_small_answers)
+
+            self.tfidf_dict = Dictionary(self.base_ques_list)  # fit dictionary
+            n_features = len(self.tfidf_dict.token2id)
+            bow = [self.tfidf_dict.doc2bow(line) for line in self.base_ques_list]  # convert corpus to BoW format
+            # 构造tf-idf模型
+            self.tfidf_model = TfidfModel(bow)  # fit model
+            text_tfidf = self.tfidf_model[bow]  # apply model
+            self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
         else:
             self.bm25_model = BM25(self.cut_answers)
+
+            self.tfidf_dict = Dictionary(self.cut_answers)  # fit dictionary
+            n_features = len(self.tfidf_dict.token2id)
+            bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # convert corpus to BoW format
+            # 构造tf-idf模型
+            self.tfidf_model = TfidfModel(bow)  # fit model
+            text_tfidf = self.tfidf_model[bow]  # apply model
+            self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
 
         if use_aver_embed:
             if use_pretrained_word2vec:
@@ -88,7 +104,7 @@ class Baselines:
     # 问题-问题匹配
     def qq_match(self, query):
         # 输入tf-idf，得到从大到小排列的index list
-        sorted_scores, max_pos, _ = self.tfidf_sim(query, self.base_ques_list)
+        sorted_scores, max_pos, _ = self.tfidf_sim(query)
         answers, questions = self.__max_pos2answers_questions(max_pos)
         return sorted_scores, max_pos, answers, questions
 
@@ -120,18 +136,10 @@ class Baselines:
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
 
     # tf-idf相似度算法搜索
-    def tfidf_sim(self, query, corpus):
-        # 构造bag of words
-        dict = Dictionary(corpus)  # fit dictionary
-        n_features = len(dict.token2id)
-        bow = [dict.doc2bow(line) for line in corpus]  # convert corpus to BoW format
-        query_bow = [dict.doc2bow(query)]
-        # 构造tf-idf模型
-        model = TfidfModel(bow)  # fit model
-        text_tfidf = model[bow]  # apply model
-        query_tfidf = model[query_bow]
-        sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
-        similarities = sim_index.get_similarities(query_tfidf)[0]
+    def tfidf_sim(self, query):
+        query_bow = [self.tfidf_dict.doc2bow(query)]  # 用query做一个bag of words
+        query_tfidf = self.tfidf_model[query_bow]  # 用tfidf model编码
+        similarities = self.sim_index.get_similarities(query_tfidf)[0]  # 算相似度
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
