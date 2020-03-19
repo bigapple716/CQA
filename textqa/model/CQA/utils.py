@@ -57,7 +57,7 @@ class Utils:
         elif re.match(r'^\d+\.\d+\.\d+', sentence) is not None:
             # print(sentence)
             return True
-        elif len(sentence) <= 8 and re.match(r'^[一二三四五六七八九]、', sentence) is not None:
+        elif len(sentence) <= 7 and re.match(r'^[一二三四五六七八九]、', sentence) is not None:
             # print(sentence)
             return True
         # 96566机场文档的标题
