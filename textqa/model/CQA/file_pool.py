@@ -29,6 +29,7 @@ class FilePool:
     # 输入输出
     input_txt = os.path.join(project_dir, 'data/input.txt')  # 问题queries，仅在批量测试时用
     output_csv = os.path.join(project_dir, 'data/output.csv')  # 输出的回答，仅在批量测试时用
+    keyword_of_answer = os.path.join(project_dir, 'data/keyword_of_answer.pickle')  # 关键词to答案的字典
 
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
 
