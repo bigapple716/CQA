@@ -4,6 +4,8 @@ from cn2an import an2cn
 import re
 from gensim.models import KeyedVectors
 import pickle
+import docx
+from textqa.model.CQA.file_pool import FilePool
 
 
 # 静态工具类
@@ -115,6 +117,15 @@ class Utils:
         with open('data/word2vec.pickle', 'wb') as f_pickle:
             pickle.dump(word2vec, f_pickle)
 
+    # 从word文档里抽取关键词
+    @staticmethod
+    def extract_keywords():
+        f_raw = docx.Document(FilePool.raw_docx2)
+        for para in f_raw.paragraphs:
+            if len(para.runs) != 0 and para.runs[-1].bold:
+                keyword = para.text.strip()
+                print(keyword)
+
     '''以下均为私有方法'''
 
     @staticmethod
@@ -129,6 +140,7 @@ class Utils:
 # for test purpose
 if __name__ == '__main__':
     # Utils.delete_titles('data/long_answers.txt', 'data/tmp.txt')
-    print(Utils.aver_len('data/input.txt'))
-    print(Utils.aver_len('data/cleaned_answers.txt'))
-    print(Utils.aver_len('data/long_answers.txt'))
+    # print(Utils.aver_len('data/input.txt'))
+    # print(Utils.aver_len('data/cleaned_answers.txt'))
+    # print(Utils.aver_len('data/long_answers.txt'))
+    Utils.extract_keywords()
