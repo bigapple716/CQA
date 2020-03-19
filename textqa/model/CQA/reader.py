@@ -144,6 +144,7 @@ class Reader:
         with open(FilePool.long_answers_json, 'w') as f_out_json:
             json.dump(obj=long_answers_json, fp=f_out_json, ensure_ascii=False)
 
+        # 把关键词to答案的字典保存为pickle形式
         with open(FilePool.keyword_of_answer, 'wb') as f_pkl:
             pickle.dump(keyword_of_long_ans, f_pkl, protocol=pickle.HIGHEST_PROTOCOL)
 
