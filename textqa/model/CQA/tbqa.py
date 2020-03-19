@@ -21,14 +21,15 @@ class TBQA:
         self.post_processor = PostProcessor()  # 实例化一个后处理类
 
         # 反馈参数设置情况
-        print('==========> TBQA settings <==========')
-        print('method:', args.method)
-        print('trim stop words:', args.trim_stop)
-        print('use long answers:', args.long_ans)
-        print('return top ' + str(args.top_n) + 'results')
-        print('QQ threshold:', args.qq_threshold)
-        print('QA threshold:', args.qa_threshold)
-        print('=====================================')
+        if args.enable_log:
+            print('==========> TBQA settings <==========')
+            print('method:', args.method)
+            print('trim stop words:', args.trim_stop)
+            print('use long answers:', args.long_ans)
+            print('return top ' + str(args.top_n) + 'results')
+            print('QQ threshold:', args.qq_threshold)
+            print('QA threshold:', args.qa_threshold)
+            print('=====================================')
 
     def search_answers(self, cleaned_in, uncut_in,):
         sorted_scores_list = []
@@ -83,7 +84,8 @@ class TBQA:
         answers = answers_list[0]
         scores = sorted_scores_list[0]
 
-        print('scores:', scores[:args.top_n])
+        if args.enable_log:
+            print('scores:', scores[:args.top_n])
 
         if len(answers) == 0:
             answers.append(-1)
