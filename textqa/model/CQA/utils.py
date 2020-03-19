@@ -119,7 +119,11 @@ class Utils:
 
     @staticmethod
     def __int2cn(matched):
-        return an2cn(matched.group(0), 'low')
+        if len(matched.group(0)) >= 8:
+            # 长度 >= 8的阿拉伯数字不转换
+            return matched.group(0)
+        else:
+            return an2cn(matched.group(0), 'low')
 
 
 # for test purpose
