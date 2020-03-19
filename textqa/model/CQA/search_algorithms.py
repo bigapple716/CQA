@@ -11,8 +11,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import jieba
 import pickle
-#from nltk.lm.preprocessing import *
-#from nltk.lm.models import KneserNeyInterpolated
+from nltk.lm.preprocessing import *
+from nltk.lm.models import KneserNeyInterpolated
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.utils import Utils
 from textqa.model.CQA import args
@@ -62,14 +62,6 @@ class Baselines:
         # 提前实例化bm25模型，提升性能
         if args.method == 'mix':
             self.bm25_model = BM25(self.cut_small_answers)
-            dict = Dictionary(self.base_ques_list)  # fit dictionary
-            self.tfidf_dict=dict
-            n_features = len(dict.token2id)
-            bow = [dict.doc2bow(line) for line in self.base_ques_list]  # convert corpus to BoW format
-            # 构造tf-idf模型
-            self.tfidf_model = TfidfModel(bow)  # fit model
-            text_tfidf = self.tfidf_model[bow]  # apply model
-            self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
         else:
             self.bm25_model = BM25(self.cut_answers)
 
@@ -107,6 +99,7 @@ class Baselines:
         # 用QQ匹配的阈值过滤一遍结果
         sorted_scores, max_pos, answers, questions = \
             self.__filter_by_threshold(sorted_scores, max_pos, answers, questions, args.qq_threshold)
+
         if len(sorted_scores) > 0:
             # QQ匹配效果不错，直接返回结果
             return sorted_scores, max_pos, answers, questions
@@ -129,19 +122,17 @@ class Baselines:
     # tf-idf相似度算法搜索
     def tfidf_sim(self, query, corpus):
         # 构造bag of words
-        #dict = Dictionary(corpus)  # fit dictionary
-        #n_features = len(dict.token2id)
-        #bow = [dict.doc2bow(line) for line in corpus]  # convert corpus to BoW format
-        #query_bow = [dict.doc2bow(query)]
-        ## 构造tf-idf模型
-        #model = TfidfModel(bow)  # fit model
-        #text_tfidf = model[bow]  # apply model
-        #query_tfidf = model[query_bow]
-        #sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
-        #similarities = sim_index.get_similarities(query_tfidf)[0]
-        query_bow = [self.tfidf_dict.doc2bow(query)]
-        query_tfidf = self.tfidf_model[query_bow]
-        similarities = self.sim_index.get_similarities(query_tfidf)[0]
+        dict = Dictionary(corpus)  # fit dictionary
+        n_features = len(dict.token2id)
+        bow = [dict.doc2bow(line) for line in corpus]  # convert corpus to BoW format
+        query_bow = [dict.doc2bow(query)]
+        # 构造tf-idf模型
+        model = TfidfModel(bow)  # fit model
+        text_tfidf = model[bow]  # apply model
+        query_tfidf = model[query_bow]
+        sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
+        similarities = sim_index.get_similarities(query_tfidf)[0]
+
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
