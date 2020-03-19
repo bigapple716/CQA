@@ -4,6 +4,7 @@ from textqa.model.CQA.search_algorithms import *
 from textqa.model.CQA.reader import Reader
 from textqa.model.CQA.post_processor import PostProcessor
 from textqa.model.CQA import args
+import platform
 
 
 class TBQA:
@@ -12,6 +13,8 @@ class TBQA:
         args.trim_stop = trim_stop
         args.long_ans = long_ans
         args.top_n = top_n
+        if platform.system() == 'Darwin':
+            args.enable_log = True
 
         self.reader = Reader(args.trim_stop)  # 实例化一个Reader类
         # self.reader.preprocess()
@@ -29,6 +32,7 @@ class TBQA:
             print('return top ' + str(args.top_n) + 'results')
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
+            print('logging enabled')
             print('=====================================')
 
     def search_answers(self, cleaned_in, uncut_in,):

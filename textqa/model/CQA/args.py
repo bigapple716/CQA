@@ -9,4 +9,4 @@ top_n = 3  # 返回前top_n个结果
 qq_threshold = 0.7  # QQ匹配的阈值
 qa_threshold = 5  # QA匹配的阈值
 
-enable_log = True  # 是否向控制台打印log
+enable_log = False  # 是否向控制台打印log
