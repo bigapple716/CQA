@@ -7,7 +7,7 @@ import json
 random.seed(0)
 
 
-class PreProcessor:
+class DataMaker:
     # file names
     question_file = 'data/question.txt'
     gold_file = 'data/gold.txt'
