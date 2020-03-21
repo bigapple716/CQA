@@ -2,6 +2,7 @@
 
 from textqa.model.CQA.search_algorithms import *
 from textqa.model.CQA.reader import Reader
+from textqa.model.CQA.pre_processor import PreProcessor
 from textqa.model.CQA.post_processor import PostProcessor
 from textqa.model.CQA import args
 import platform
@@ -18,6 +19,8 @@ class TBQA:
 
         self.reader = Reader()  # 实例化一个Reader类
         # self.reader.preprocess()
+
+        self.pre_processor = PreProcessor()
 
         self.baseline_model = Baselines()  # 放在这里就只需要初始化一次，能提高性能
 
@@ -76,7 +79,7 @@ class TBQA:
     # 对外接口，输入1个问题给出1个回答
     def get_answer(self, question):
         # 清洗输入
-        cleaned_input, uncut_input = self.reader.clean_input([question])
+        cleaned_input, uncut_input = self.pre_processor.clean_input([question])
 
         # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
@@ -104,7 +107,7 @@ class TBQA:
         questions = [line.rstrip('\n') for line in doc]
 
         # 清洗输入
-        cleaned_input, uncut_input = self.reader.clean_input(questions)
+        cleaned_input, uncut_input = self.pre_processor.clean_input(questions)
 
         # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)

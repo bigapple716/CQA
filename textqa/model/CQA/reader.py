@@ -10,38 +10,6 @@ from textqa.model.CQA import args
 
 
 class Reader:
-    def __init__(self):
-        # 停用词表
-        with open(FilePool.stopword_txt, 'r') as f_stopword:
-            doc = f_stopword.readlines()
-        self.stopwords = [line.rstrip('\n') for line in doc]
-
-    # 清洗text
-    def clean_input(self, text):
-        """
-        Returns
-        -------
-        cleaned : list of list of str
-            清洗、分词后的输入
-        uncut : list of str
-            仅清洗后的输入(没有分词)
-        """
-        cleaned = []
-        uncut = []
-        for line in text:
-            line = Utils.str2cn(line)  # 阿拉伯数字转中文
-            cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
-            # 去停用词
-            if args.trim_stop:
-                trim_line = [w for w in cut_line if w not in self.stopwords]
-            else:
-                trim_line = cut_line
-
-            uncut_line = ''.join(trim_line)
-            cleaned.append(trim_line)
-            uncut.append(uncut_line)
-        return cleaned, uncut
-
     # 预处理数据(下面方法的集合)
     def preprocess(self):
         self.__read_keywords()  # 读入各类的关键词
