@@ -15,8 +15,6 @@ class Reader:
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
-        # 关键词库
-        self.keyword_database = []
 
     # 清洗text
     def clean_input(self, text):
@@ -46,6 +44,7 @@ class Reader:
 
     # 预处理数据(下面方法的集合)
     def preprocess(self):
+        self.__read_keywords()  # 读入各类的关键词
         self.__read_docs()
         self.__clean_txt(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
         self.__clean_txt(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
@@ -177,19 +176,23 @@ class Reader:
         with open(FilePool.long_answers_json, 'w') as f_long_ans_json:
             json.dump(obj=merged_json, fp=f_long_ans_json, ensure_ascii=False)
 
-    # 给list of str去重
+    # 去重
     def __remove_dup(self, list_in):
         return list(dict.fromkeys(list_in))
 
     # 读入各类的关键词
     def __read_keywords(self):
+        keyword_database = []  # 关键词库
         for keyword_file in FilePool.keyword_list:
             with open(keyword_file, 'r') as f_kw:
                 lines = f_kw.readlines()
                 lines = [line.rstrip() for line in lines]
                 keywords = lines[1].split(' ')
                 dict = {'class': lines[0], 'keywords': keywords, 'answers': lines[2:]}
-                self.keyword_database.append(dict)
+                keyword_database.append(dict)
+        # 写到json里
+        with open(FilePool.keyword_database_json, 'w') as f_kwdb:
+            json.dump(obj=keyword_database, fp=f_kwdb, ensure_ascii=False)
 
 
 # for test purpose

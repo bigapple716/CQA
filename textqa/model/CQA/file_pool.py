@@ -25,6 +25,7 @@ class FilePool:
     long_answers_json = os.path.join(project_dir, 'data/long_answers.json')  # 长答案(已分词)
 
     base_question_file = os.path.join(project_dir, 'data/base_questions.json')
+    keyword_database_json = os.path.join(project_dir, 'data/keyword_database.json')
 
     # 输入输出
     input_txt = os.path.join(project_dir, 'data/input.txt')  # 问题queries，仅在批量测试时用
