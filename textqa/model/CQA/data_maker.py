@@ -226,8 +226,8 @@ class DataMaker:
 
 
 if __name__ == "__main__":
-    pre_processor = PreProcessor()
+    data_maker = DataMaker()
 
-    pre_processor.qid2qa()
+    data_maker.qid2qa()
     # pre_processor.qq_match()
     # pre_processor.qa_match()
