@@ -34,5 +34,9 @@ class FilePool:
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
 
     docx_list = [raw_docx1, raw_docx2]
+    keyword_list = [
+        os.path.join(project_dir, 'data/keyword/乘机证件.txt'),
+
+    ]
 
     word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')

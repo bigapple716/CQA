@@ -16,7 +16,7 @@ class TBQA:
         if platform.system() == 'Darwin':
             args.enable_log = True
 
-        self.reader = Reader(args.trim_stop)  # 实例化一个Reader类
+        self.reader = Reader()  # 实例化一个Reader类
         # self.reader.preprocess()
 
         self.baseline_model = Baselines()  # 放在这里就只需要初始化一次，能提高性能

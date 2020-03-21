@@ -6,12 +6,11 @@ import json
 import pickle
 from textqa.model.CQA.utils import Utils
 from textqa.model.CQA.file_pool import FilePool
+from textqa.model.CQA import args
 
 
 class Reader:
-    def __init__(self, trim_stop):
-        self.trim_stop = trim_stop
-
+    def __init__(self):
         # 停用词表
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
@@ -33,7 +32,7 @@ class Reader:
             line = Utils.str2cn(line)  # 阿拉伯数字转中文
             cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
             # 去停用词
-            if self.trim_stop:
+            if args.trim_stop:
                 trim_line = [w for w in cut_line if w not in self.stopwords]
             else:
                 trim_line = cut_line
@@ -179,3 +178,20 @@ class Reader:
     # 给list of str去重
     def __remove_dup(self, list_in):
         return list(dict.fromkeys(list_in))
+
+    # 读入各类的关键词
+    def read_keywords(self):
+        keyword_database = []
+        for keyword_file in FilePool.keyword_list:
+            with open(keyword_file, 'r') as f_kw:
+                lines = f_kw.readlines()
+                lines = [line.rstrip() for line in lines]
+                keywords = lines[1].split(' ')
+                dict = {'class': lines[0], 'keywords': keywords, 'answers': lines[2:]}
+                keyword_database.append(dict)
+
+
+# for test purpose
+if __name__ == '__main__':
+    reader = Reader()
+    reader.read_keywords()
