@@ -15,6 +15,10 @@ class PreProcessor:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
 
+        # 关键词库
+        with open(FilePool.keyword_database_json, 'r') as f_kwdb:
+            self.keyword_database = json.load(f_kwdb)
+
     # 清洗text
     def clean_input(self, text):
         """
@@ -43,5 +47,14 @@ class PreProcessor:
 
     # 对问题进行分类
     def categorize(self, questions):
-        with open(FilePool.keyword_database_json, 'r') as f_kwdb:
-            keyword_database = json.load(f_kwdb)
+        categories = []  # 问题所属的类别，可能有多个
+        answers = []
+        for ques in questions:
+            for dict in self.keyword_database:
+                for word in dict['keywords']:
+                    # 如果有关键词在问题里出现了，那么说明问题属于这个类别
+                    if word in ques:
+                        categories.append(dict['class'])
+                        break  # 没必要再在同样的类别下面纠结了
+
+        return categories
