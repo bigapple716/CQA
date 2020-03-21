@@ -15,6 +15,8 @@ class Reader:
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
+        # 关键词库
+        self.keyword_database = []
 
     # 清洗text
     def clean_input(self, text):
@@ -180,18 +182,16 @@ class Reader:
         return list(dict.fromkeys(list_in))
 
     # 读入各类的关键词
-    def read_keywords(self):
-        keyword_database = []
+    def __read_keywords(self):
         for keyword_file in FilePool.keyword_list:
             with open(keyword_file, 'r') as f_kw:
                 lines = f_kw.readlines()
                 lines = [line.rstrip() for line in lines]
                 keywords = lines[1].split(' ')
                 dict = {'class': lines[0], 'keywords': keywords, 'answers': lines[2:]}
-                keyword_database.append(dict)
+                self.keyword_database.append(dict)
 
 
 # for test purpose
 if __name__ == '__main__':
     reader = Reader()
-    reader.read_keywords()
