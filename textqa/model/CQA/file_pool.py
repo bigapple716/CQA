@@ -37,7 +37,11 @@ class FilePool:
     docx_list = [raw_docx1, raw_docx2]
     keyword_list = [
         os.path.join(project_dir, 'data/keyword/乘机证件.txt'),
-
+        os.path.join(project_dir, 'data/keyword/中转服务.txt'),
+        os.path.join(project_dir, 'data/keyword/值机.txt'),
+        os.path.join(project_dir, 'data/keyword/国内到达.txt'),
+        os.path.join(project_dir, 'data/keyword/物品携带.txt'),
+        os.path.join(project_dir, 'data/keyword/安全检查.txt'),
     ]
 
     word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')
