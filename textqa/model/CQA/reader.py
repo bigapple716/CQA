@@ -13,6 +13,9 @@ class Reader:
     # 预处理数据(下面方法的集合)
     def preprocess(self):
         self.__read_keywords()  # 读入各类的关键词
+        self.__clean_txt(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
+
+        # 以下方法有先后依赖关系
         self.__read_docs()
         self.__clean_txt(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
         self.__clean_txt(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
@@ -37,19 +40,18 @@ class Reader:
         cleaned_json = []  # 清洗过后的数据(json格式)
         with open(ans_file, 'r') as f_in, open(cleaned_txt_file, 'w') as f_out_txt:
             for line in f_in:
-                # 去掉行首空格
-                line = line.lstrip()
+                line = line.lstrip()  # 去掉行首空格
+                line = line.rstrip()  # 去掉行尾换行符
                 # 去掉空行
                 if line == '':
                     continue
                 line = line.replace('\t', '')  # 去掉\t
                 line = Utils.full2half(line)  # 全角转半角
                 line = Utils.str2cn(line)  # 阿拉伯数字转中文
-                # 分词
-                line_json = [w for w in jieba.cut(line.rstrip())]
+                line_json = [w for w in jieba.cut(line)]  # 分词
                 # 以json和txt两种格式保存数据
                 cleaned_json.append(line_json)
-                f_out_txt.write(line)
+                f_out_txt.write(line + '\n')
         with open(cleaned_json_file, 'w') as f_out_json:
             json.dump(obj=cleaned_json, fp=f_out_json, ensure_ascii=False)
 
