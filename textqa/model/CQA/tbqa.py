@@ -38,9 +38,12 @@ class TBQA:
             print('logging enabled')
             print('=====================================')
 
-    def search_answers(self, cleaned_in, uncut_in, categorized_answers=None):
+    def search_answers(self, cleaned_in, uncut_in):
         # 问题分类
-        categorized_answers = self.pre_processor.categorize(uncut_in)
+        if args.categorize_question:
+            categorized_answers = self.pre_processor.categorize(uncut_in)
+        else:
+            categorized_answers = None
 
         sorted_scores_list = []
         answers_list = []
