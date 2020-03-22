@@ -46,16 +46,15 @@ class PreProcessor:
         return cleaned, uncut
 
     # 对问题进行分类
-    def categorize(self, questions):
+    def categorize(self, question):
         categories = []  # 问题所属的类别，可能有多个
         answers = []
-        for ques in questions:
-            for dict in self.keyword_database:
-                for word in dict['keywords']:
-                    # 如果有关键词在问题里出现了，那么说明问题属于这个类别
-                    if word in ques:
-                        categories.append(dict['class'])
-                        answers += dict['answers']
-                        break  # 没必要再在同样的类别下面纠结了
+        for dict in self.keyword_database:
+            for word in dict['keywords']:
+                # 如果有关键词在问题里出现了，那么说明问题属于这个类别
+                if word in question:
+                    categories.append(dict['class'])
+                    answers += dict['answers']
+                    break  # 没必要再在同样的类别下面纠结了
 
         return categories, answers

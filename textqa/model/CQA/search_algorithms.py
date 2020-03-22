@@ -93,7 +93,9 @@ class Baselines:
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
-    def bm25(self, query):
+    def bm25(self, query, categorized_answers=None):
+        if args.categorize_question:
+            self.bm25_model = BM25(categorized_answers)
         bm25_weights = self.bm25_model.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
@@ -111,7 +113,7 @@ class Baselines:
         return sorted_scores, max_pos, answers, questions
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query):
+    def qq_qa_mix(self, query, categorized_answers=None):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
 
         # 用QQ匹配的阈值过滤一遍结果
@@ -128,7 +130,7 @@ class Baselines:
             # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
             # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
             # base_question给出实际的答案
-            sorted_scores, max_pos, _ = self.bm25(query)
+            sorted_scores, max_pos, _ = self.bm25(query, categorized_answers)
             answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
 
             # 用QA匹配的阈值过滤一遍结果

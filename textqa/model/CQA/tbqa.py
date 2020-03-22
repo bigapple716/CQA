@@ -38,7 +38,10 @@ class TBQA:
             print('logging enabled')
             print('=====================================')
 
-    def search_answers(self, cleaned_in, uncut_in):
+    def search_answers(self, cleaned_in, uncut_in, categorized_answers=None):
+        # 问题分类
+        categorized_answers = self.pre_processor.categorize(uncut_in)
+
         sorted_scores_list = []
         answers_list = []
         answers_index_list = []
@@ -52,7 +55,7 @@ class TBQA:
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
             elif args.method == 'mix':
-                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query)
+                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query, categorized_answers)
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
