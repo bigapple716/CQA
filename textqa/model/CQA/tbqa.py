@@ -132,7 +132,7 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    question = '身份证丢了如何乘机？'
+    question = '值机攻略'
     answer = tbqa.get_answer(question)
     print('answer:', answer)
 

@@ -86,7 +86,12 @@ class Baselines:
     def bm25(self, query, categorized_qa):
         # 只有问题分类的情况下才在这里做模型实例化，其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question:
-            self.bm25_model = BM25(categorized_qa['cut_answers'])
+            if len(categorized_qa['cut_answers']) != 0:
+                # 非空的时候才用这个作corpus传进BM25
+                self.bm25_model = BM25(categorized_qa['cut_answers'])
+            else:
+                # 如果为空，那么还用原来的corpus传进BM25
+                self.bm25_model = BM25(self.cut_answers)
 
         bm25_weights = self.bm25_model.get_scores(query)
 
@@ -97,7 +102,12 @@ class Baselines:
         # 根据max_pos从答案库里把真正的答案抽出来
         if args.categorize_question:
             # 答案来源是categorized的时候
-            answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
+            if len(categorized_qa['cut_answers']) != 0:
+                # 非空的时候才用这个作为answer base
+                answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
+            else:
+                # 如果为空，那么还用原来的self.uncut_answers作为answer base
+                answers = self.__max_pos2answers(max_pos, self.uncut_answers)
         else:
             # 答案来源不是categorized的时候，categorized_qa是None
             answers = self.__max_pos2answers(max_pos, self.uncut_answers)
