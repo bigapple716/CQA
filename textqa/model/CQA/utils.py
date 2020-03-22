@@ -5,6 +5,7 @@ import re
 from gensim.models import KeyedVectors
 import pickle
 import docx
+import jieba
 from textqa.model.CQA.file_pool import FilePool
 
 
@@ -96,6 +97,15 @@ class Utils:
             if len(para.runs) != 0 and para.runs[-1].bold:
                 keyword = para.text.strip()
                 print(keyword)
+
+    # 分词
+    @staticmethod
+    def cut_text(text_list):
+        cut_text = []
+        for line in text_list:
+            cut_line = [w for w in jieba.cut(line)]  # 分词
+            cut_text.append(cut_line)
+        return cut_text
 
     '''以下均为私有方法'''
 
