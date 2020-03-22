@@ -19,7 +19,7 @@ self_trained_word2vec = 'train_embed/word2vec.kv'
 
 
 class Baselines:
-    def __init__(self, special_answer_base=None, use_aver_embed=False, use_pretrained_word2vec=True):
+    def __init__(self, use_aver_embed=False, use_pretrained_word2vec=True):
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
