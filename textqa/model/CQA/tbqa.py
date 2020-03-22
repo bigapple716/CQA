@@ -39,18 +39,18 @@ class TBQA:
             print('=====================================')
 
     def search_answers(self, cleaned_in, uncut_in):
-        # 问题分类
-        if args.categorize_question:
-            categorized_answers = self.pre_processor.categorize(uncut_in)
-        else:
-            categorized_answers = None
-
         sorted_scores_list = []
         answers_list = []
         answers_index_list = []
         questions_list = []
     
         for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
+            # 问题分类
+            if args.categorize_question:
+                categorized_answers = self.pre_processor.categorize(query)
+            else:
+                categorized_answers = None
+
             # 用不同算法搜索
             if args.method == 'bm25':
                 sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_answers)
