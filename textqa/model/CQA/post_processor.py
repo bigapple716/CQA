@@ -13,7 +13,7 @@ class PostProcessor:
             raise Exception('答案列表和答案索引列表长度不一致！')
 
         # 载入答案文档
-        if args.long_ans:
+        if args.answer_base == 'long':
             ans_txt = FilePool.long_answers_txt
         else:
             ans_txt = FilePool.cleaned_answers_txt
