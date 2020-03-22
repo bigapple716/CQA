@@ -7,7 +7,6 @@ from gensim.corpora import Dictionary
 from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-import jieba
 import pickle
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
