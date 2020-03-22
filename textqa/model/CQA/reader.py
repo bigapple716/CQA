@@ -14,6 +14,7 @@ class Reader:
     def preprocess(self):
         self.__read_keywords()  # 读入各类的关键词
         self.__clean_txt(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
+        self.__make_base_que_list()  # 制作base_ques_list
 
         # 以下方法有先后依赖关系
         self.__read_docs()
@@ -170,6 +171,19 @@ class Reader:
         # 写到json里
         with open(FilePool.keyword_database_json, 'w') as f_kwdb:
             json.dump(obj=keyword_database, fp=f_kwdb, ensure_ascii=False)
+
+    def __make_base_que_list(self):
+        with open(FilePool.base_question_file, 'r') as f_base_ques:
+            base_questions = json.load(f_base_ques)
+
+        # 把被匹配的问题分词，制作一个纯list
+        base_ques_list = []
+        for base_ques in base_questions:
+            line = [w for w in jieba.cut(base_ques['question'])]
+            base_ques_list.append(line)
+
+        with open(FilePool.base_ques_list_file, 'w') as f_base_ques_list:
+            json.dump(obj=base_ques_list, fp=f_base_ques_list, ensure_ascii=False)
 
 
 # for test purpose

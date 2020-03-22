@@ -5,7 +5,6 @@ import jieba
 from textqa.model.CQA import args
 from textqa.model.CQA.utils import Utils
 from textqa.model.CQA.file_pool import FilePool
-from textqa.model.CQA.categorized_qa import CategorizedQA
 
 
 # 数据预处理
@@ -48,14 +47,14 @@ class PreProcessor:
 
     # 对问题进行分类
     def categorize(self, question):
-        cat = CategorizedQA(question)
+        categorized_qa = {'question': question, 'classes': [], 'uncut_answers': [], 'cut_answers': []}
         for dict in self.keyword_database:
             for word in dict['keywords']:
                 # 如果有关键词在问题里出现了，那么说明问题属于这个类别
                 if word in question:
-                    cat.categories.append(dict['class'])
-                    cat.uncut_answers += dict['uncut_answers']
-                    cat.cut_answers += dict['cut_answers']
+                    categorized_qa['classes'].append(dict['class'])
+                    categorized_qa['uncut_answers'] += dict['uncut_answers']
+                    categorized_qa['cut_answers'] += dict['cut_answers']
                     break  # 没必要再在同样的类别下面纠结了
 
-        return cat
+        return categorized_qa

@@ -9,16 +9,13 @@ import platform
 
 
 class TBQA:
-    def __init__(self, method='mix', trim_stop=True, long_ans=True, top_n=3):
-        args.method = method
-        args.trim_stop = trim_stop
-        args.long_ans = long_ans
-        args.top_n = top_n
+    def __init__(self):
         if platform.system() == 'Darwin':
             args.enable_log = True
 
+        # 下面两行代码只需要运行一次
         self.reader = Reader()  # 实例化一个Reader类
-        # self.reader.preprocess()
+        self.reader.preprocess()
 
         self.pre_processor = PreProcessor()
 
@@ -31,8 +28,8 @@ class TBQA:
             print('==========> TBQA settings <==========')
             print('method:', args.method)
             print('trim stop words:', args.trim_stop)
-            print('use long answers:', args.long_ans)
-            print('return top ' + str(args.top_n) + 'results')
+            print('answer base:', args.answer_base)
+            print('return top ' + str(args.top_n) + ' results')
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
             print('logging enabled')
@@ -45,27 +42,27 @@ class TBQA:
         questions_list = []
     
         for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
-            # 问题分类
+            # 答案来源
             if args.categorize_question:
-                categorized_answers = self.pre_processor.categorize(query)
+                categorized_qa = self.pre_processor.categorize(query)
             else:
-                categorized_answers = None
+                categorized_qa = {}
 
             # 用不同算法搜索
             if args.method == 'bm25':
-                sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_answers)
+                sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_qa)
             elif args.method == 'qq-match':
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
             elif args.method == 'mix':
-                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query, categorized_answers)
+                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query, categorized_qa)
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
-            elif args.method == 'aver-embed':
-                sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
-            elif args.method == 'lm':
-                sorted_scores, max_pos, answers = self.baseline_model.language_model(cut_query)
+            # elif args.method == 'aver-embed':
+            #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
+            # elif args.method == 'lm':
+            #     sorted_scores, max_pos, answers = self.baseline_model.language_model(cut_query)
             else:
                 raise Exception('尚未支持该搜索算法！')
     
@@ -135,8 +132,8 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    # question = '接机攻略'
-    # answer = tbqa.get_answer(question)
-    # print('answer:', answer)
+    question = '身份证丢了如何乘机？'
+    answer = tbqa.get_answer(question)
+    print('answer:', answer)
 
-    tbqa.get_multi_answers()
+    # tbqa.get_multi_answers()

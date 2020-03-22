@@ -12,7 +12,6 @@ import pickle
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
 from textqa.model.CQA.file_pool import FilePool
-from textqa.model.CQA.utils import Utils
 from textqa.model.CQA import args
 
 self_trained_word2vec = 'train_embed/word2vec.kv'
@@ -20,49 +19,45 @@ self_trained_word2vec = 'train_embed/word2vec.kv'
 
 class Baselines:
     def __init__(self, use_aver_embed=False, use_pretrained_word2vec=True):
+        # 读入停用词表
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
 
-        if args.long_ans:
+        if args.answer_base == 'long':
             # 使用长答案
             ans_json = FilePool.long_answers_json
             ans_txt = FilePool.long_answers_txt
-        else:
+        elif args.answer_base == 'cleaned':
             # 使用短答案
             ans_json = FilePool.cleaned_answers_json
             ans_txt = FilePool.cleaned_answers_txt
+        else:
+            # args.answer_base == 'small'
+            # 使用small answers
+            ans_json = FilePool.small_answers_json
+            ans_txt = FilePool.small_answers_txt
 
         with open(ans_json, 'r') as f_json:
-            self.cut_answers = json.load(f_json)
-            self.cut_answers = [[ele for ele in answer if ele not in self.stopwords] for answer in self.cut_answers]
+            text = json.load(f_json)
+            self.cut_answers = [[ele for ele in answer if ele not in self.stopwords] for answer in text]
         with open(ans_txt, 'r') as f_ans_txt:
-            uncut_answers = f_ans_txt.readlines()
-            self.uncut_answers = [line.rstrip('\n') for line in uncut_answers]
+            text = f_ans_txt.readlines()
+            self.uncut_answers = [line.rstrip('\n') for line in text]
+
         with open(FilePool.base_question_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
-        with open(FilePool.small_answers_txt, 'r') as f_small_ans:
-            small_ans_txt = f_small_ans.readlines()
-            self.uncut_small_answers = [line.rstrip('\n') for line in small_ans_txt]
 
-        # 把small answer分词
-        self.cut_small_answers = []
-        for ans in self.uncut_small_answers:
-            line = [w for w in jieba.cut(ans)]
-            self.cut_small_answers.append(line)
+        with open(FilePool.base_ques_list_file, 'r') as f_base_ques_list:
+            self.base_ques_list = json.load(f_base_ques_list)
 
-        # 把被匹配的问题分词，制作一个纯list
-        self.base_ques_list = []
-        for base_ques in self.base_questions:
-            line = [w for w in jieba.cut(base_ques['question'])]
-            self.base_ques_list.append(line)
+        # 提前实例化bm25模型，提升性能
+        # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
+        if not args.categorize_question:
+            self.bm25_model = BM25(self.cut_answers)
 
-        # 提前实例化bm25和tfidf模型，提升性能
+        # 提前实例化tfidf模型，提升性能
         if args.method == 'mix':
-            # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
-            if not args.categorize_question:
-                self.bm25_model = BM25(self.cut_small_answers)
-
             self.tfidf_dict = Dictionary(self.base_ques_list)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
             bow = [self.tfidf_dict.doc2bow(line) for line in self.base_ques_list]  # convert corpus to BoW format
@@ -71,10 +66,6 @@ class Baselines:
             text_tfidf = self.tfidf_model[bow]  # apply model
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
         else:
-            # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
-            if not args.categorize_question:
-                self.bm25_model = BM25(self.cut_answers)
-
             self.tfidf_dict = Dictionary(self.cut_answers)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
             bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # convert corpus to BoW format
@@ -93,16 +84,25 @@ class Baselines:
                 self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
 
     # bm25算法搜索
-    def bm25(self, query, categorized_answers=None):
+    def bm25(self, query, categorized_qa):
+        # 只有问题分类的情况下才在这里做模型实例化，其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question:
-            self.bm25_model = BM25(categorized_answers)
+            self.bm25_model = BM25(categorized_qa['cut_answers'])
+
         bm25_weights = self.bm25_model.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        # max_pos = Utils.trim_result(sorted_scores, max_pos, threshold=10)
-        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+
+        # 根据max_pos从答案库里把真正的答案抽出来
+        if args.categorize_question:
+            # 答案来源是categorized的时候
+            answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
+        else:
+            # 答案来源不是categorized的时候，categorized_qa是None
+            answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+
         return sorted_scores, max_pos, answers
 
     # 问题-问题匹配
@@ -113,7 +113,7 @@ class Baselines:
         return sorted_scores, max_pos, answers, questions
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, categorized_answers=None):
+    def qq_qa_mix(self, query, categorized_qa):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
 
         # 用QQ匹配的阈值过滤一遍结果
@@ -127,11 +127,7 @@ class Baselines:
             # 截断之后啥也不剩了，说明QQ匹配没有一个得分到阈值的
             # 果断放弃，改用QA匹配
             # QA匹配暂时选用bm25算法
-            # 最后一个返回值没有意义，因为它是按照答案库挑出的答案，但是这里的max_pos根本就不是答案库的index序列
-            # 而是base_question的index序列，于是需要下一行的self.__max_pos2answers_questions()方法根据
-            # base_question给出实际的答案
-            sorted_scores, max_pos, _ = self.bm25(query, categorized_answers)
-            answers = self.__max_pos2answers(max_pos, self.uncut_small_answers)
+            sorted_scores, max_pos, answers = self.bm25(query, categorized_qa)
 
             # 用QA匹配的阈值过滤一遍结果
             sorted_scores, max_pos, answers, _ = \
@@ -147,10 +143,10 @@ class Baselines:
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
-    # 词向量平均
+    # 词向量平均(暂停维护)
     def aver_embed(self, query):
         doc_score = []
 
@@ -164,10 +160,10 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
-    # Language Model
+    # Language Model(暂停维护)
     def language_model(self, query):
         doc_score = []
         for text in self.cut_answers:
@@ -184,15 +180,15 @@ class Baselines:
 
         sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos, self.cut_small_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
     # 根据max_pos从答案库里把真正的答案抽出来
-    def __max_pos2answers(self, max_pos, answer_base):
+    def __max_pos2answers(self, max_pos, uncut_answers):
         max_pos = max_pos.tolist()  # ndarray -> list
         answers = []
         for r in max_pos:
-            answers.append(answer_base[r])
+            answers.append(uncut_answers[r])
         return answers
 
     def __max_pos2answers_questions(self, max_pos):
