@@ -18,4 +18,4 @@ def performance_test(text):
     return json_data
 
 
-performance_test('我可以带生鸡蛋上飞机么')
+performance_test('身份证丢了如何乘机？')
