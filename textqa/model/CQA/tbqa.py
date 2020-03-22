@@ -14,8 +14,8 @@ class TBQA:
             args.enable_log = True
 
         # 下面两行代码只需要运行一次
-        self.reader = Reader()  # 实例化一个Reader类
-        self.reader.preprocess()
+        # self.reader = Reader()  # 实例化一个Reader类
+        # self.reader.preprocess()
 
         self.pre_processor = PreProcessor()
 

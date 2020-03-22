@@ -39,7 +39,10 @@ class Baselines:
 
         with open(ans_json, 'r') as f_json:
             text = json.load(f_json)
-            self.cut_answers = [[ele for ele in answer if ele not in self.stopwords] for answer in text]
+            if args.trim_stop:
+                self.cut_answers = [[ele for ele in answer if ele not in self.stopwords] for answer in text]
+            else:
+                self.cut_answers = text
         with open(ans_txt, 'r') as f_ans_txt:
             text = f_ans_txt.readlines()
             self.uncut_answers = [line.rstrip('\n') for line in text]
