@@ -66,11 +66,11 @@ class TBQA:
             sorted_scores_list.append(sorted_scores)
             answers_list.append(answers)
             answers_index_list.append(max_pos)
-        '''
+
             # 输出实时进度
-            if i % 20 == 0:
+            if args.enable_log and i % 20 == 0:
                 print('line ' + str(i) + ' processed')
-        
+        '''
         if method == 'qq-match' or 'mix':
             print_answers(questions_list, 'data/output_questions.csv')
         '''
