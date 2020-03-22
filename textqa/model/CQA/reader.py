@@ -158,7 +158,14 @@ class Reader:
                 lines = f_kw.readlines()
                 lines = [line.rstrip() for line in lines]
                 keywords = lines[1].split(' ')
-                dict = {'class': lines[0], 'keywords': keywords, 'answers': lines[2:]}
+                uncut_answers = lines[2:]
+                cut_answers = Utils.cut_text(uncut_answers)
+                dict = {
+                    'class': lines[0],
+                    'keywords': keywords,
+                    'uncut_answers': uncut_answers,
+                    'cut_answers': cut_answers
+                }
                 keyword_database.append(dict)
         # 写到json里
         with open(FilePool.keyword_database_json, 'w') as f_kwdb:
