@@ -5,12 +5,13 @@ import jieba
 from textqa.model.CQA import args
 from textqa.model.CQA.utils import Utils
 from textqa.model.CQA.file_pool import FilePool
+from textqa.model.CQA.categorized_qa import CategorizedQA
 
 
 # 数据预处理
 class PreProcessor:
     def __init__(self):
-        # 停用词表
+        # 读入停用词表
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
@@ -47,14 +48,14 @@ class PreProcessor:
 
     # 对问题进行分类
     def categorize(self, question):
-        categories = []  # 问题所属的类别，可能有多个
-        answers = []
+        cat = CategorizedQA(question)
         for dict in self.keyword_database:
             for word in dict['keywords']:
                 # 如果有关键词在问题里出现了，那么说明问题属于这个类别
                 if word in question:
-                    categories.append(dict['class'])
-                    answers += dict['answers']
+                    cat.categories.append(dict['class'])
+                    cat.uncut_answers += dict['uncut_answers']
+                    cat.cut_answers += dict['cut_answers']
                     break  # 没必要再在同样的类别下面纠结了
 
-        return categories, answers
+        return cat
