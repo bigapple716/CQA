@@ -38,7 +38,7 @@ class TBQA:
             print('logging enabled')
             print('=====================================')
 
-    def search_answers(self, cleaned_in, uncut_in,):
+    def search_answers(self, cleaned_in, uncut_in):
         sorted_scores_list = []
         answers_list = []
         answers_index_list = []
