@@ -59,7 +59,9 @@ class Baselines:
 
         # 提前实例化bm25和tfidf模型，提升性能
         if args.method == 'mix':
-            self.bm25_model = BM25(self.cut_small_answers)
+            # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
+            if not args.categorize_question:
+                self.bm25_model = BM25(self.cut_small_answers)
 
             self.tfidf_dict = Dictionary(self.base_ques_list)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
@@ -69,7 +71,9 @@ class Baselines:
             text_tfidf = self.tfidf_model[bow]  # apply model
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
         else:
-            self.bm25_model = BM25(self.cut_answers)
+            # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
+            if not args.categorize_question:
+                self.bm25_model = BM25(self.cut_answers)
 
             self.tfidf_dict = Dictionary(self.cut_answers)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
