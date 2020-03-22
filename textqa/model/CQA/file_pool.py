@@ -42,6 +42,10 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword/国内到达.txt'),
         os.path.join(project_dir, 'data/keyword/物品携带.txt'),
         os.path.join(project_dir, 'data/keyword/安全检查.txt'),
+        os.path.join(project_dir, 'data/keyword/机场服务.txt'),
+        os.path.join(project_dir, 'data/keyword/物品遗失.txt'),
+        os.path.join(project_dir, 'data/keyword/特殊旅客.txt'),
+        os.path.join(project_dir, 'data/keyword/行李携带.txt'),
     ]
 
     word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')
