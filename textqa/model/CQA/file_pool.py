@@ -14,9 +14,11 @@ class FilePool:
     raw_docx2 = os.path.join(project_dir, 'data/96566机场问询资料.docx')  # 昆明机场知识文档
     answers_txt = os.path.join(project_dir, 'data/answers.txt')  # 全部机场知识文档的txt格式集合(不含补充知识文档)
     extra_txt = os.path.join(project_dir, 'data/extra_answers.txt')  # 补充知识文档
+    raw_small_answers_txt = os.path.join(project_dir, 'data/raw_small_answers.txt')  # 全部答案 - 长沙机场
 
     # 清洗过的答案库
     small_answers_txt = os.path.join(project_dir, 'data/small_answers.txt')  # 全部答案 - 长沙机场(没分词)
+    small_answers_json = os.path.join(project_dir, 'data/small_answers.json')  # 全部答案 - 长沙机场(已分词)
     cleaned_answers_txt = os.path.join(project_dir, 'data/cleaned_answers.txt')  # 短答案(没分词)
     cleaned_answers_json = os.path.join(project_dir, 'data/cleaned_answers.json')  # 短答案(已分词)
     cleaned_extra_txt = os.path.join(project_dir, 'data/cleaned_extra.txt')  # 补充答案(没分词)
