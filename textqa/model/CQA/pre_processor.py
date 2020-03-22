@@ -55,6 +55,7 @@ class PreProcessor:
                     # 如果有关键词在问题里出现了，那么说明问题属于这个类别
                     if word in ques:
                         categories.append(dict['class'])
+                        answers += dict['answers']
                         break  # 没必要再在同样的类别下面纠结了
 
-        return categories
+        return categories, answers
