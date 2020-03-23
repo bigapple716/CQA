@@ -92,9 +92,11 @@ class Baselines:
             if len(categorized_qa['cut_answers']) != 0:
                 # 非空的时候才用这个作corpus传进BM25
                 self.bm25_model = BM25(categorized_qa['cut_answers'])
+                # print(categorized_qa['classes'])
             else:
                 # 如果为空，那么还用原来的corpus传进BM25
                 self.bm25_model = BM25(self.cut_answers)
+                # print('没用分类问题')
 
         bm25_weights = self.bm25_model.get_scores(query)
 

@@ -66,9 +66,9 @@ class TBQA:
             else:
                 raise Exception('尚未支持该搜索算法！')
     
-            sorted_scores_list.append(sorted_scores)
-            answers_list.append(answers)
-            answers_index_list.append(max_pos)
+            sorted_scores_list.append(sorted_scores[:args.top_n])
+            answers_list.append(answers[:args.top_n])
+            answers_index_list.append(max_pos[:args.top_n])
 
             # 输出实时进度
             if args.enable_log and i % 20 == 0:
@@ -105,6 +105,10 @@ class TBQA:
 
     # 测试用接口，批量回答问题
     def get_multi_answers(self):
+        # 清空输出文件
+        with open(FilePool.output_csv, 'w') as f_output:
+            pass
+
         # 读入输入问题
         with open(FilePool.input_txt, 'r') as f_input:
             doc = f_input.readlines()
@@ -117,11 +121,12 @@ class TBQA:
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
 
         # 清洗答案
-        if args.method != 'qq-match' and args.method != 'mix':
-            answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
+        # if args.method != 'qq-match' and args.method != 'mix':
+        #     answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
 
         for scores, ans in zip(sorted_scores_list, answers_list):
-            print('scores:', scores[:args.top_n])
+            if args.enable_log:
+                print('scores:', scores[:args.top_n])
             # 如果回答列表是空的，那么说明这个问题不可回答
             if len(ans) == 0:
                 ans.append(-1)
