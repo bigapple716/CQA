@@ -119,6 +119,11 @@ class Baselines:
 
         return sorted_scores, max_pos, answers
 
+    # bm25 with synonym module
+    def bm25_syn(self, query):
+        for word in query:
+            word_weights = self.bm25_model.get_scores(word)
+
     # 问题-问题匹配
     def qq_match(self, query):
         # 输入tf-idf，得到从大到小排列的index list

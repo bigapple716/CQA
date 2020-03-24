@@ -51,6 +51,8 @@ class TBQA:
             # 用不同算法搜索
             if args.method == 'bm25':
                 sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_qa)
+            elif args.method == 'bm25-syn':
+                sorted_scores, max_pos, answers = self.baseline_model.bm25_syn(cut_query)
             elif args.method == 'qq-match':
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
