@@ -2,6 +2,7 @@
 
 import json
 import jieba
+import synonyms
 from textqa.model.CQA import args
 from textqa.model.CQA.utils import Utils
 from textqa.model.CQA.file_pool import FilePool
