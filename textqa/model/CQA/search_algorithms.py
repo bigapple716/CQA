@@ -8,6 +8,7 @@ from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import pickle
+import synonyms
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
 from textqa.model.CQA.file_pool import FilePool
@@ -120,9 +121,45 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # bm25 with synonym module
-    def bm25_syn(self, query):
-        for word in query:
-            word_weights = self.bm25_model.get_scores(word)
+    def bm25_syn(self, query, n_syn=5):
+        query_weights = self.bm25_model.get_scores(query)  # 普通的bm25算法
+        max_pos = np.argsort(query_weights)[::-1][0]  # 最高得分所在的index(而不是真正的value)
+
+        # 找出来query里哪个词是最关键的
+        max_score = 0
+        kw = ''  # 最关键的那个词
+        kw_idx = -1
+        for idx, word in enumerate(query):
+            word_weight = self.bm25_model.get_score([word], index=max_pos)
+            if word_weight > max_score:
+                max_score = word_weight
+                kw = word
+                kw_idx = idx
+
+        # 为这个最关键的词创造一个近义词列表
+        syn_list = synonyms.nearby(kw)[0][:n_syn]
+
+        # 找出来哪个近义词得分最高
+        max_score = -1
+        best_kw = ''  # 最关键的那个词
+        for syn in syn_list:
+            query[kw_idx] = syn  # 替换query中的那个最关键的词
+            weights = self.bm25_model.get_scores(query)  # 普通的bm25算法
+            score = sorted(weights, reverse=True)[0]  # 将得分从大到小排序，取第1个
+            if score > max_score:
+                max_score = score
+                best_kw = syn
+
+        # 找到最合适的关键词了，回到正规，返回sorted_scores, max_pos, answers
+        query[kw_idx] = best_kw
+        bm25_weights = self.bm25_model.get_scores(query)
+
+        sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
+        sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
+        max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+
+        return sorted_scores, max_pos, answers
 
     # 问题-问题匹配
     def qq_match(self, query):

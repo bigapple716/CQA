@@ -29,6 +29,7 @@ class TBQA:
             print('method:', args.method)
             print('trim stop words:', args.trim_stop)
             print('answer base:', args.answer_base)
+            print('categorize questions:', args.categorize_question)
             print('return top ' + str(args.top_n) + ' results')
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
@@ -139,7 +140,7 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    question = '值机攻略'
+    question = '身份证丢了怎么登机'
     answer = tbqa.get_answer(question)
     print('answer:', answer)
 
