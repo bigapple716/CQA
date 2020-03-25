@@ -39,19 +39,24 @@ class Reader:
     # 清洗数据
     def __clean_txt(self, ans_file, cleaned_txt_file, cleaned_json_file):
         cleaned_json = []  # 清洗过后的数据(json格式)
-        with open(ans_file, 'r') as f_in, open(cleaned_txt_file, 'w') as f_out_txt:
+        cleaned_txt = []  # 清洗过后的数据(txt格式)
+
+        with open(ans_file, 'r') as f_in:
             for line in f_in:
                 line = line.lstrip()  # 去掉行首空格
                 line = line.rstrip()  # 去掉行尾换行符
-                # 去掉空行
-                if line == '':
+                if line == '':  # 去掉空行
                     continue
                 line = line.replace('\t', '')  # 去掉\t
                 line = Utils.full2half(line)  # 全角转半角
                 line = Utils.str2cn(line)  # 阿拉伯数字转中文
+                cleaned_txt.append(line)  # 加入到cleaned_txt这个列表里
                 line_json = [w for w in jieba.cut(line)]  # 分词
-                # 以json和txt两种格式保存数据
                 cleaned_json.append(line_json)
+
+        # 写进文件
+        with open(cleaned_txt_file, 'w') as f_out_txt:
+            for line in cleaned_txt:
                 f_out_txt.write(line + '\n')
         with open(cleaned_json_file, 'w') as f_out_json:
             json.dump(obj=cleaned_json, fp=f_out_json, ensure_ascii=False)

@@ -32,6 +32,10 @@ class PreProcessor:
         cleaned = []
         uncut = []
         for line in text:
+            line = line.lstrip()  # 去掉行首空格
+            line = line.rstrip()  # 去掉行尾换行符
+            line = line.replace('\t', '')  # 去掉\t
+            line = Utils.full2half(line)  # 全角转半角
             line = Utils.str2cn(line)  # 阿拉伯数字转中文
             cut_line = [w for w in jieba.cut(line)]  # 对query进行分词
             # 去停用词
