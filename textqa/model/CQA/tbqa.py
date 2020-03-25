@@ -78,7 +78,7 @@ class TBQA:
                 print('line ' + str(i) + ' processed')
 
         if args.method == 'qq-match' or 'mix':
-            self.post_processor.print_answers(questions_list, 'data/output_questions.csv')
+            self.post_processor.print_answers(questions_list, FilePool.output_question_csv)
 
         return answers_list, answers_index_list, sorted_scores_list
 
