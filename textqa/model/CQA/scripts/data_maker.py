@@ -21,7 +21,7 @@ class DataMaker:
     input_txt = 'textqa/model/CQA/data/input.txt'
 
     # 根据问题ID找问答对
-    def qid2qa(self, query_file=FilePool.input_txt, output_file='textqa/model/CQA/data/base_questions.json'):
+    def qid2qa(self, query_file=FilePool.input_txt, output_file='textqa/model/CQA/data/qa.json'):
         # 读文件
         with open(query_file, 'r') as f_query:
             queries = f_query.readlines()
