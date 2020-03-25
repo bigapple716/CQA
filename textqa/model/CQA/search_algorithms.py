@@ -24,6 +24,7 @@ class Baselines:
             doc = f_stopword.readlines()
         self.stopwords = [line.rstrip('\n') for line in doc]
 
+        # 读入答案
         if args.answer_base == 'long':
             # 使用长答案
             ans_json = FilePool.long_answers_json
@@ -36,7 +37,6 @@ class Baselines:
             # 使用small answers
             ans_json = FilePool.small_answers_json
             ans_txt = FilePool.small_answers_txt
-
         with open(ans_json, 'r') as f_json:
             text = json.load(f_json)
             if args.trim_stop:
@@ -47,8 +47,8 @@ class Baselines:
             text = f_ans_txt.readlines()
             self.uncut_answers = [line.rstrip('\n') for line in text]
 
-        with open(FilePool.qa_file, 'r') as f_base_ques:
-            self.base_questions = json.load(f_base_ques)
+        with open(FilePool.qa_file, 'r') as f_qa:
+            self.base_questions = json.load(f_qa)
 
         with open(FilePool.base_ques_list_file, 'r') as f_base_ques_list:
             self.base_ques_list = json.load(f_base_ques_list)
