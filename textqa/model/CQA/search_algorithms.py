@@ -33,7 +33,6 @@ class Baselines:
             ans_json = FilePool.cleaned_answers_json
             ans_txt = FilePool.cleaned_answers_txt
         else:
-            # args.answer_base == 'small'
             # 使用small answers
             ans_json = FilePool.small_answers_json
             ans_txt = FilePool.small_answers_txt
@@ -60,7 +59,7 @@ class Baselines:
             self.bm25_model = BM25(self.cut_answers)
 
         # 提前实例化tfidf模型，提升性能
-        if args.method == 'mix':
+        if args.method == 'mix' or 'qq-match':
             self.tfidf_dict = Dictionary(self.base_ques_list)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
             bow = [self.tfidf_dict.doc2bow(line) for line in self.base_ques_list]  # convert corpus to BoW format
@@ -171,15 +170,16 @@ class Baselines:
         # 输入tf-idf，得到从大到小排列的index list
         sorted_scores, max_pos, _ = self.tfidf_sim(query)
         answers, questions = self.__max_pos2answers_questions(max_pos)
+
+        # 用QQ匹配的阈值过滤一遍结果
+        sorted_scores, max_pos, answers, questions = \
+            self.__filter_by_threshold(sorted_scores, max_pos, answers, questions, args.qq_threshold)
+
         return sorted_scores, max_pos, answers, questions
 
     # QQ匹配和QA匹配混合
     def qq_qa_mix(self, query, categorized_qa):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
-
-        # 用QQ匹配的阈值过滤一遍结果
-        sorted_scores, max_pos, answers, questions = \
-            self.__filter_by_threshold(sorted_scores, max_pos, answers, questions, args.qq_threshold)
 
         if len(sorted_scores) > 0:
             # QQ匹配效果不错，直接返回结果

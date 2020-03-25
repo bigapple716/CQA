@@ -91,8 +91,8 @@ class TBQA:
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
 
         # 清洗答案
-        if args.method != 'qq-match' and args.method != 'mix':
-            answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
+        # if args.method != 'qq-match' and args.method != 'mix':
+        #     answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
 
         answers = answers_list[0]
         scores = sorted_scores_list[0]
@@ -140,8 +140,8 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    question = '身份证丢了怎么登机'
-    answer = tbqa.get_answer(question)
-    print('answer:', answer)
+    # question = '身份证丢了怎么登机'
+    # answer = tbqa.get_answer(question)
+    # print('answer:', answer)
 
-    # tbqa.get_multi_answers()
+    tbqa.get_multi_answers()
