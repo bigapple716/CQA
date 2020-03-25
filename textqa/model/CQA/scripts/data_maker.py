@@ -16,7 +16,6 @@ class DataMaker:
     answer_file = 'textqa/model/CQA/data/long_answers.txt'
     queries_file = 'textqa/model/CQA/data/queries.txt'
 
-    match_qid_file = 'textqa/model/CQA/data/match_qid.txt'
     match_question_file = 'textqa/model/CQA/data/match_question.txt'
     match_gold_file = 'textqa/model/CQA/data/match_gold.txt'
     input_txt = 'textqa/model/CQA/data/input.txt'
@@ -27,9 +26,6 @@ class DataMaker:
         with open(query_file, 'r') as f_query:
             queries = f_query.readlines()
             queries = [line.rstrip('\n') for line in queries]
-        with open(self.match_qid_file, 'r') as f_qid:
-            qid_list = f_qid.readlines()
-            qid_list = [line.rstrip('\n') for line in qid_list]
         with open(self.match_question_file, 'r') as f_ques:
             ques_list = f_ques.readlines()
             ques_list = [line.rstrip('\n') for line in ques_list]
@@ -38,7 +34,7 @@ class DataMaker:
             gold_list = [line.rstrip('\n') for line in gold_list]
 
         # 判断上面3个list长度一致
-        if not (len(qid_list) == len(ques_list) == len(gold_list)):
+        if not len(ques_list) == len(gold_list):
             raise Exception('数据长度不一致！')
 
         # 制作字典
@@ -50,6 +46,7 @@ class DataMaker:
             # 只要问题不在input里面而且带答案的
             if (ques not in queries) and (gold != ''):
                 base_questions.append({'question': ques, 'sentence': gold})
+                print(gold)
 
         # 写到json里
         with open(output_file, 'w') as f_out:
