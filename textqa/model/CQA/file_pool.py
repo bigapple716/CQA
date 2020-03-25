@@ -30,11 +30,14 @@ class FilePool:
     base_ques_list_file = os.path.join(project_dir, 'data/base_ques_list.json')
 
     keyword_database_json = os.path.join(project_dir, 'data/keyword_database.json')  # 关键词库
-
-    # 输入输出
-    input_txt = os.path.join(project_dir, 'data/input.txt')  # 问题queries，仅在批量测试时用
-    output_csv = os.path.join(project_dir, 'data/output.csv')  # 输出的回答，仅在批量测试时用
     keyword_of_answer = os.path.join(project_dir, 'data/keyword_of_answer.pickle')  # 关键词to答案的字典
+
+    # 输入
+    input_txt = os.path.join(project_dir, 'data/input.txt')  # 问题queries，仅在批量测试时用
+
+    # 输出
+    output_csv = os.path.join(project_dir, 'data/output.csv')  # 输出的回答，仅在批量测试时用
+    output_question_csv = os.path.join(project_dir, 'data/output_questions.csv')  # 被匹配上的问题，仅在QQ匹配时用
 
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
 

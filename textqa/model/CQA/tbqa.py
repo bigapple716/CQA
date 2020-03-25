@@ -76,10 +76,10 @@ class TBQA:
             # 输出实时进度
             if args.enable_log and i % 20 == 0:
                 print('line ' + str(i) + ' processed')
-        '''
-        if method == 'qq-match' or 'mix':
-            print_answers(questions_list, 'data/output_questions.csv')
-        '''
+
+        if args.method == 'qq-match' or 'mix':
+            self.post_processor.print_answers(questions_list, 'data/output_questions.csv')
+
         return answers_list, answers_index_list, sorted_scores_list
 
     # 对外接口，输入1个问题给出1个回答
