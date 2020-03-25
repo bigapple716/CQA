@@ -2,6 +2,7 @@
 
 import random
 import json
+from textqa.model.CQA.file_pool import FilePool
 
 # set random seed
 random.seed(0)
@@ -9,19 +10,19 @@ random.seed(0)
 
 class DataMaker:
     # file names
-    question_file = 'data/question.txt'
-    gold_file = 'data/gold.txt'
-    # answer_file = 'data/cleaned_answers.txt'
-    answer_file = 'data/long_answers.txt'
-    queries_file = 'data/queries.txt'
+    question_file = 'textqa/model/CQA/data/question.txt'
+    gold_file = 'textqa/model/CQA/data/gold.txt'
+    # answer_file = 'textqa/model/CQA/data/cleaned_answers.txt'
+    answer_file = 'textqa/model/CQA/data/long_answers.txt'
+    queries_file = 'textqa/model/CQA/data/queries.txt'
 
-    match_qid_file = 'data/match_qid.txt'
-    match_question_file = 'data/match_question.txt'
-    match_gold_file = 'data/match_gold.txt'
-    input_txt = 'data/input.txt'
+    match_qid_file = 'textqa/model/CQA/data/match_qid.txt'
+    match_question_file = 'textqa/model/CQA/data/match_question.txt'
+    match_gold_file = 'textqa/model/CQA/data/match_gold.txt'
+    input_txt = 'textqa/model/CQA/data/input.txt'
 
     # 根据问题ID找问答对
-    def qid2qa(self, query_file='data/input.txt', output_file='data/base_questions.json'):
+    def qid2qa(self, query_file=FilePool.input_txt, output_file='textqa/model/CQA/data/base_questions.json'):
         # 读文件
         with open(query_file, 'r') as f_query:
             queries = f_query.readlines()
@@ -44,7 +45,7 @@ class DataMaker:
         base_questions = []
         for ques, gold in zip(ques_list, gold_list):
             if '五一广场' in gold or '黄花' in gold or '小吃' in gold or '宜居' in gold or '长沙' in gold:
-                print(gold)
+                # print(gold)
                 continue
             # 只要问题不在input里面而且带答案的
             if (ques not in queries) and (gold != ''):
