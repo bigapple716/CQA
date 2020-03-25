@@ -173,7 +173,7 @@ class Reader:
             json.dump(obj=keyword_database, fp=f_kwdb, ensure_ascii=False)
 
     def __make_base_que_list(self):
-        with open(FilePool.base_question_file, 'r') as f_base_ques:
+        with open(FilePool.qa_file, 'r') as f_base_ques:
             base_questions = json.load(f_base_ques)
 
         # 把被匹配的问题分词，制作一个纯list

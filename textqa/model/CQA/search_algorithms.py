@@ -48,7 +48,7 @@ class Baselines:
             text = f_ans_txt.readlines()
             self.uncut_answers = [line.rstrip('\n') for line in text]
 
-        with open(FilePool.base_question_file, 'r') as f_base_ques:
+        with open(FilePool.qa_file, 'r') as f_base_ques:
             self.base_questions = json.load(f_base_ques)
 
         with open(FilePool.base_ques_list_file, 'r') as f_base_ques_list:
