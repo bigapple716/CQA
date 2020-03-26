@@ -13,6 +13,7 @@ from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA import args
+from textqa.model.CQA.new_tfidf import NewTfidf
 
 self_trained_word2vec = 'train_embed/word2vec.kv'
 
@@ -204,6 +205,25 @@ class Baselines:
 
     # tf-idf相似度算法搜索
     def tfidf_sim(self, query):
+        query_bow = [self.tfidf_dict.doc2bow(query)]  # 用query做一个bag of words
+        query_tfidf = self.tfidf_model[query_bow]  # 用tfidf model编码
+        similarities = self.sim_index[query_tfidf][0]  # 算相似度
+
+        sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
+        max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        return sorted_scores, max_pos, answers
+
+    def new_tfidf(self, query):
+        # 实例化new-tfidf模型
+        self.tfidf_dict = Dictionary(self.cut_answers)  # fit dictionary
+        n_features = len(self.tfidf_dict.token2id)
+        bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # convert corpus to BoW format
+        # 构造tf-idf模型
+        self.tfidf_model = NewTfidf(bow)  # fit model
+        text_tfidf = self.tfidf_model[bow]  # apply model
+        self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
+
         query_bow = [self.tfidf_dict.doc2bow(query)]  # 用query做一个bag of words
         query_tfidf = self.tfidf_model[query_bow]  # 用tfidf model编码
         similarities = self.sim_index[query_tfidf][0]  # 算相似度

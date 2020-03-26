@@ -62,6 +62,8 @@ class TBQA:
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
+            elif args.method == 'new-tfidf':
+                sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
             # elif args.method == 'aver-embed':
             #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
             # elif args.method == 'lm':
@@ -142,8 +144,8 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    # question = '身份证丢了怎么登机'
-    # answer = tbqa.get_answer(question)
-    # print('answer:', answer)
+    question = '身份证丢了怎么登机'
+    answer = tbqa.get_answer(question)
+    print('answer:', answer)
 
-    tbqa.get_multi_answers()
+    # tbqa.get_multi_answers()
