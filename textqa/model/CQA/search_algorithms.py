@@ -206,7 +206,7 @@ class Baselines:
     def tfidf_sim(self, query):
         query_bow = [self.tfidf_dict.doc2bow(query)]  # 用query做一个bag of words
         query_tfidf = self.tfidf_model[query_bow]  # 用tfidf model编码
-        similarities = self.sim_index.get_similarities(query_tfidf)[0]  # 算相似度
+        similarities = self.sim_index[query_tfidf][0]  # 算相似度
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
