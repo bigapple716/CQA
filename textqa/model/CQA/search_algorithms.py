@@ -136,11 +136,16 @@ class Baselines:
                 kw_idx = idx
 
         # 为这个最关键的词创造一个近义词列表
-        syn_list = synonyms.nearby(kw)[0][:n_syn]
+        nearby_list = synonyms.nearby(kw)
+        syn_list = [kw]  # 先手动把关键词自己加到列表里
+        for word, score in zip(nearby_list[0], nearby_list[1]):
+            # 条件：得分大于阈值
+            if score > args.syn_threshold:
+                syn_list.append(word)
 
         # 找出来哪个近义词得分最高
         max_score = -1
-        best_kw = ''  # 最关键的那个词
+        best_kw = ''  # 得分最高的词
         for syn in syn_list:
             query[kw_idx] = syn  # 替换query中的那个最关键的词
             weights = self.bm25_model.get_scores(query)  # 普通的bm25算法
@@ -148,11 +153,6 @@ class Baselines:
             if score > max_score:
                 max_score = score
                 best_kw = syn
-
-        # if best_kw != kw:
-        #     print('1')
-        # else:
-        #     print('0')
 
         # 找到最合适的关键词了，回到正规，返回sorted_scores, max_pos, answers
         query[kw_idx] = best_kw
