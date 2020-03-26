@@ -120,7 +120,7 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # bm25 with synonym module
-    def bm25_syn(self, query, n_syn=5):
+    def bm25_syn(self, query):
         query_weights = self.bm25_model.get_scores(query)  # 普通的bm25算法
         max_pos = np.argsort(query_weights)[::-1][0]  # 最高得分所在的index(而不是真正的value)
 
@@ -158,6 +158,7 @@ class Baselines:
         #     print('1')
         # else:
         #     print('0')
+        # print(kw + '\t' + best_kw)
 
         # 找到最合适的关键词了，回到正规，返回sorted_scores, max_pos, answers
         query[kw_idx] = best_kw
