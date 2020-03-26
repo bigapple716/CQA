@@ -172,8 +172,8 @@ class Baselines:
         answers, questions = self.__max_pos2answers_questions(max_pos)
 
         # 用QQ匹配的阈值过滤一遍结果
-        # sorted_scores, max_pos, answers, questions = \
-        #     self.__filter_by_threshold(sorted_scores, max_pos, answers, questions, args.qq_threshold)
+        sorted_scores, max_pos, answers, questions = \
+            self.__filter_by_threshold(sorted_scores, max_pos, answers, questions, args.qq_threshold)
 
         return sorted_scores, max_pos, answers, questions
 
