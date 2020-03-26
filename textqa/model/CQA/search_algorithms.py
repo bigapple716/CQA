@@ -154,10 +154,10 @@ class Baselines:
                 max_score = score
                 best_kw = syn
 
-        if best_kw != kw:
-            print('1')
-        else:
-            print('0')
+        # if best_kw != kw:
+        #     print('1')
+        # else:
+        #     print('0')
 
         # 找到最合适的关键词了，回到正规，返回sorted_scores, max_pos, answers
         query[kw_idx] = best_kw
