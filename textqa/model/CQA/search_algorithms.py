@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.summarization.bm25 import BM25
 from gensim.models import TfidfModel, KeyedVectors
 from gensim.corpora import Dictionary
@@ -176,7 +175,17 @@ class Baselines:
 
     # 改进版的bm25
     def bm25_new(self, query):
-        pass
+        self.bm25_model = BM25(self.cut_answers)
+
+        bm25_weights = self.bm25_model.get_scores(query)
+
+        sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
+        sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
+        max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+
+        return sorted_scores, max_pos, answers
 
     # 问题-问题匹配
     def qq_match(self, query):
