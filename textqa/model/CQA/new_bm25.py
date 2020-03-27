@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import math
 from six import iteritems
 from six.moves import range
@@ -15,24 +14,9 @@ EPSILON = 0.25
 
 
 class NewBM25(BM25):
-    """Implementation of Best Matching 25 ranking function.
-
-    Attributes
-    ----------
-    corpus_size : int
-        Size of corpus (number of documents).
-    avgdl : float
-        Average length of document in `corpus`.
-    doc_freqs : list of dicts of int
-        Dictionary with terms frequencies for each document in `corpus`. Words used as keys and frequencies as values.
-    idf : dict
-        Dictionary with inversed documents frequencies for whole `corpus`. Words used as keys and frequencies as values.
-    doc_len : list of int
-        List of document lengths.
-    """
-
+    # 继承父类的构造方法
     def __init__(self, corpus):
-        super()
+        super(NewBM25, self).__init__(corpus)
 
     def _initialize(self, corpus):
         """Calculates frequencies of terms in documents and in corpus. Also computes inverse document frequencies."""
@@ -137,133 +121,3 @@ class NewBM25(BM25):
             if score > 0:
                 scores.append((index, score))
         return scores
-
-
-def _get_scores_bow(bm25, document):
-    """Helper function for retrieving bm25 scores of given `document` in parallel
-    in relation to every item in corpus.
-
-    Parameters
-    ----------
-    bm25 : BM25 object
-        BM25 object fitted on the corpus where documents are retrieved.
-    document : list of str
-        Document to be scored.
-
-    Returns
-    -------
-    list of (index, float)
-        BM25 scores in a bag of weights format.
-
-    """
-    return bm25.get_scores_bow(document)
-
-
-def _get_scores(bm25, document):
-    """Helper function for retrieving bm25 scores of given `document` in parallel
-    in relation to every item in corpus.
-
-    Parameters
-    ----------
-    bm25 : BM25 object
-        BM25 object fitted on the corpus where documents are retrieved.
-    document : list of str
-        Document to be scored.
-
-    Returns
-    -------
-    list of float
-        BM25 scores.
-
-    """
-    return bm25.get_scores(document)
-
-
-def iter_bm25_bow(corpus, n_jobs=1):
-    """Yield BM25 scores (weights) of documents in corpus.
-    Each document has to be weighted with every document in given corpus.
-
-    Parameters
-    ----------
-    corpus : list of list of str
-        Corpus of documents.
-    n_jobs : int
-        The number of processes to use for computing bm25.
-
-    Yields
-    -------
-    list of (index, float)
-        BM25 scores in bag of weights format.
-
-    Examples
-    --------
-    .. sourcecode:: pycon
-
-        >>> from gensim.summarization.bm25 import iter_bm25_weights
-        >>> corpus = [
-        ...     ["black", "cat", "white", "cat"],
-        ...     ["cat", "outer", "space"],
-        ...     ["wag", "dog"]
-        ... ]
-        >>> result = iter_bm25_weights(corpus, n_jobs=-1)
-
-    """
-    bm25 = BM25(corpus)
-
-    n_processes = effective_n_jobs(n_jobs)
-    if n_processes == 1:
-        for doc in corpus:
-            yield bm25.get_scores_bow(doc)
-        return
-
-    get_score = partial(_get_scores_bow, bm25)
-    pool = Pool(n_processes)
-
-    for bow in pool.imap(get_score, corpus):
-        yield bow
-    pool.close()
-    pool.join()
-
-
-def get_bm25_weights(corpus, n_jobs=1):
-    """Returns BM25 scores (weights) of documents in corpus.
-    Each document has to be weighted with every document in given corpus.
-
-    Parameters
-    ----------
-    corpus : list of list of str
-        Corpus of documents.
-    n_jobs : int
-        The number of processes to use for computing bm25.
-
-    Returns
-    -------
-    list of list of float
-        BM25 scores.
-
-    Examples
-    --------
-    .. sourcecode:: pycon
-
-        >>> from gensim.summarization.bm25 import get_bm25_weights
-        >>> corpus = [
-        ...     ["black", "cat", "white", "cat"],
-        ...     ["cat", "outer", "space"],
-        ...     ["wag", "dog"]
-        ... ]
-        >>> result = get_bm25_weights(corpus, n_jobs=-1)
-
-    """
-    bm25 = BM25(corpus)
-
-    n_processes = effective_n_jobs(n_jobs)
-    if n_processes == 1:
-        weights = [bm25.get_scores(doc) for doc in corpus]
-        return weights
-
-    get_score = partial(_get_scores, bm25)
-    pool = Pool(n_processes)
-    weights = pool.map(get_score, corpus)
-    pool.close()
-    pool.join()
-    return weights
