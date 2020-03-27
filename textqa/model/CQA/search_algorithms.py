@@ -11,6 +11,7 @@ import pickle
 import synonyms
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
+from textqa.model.CQA.new_bm25 import NewBM25
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
@@ -175,7 +176,7 @@ class Baselines:
 
     # 改进版的bm25
     def bm25_new(self, query):
-        self.bm25_model = BM25(self.cut_answers)
+        self.bm25_model = NewBM25(self.cut_answers)
 
         bm25_weights = self.bm25_model.get_scores(query)
 

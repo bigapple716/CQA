@@ -7,13 +7,14 @@ from six.moves import range
 from functools import partial
 from multiprocessing import Pool
 from gensim.utils import effective_n_jobs
+from gensim.summarization.bm25 import BM25
 
 PARAM_K1 = 1.5
 PARAM_B = 0.75
 EPSILON = 0.25
 
 
-class BM25(object):
+class NewBM25(BM25):
     """Implementation of Best Matching 25 ranking function.
 
     Attributes
@@ -31,19 +32,7 @@ class BM25(object):
     """
 
     def __init__(self, corpus):
-        """
-        Parameters
-        ----------
-        corpus : list of list of str
-            Given corpus.
-
-        """
-        self.corpus_size = 0
-        self.avgdl = 0
-        self.doc_freqs = []
-        self.idf = {}
-        self.doc_len = []
-        self._initialize(corpus)
+        super()
 
     def _initialize(self, corpus):
         """Calculates frequencies of terms in documents and in corpus. Also computes inverse document frequencies."""
