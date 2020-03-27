@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.summarization.bm25 import BM25
 from gensim.models import TfidfModel, KeyedVectors
 from gensim.corpora import Dictionary
@@ -56,11 +57,11 @@ class Baselines:
 
         # 提前实例化bm25模型，提升性能
         # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
-        if not args.categorize_question:
+        if (args.method == 'mix' or args.method == 'bm25') and (not args.categorize_question):
             self.bm25_model = BM25(self.cut_answers)
 
         # 提前实例化tfidf模型，提升性能
-        if args.method == 'mix' or 'qq-match':
+        if args.method == 'mix' or args.method == 'qq-match':
             self.tfidf_dict = Dictionary(self.base_ques_list)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
             bow = [self.tfidf_dict.doc2bow(line) for line in self.base_ques_list]  # convert corpus to BoW format
@@ -211,6 +212,34 @@ class Baselines:
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
+        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        return sorted_scores, max_pos, answers
+
+    def tfidf(self, query):
+        cut_query = ' '.join(query)  # 将列表形式的query转化成空格隔开的形式
+        corpus = self.cut_answers
+        # 将列表形式的corpus转化成空格隔开的形式
+        cut_corpus = []
+        for line in corpus:
+            cut_corpus.append(' '.join(line))
+
+        doc_score = [0] * len(corpus)  # 每个doc的得分 = query里每个词在这个doc里面的得分之和
+
+        model = TfidfVectorizer(token_pattern=r'\b\w+\b')  # 实例化一个TfidfVectorizer
+        model.fit(cut_corpus)
+        query_tokens = model.transform([cut_query]).indices  # 将query转化为token表示
+        for doc_id in range(len(cut_corpus)):  # 遍历每个doc
+            score = 0  # 初始得分为0
+            doc_tfidf = model.transform([cut_corpus[doc_id]])  # 计算doc里每个词在这个doc里的tfidf得分
+            doc_tokens = doc_tfidf.indices  # 将doc转化为token表示
+            for token in query_tokens:  # 遍历query里的每个词
+                # 如果query里的这个词在这个doc里面，那么tfidf得分就不是0，可以加到score里
+                if token in doc_tokens:
+                    score += doc_tfidf[0, token]
+            doc_score[doc_id] = score
+
+        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
+        max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
