@@ -7,6 +7,7 @@ from gensim.corpora import Dictionary
 from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import normalize
 import pickle
 import synonyms
 from nltk.lm.preprocessing import *
@@ -175,10 +176,23 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query):
+    def bm25_new(self, query, norm=False):
         self.bm25_model = NewBM25(self.cut_answers)
 
-        bm25_weights = self.bm25_model.get_scores(query)
+        expanded_query = []
+        for q in query:
+            expanded_query.append(q)  # 先把q加到expanded_query里面
+            nearby_list = synonyms.nearby(q)  # 为q创造一个近义词列表
+            for word, score in zip(nearby_list[0], nearby_list[1]):
+                # 条件：得分大于阈值 && expanded_query当前没这个词
+                if score > args.syn_threshold and word not in expanded_query:
+                    expanded_query.append(word)
+
+        bm25_weights = self.bm25_model.get_new_scores(query, expanded_query)
+
+        # 是否进行normalize
+        if norm:
+            bm25_weights = normalize([bm25_weights], norm='max')[0].tolist()
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
