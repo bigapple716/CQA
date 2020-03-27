@@ -64,8 +64,8 @@ class TBQA:
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
             elif args.method == 'new-tfidf':
                 sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
-            elif args.method == 'tfidf':
-                sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
+            # elif args.method == 'tfidf':
+            #     sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
             # elif args.method == 'aver-embed':
             #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
             # elif args.method == 'lm':

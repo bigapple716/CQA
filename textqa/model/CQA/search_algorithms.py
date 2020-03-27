@@ -216,6 +216,7 @@ class Baselines:
         answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
+    # sklearn的TF-IDF(暂停维护)
     def tfidf(self, query):
         cut_query = ' '.join(query)  # 将列表形式的query转化成空格隔开的形式
         corpus = self.cut_answers
