@@ -146,7 +146,7 @@ class DataMaker:
         test_data = []
         dev_answerable = []
 
-        if mode == 'train' or 'mix':
+        if mode == 'train' or mode == 'mix':
             # 筛选出可回答的问题
             answerable_list = self.__pick_answerable(questions, golds)
 

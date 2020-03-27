@@ -64,6 +64,8 @@ class TBQA:
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
             elif args.method == 'new-tfidf':
                 sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
+            elif args.method == 'tfidf':
+                sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
             # elif args.method == 'aver-embed':
             #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
             # elif args.method == 'lm':
@@ -79,7 +81,7 @@ class TBQA:
             if args.enable_log and i % 20 == 0:
                 print('line ' + str(i) + ' processed')
 
-        if args.method == 'qq-match' or 'mix':
+        if args.method == 'qq-match' or args.method == 'mix':
             self.post_processor.print_answers(questions_list, FilePool.output_question_csv)
 
         return answers_list, answers_index_list, sorted_scores_list

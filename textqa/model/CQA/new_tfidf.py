@@ -45,3 +45,12 @@ class NewTfidf(TfidfModel):
         norm_vector = [(termid, weight) for termid, weight in norm_vector if abs(weight) > self.eps]
 
         return norm_vector
+
+    def __delta(self, i, q):
+        if i in q:
+            return 1
+        else:
+            return self.__S(i, q)
+
+    def __S(self, i, q):
+        pass
