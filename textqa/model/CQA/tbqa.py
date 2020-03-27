@@ -4,6 +4,7 @@ from textqa.model.CQA.search_algorithms import *
 from textqa.model.CQA.reader import Reader
 from textqa.model.CQA.pre_processor import PreProcessor
 from textqa.model.CQA.post_processor import PostProcessor
+from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
 import platform
 
@@ -50,23 +51,23 @@ class TBQA:
                 categorized_qa = {}
 
             # 用不同算法搜索
-            if args.method == 'bm25':
+            if args.method == Method.bm25:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_qa)
-            elif args.method == 'bm25-syn':
+            elif args.method == Method.bm25_syn:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_syn(cut_query)
-            elif args.method == 'bm25-new':
+            elif args.method == Method.bm25_new:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query)
-            elif args.method == 'qq-match':
+            elif args.method == Method.qq_match:
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
-            elif args.method == 'mix':
+            elif args.method == Method.mix:
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query, categorized_qa)
                 questions_list.append(questions)
-            elif args.method == 'tfidf-sim':
+            elif args.method == Method.tfidf_sim:
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
-            # elif args.method == 'aver-embed':
+            # elif args.method == Method.aver_embed:
             #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
-            # elif args.method == 'lm':
+            # elif args.method == Method.lm:
             #     sorted_scores, max_pos, answers = self.baseline_model.language_model(cut_query)
             else:
                 raise Exception('尚未支持该搜索算法！')
@@ -79,7 +80,7 @@ class TBQA:
             if args.enable_log and i % 20 == 0:
                 print('line ' + str(i) + ' processed')
 
-        if args.method == 'qq-match' or args.method == 'mix':
+        if args.method == Method.qq_match or args.method == Method.mix:
             self.post_processor.print_answers(questions_list, FilePool.output_question_csv)
 
         return answers_list, answers_index_list, sorted_scores_list

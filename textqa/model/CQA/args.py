@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from textqa.model.CQA.method import Method
+
 # 所有系统参数
 # 以下的值均为默认值
-method = 'bm25-new'  # 检索方法: bm25, bm25-syn, bm25-new, qq-match, mix, tfidf-sim, aver-embed, lm
+method = Method.bm25_new  # 检索方法
 trim_stop = True  # 是否去停用词
 answer_base = 'small'  # 答案库来源: long, cleaned, small
 categorize_question = False  # 是否对问题进行分类

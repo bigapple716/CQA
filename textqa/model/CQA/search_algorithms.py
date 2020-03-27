@@ -13,6 +13,7 @@ import synonyms
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
 from textqa.model.CQA.file_pool import FilePool
+from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
 
 self_trained_word2vec = 'train_embed/word2vec.kv'
@@ -56,12 +57,12 @@ class Baselines:
 
         # 提前实例化bm25模型，提升性能
         # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
-        if (args.method == 'mix' or args.method == 'bm25' or args.method == 'bm25-syn') \
+        if (args.method == Method.mix or args.method == Method.bm25 or args.method == Method.bm25_syn) \
                 and (not args.categorize_question):
             self.bm25_model = BM25(self.cut_answers)
 
         # 提前实例化tfidf模型，提升性能
-        if args.method == 'mix' or args.method == 'qq-match':
+        if args.method == Method.mix or args.method == Method.qq_match:
             self.tfidf_dict = Dictionary(self.base_ques_list)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
             bow = [self.tfidf_dict.doc2bow(line) for line in self.base_ques_list]  # convert corpus to BoW format
@@ -69,7 +70,7 @@ class Baselines:
             self.tfidf_model = TfidfModel(bow)  # fit model
             text_tfidf = self.tfidf_model[bow]  # apply model
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
-        elif args.method == 'tfidf-sim':
+        elif args.method == Method.tfidf_sim:
             self.tfidf_dict = Dictionary(self.cut_answers)  # fit dictionary
             n_features = len(self.tfidf_dict.token2id)
             bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # convert corpus to BoW format
