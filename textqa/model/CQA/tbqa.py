@@ -54,7 +54,7 @@ class TBQA:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_qa)
             elif args.method == 'bm25-syn':
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_syn(cut_query)
-            elif args.method == 'bm25_new':
+            elif args.method == 'bm25-new':
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query)
             elif args.method == 'qq-match':
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)

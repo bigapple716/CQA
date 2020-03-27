@@ -173,6 +173,10 @@ class Baselines:
 
         return sorted_scores, max_pos, answers
 
+    # 改进版的bm25
+    def bm25_new(self, query):
+        pass
+
     # 问题-问题匹配
     def qq_match(self, query):
         # 输入tf-idf，得到从大到小排列的index list
@@ -214,9 +218,6 @@ class Baselines:
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
         answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
-
-    def bm25_new(self, query):
-        pass
 
     # 词向量平均(暂停维护)
     def aver_embed(self, query):
