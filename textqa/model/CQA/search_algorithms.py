@@ -246,16 +246,15 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     def new_tfidf(self, query):
-        # 实例化new-tfidf模型
-        self.tfidf_dict = Dictionary(self.cut_answers)  # fit dictionary
-        n_features = len(self.tfidf_dict.token2id)
-        bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # convert corpus to BoW format
-        # 构造tf-idf模型
-        self.tfidf_model = NewTfidf(bow)  # fit model
-        text_tfidf = self.tfidf_model[bow]  # apply model
+        query_bow = [self.tfidf_dict.doc2bow(query)]  # query的词袋形式
+
+        self.tfidf_dict = Dictionary(self.cut_answers)  # 用答案库建一个字典
+        n_features = len(self.tfidf_dict.token2id)  # 统计一下字典的大小，后面会用到
+        bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # corpus的词袋形式
+        self.tfidf_model = NewTfidf(bow)  # 用corpus的词袋形式建一个TF-IDF模型
+        text_tfidf = self.tfidf_model[bow]  # 把这个模型应用在corpus上面
         self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
 
-        query_bow = [self.tfidf_dict.doc2bow(query)]  # 用query做一个bag of words
         query_tfidf = self.tfidf_model[query_bow]  # 用tfidf model编码
         similarities = self.sim_index[query_tfidf][0]  # 算相似度
 
