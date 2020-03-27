@@ -181,7 +181,8 @@ class Baselines:
 
         expanded_query = []
         for q in query:
-            expanded_query.append(q)  # 先把q加到expanded_query里面
+            if q not in expanded_query:
+                expanded_query.append(q)  # 先把q加到expanded_query里面
             nearby_list = synonyms.nearby(q)  # 为q创造一个近义词列表
             for word, score in zip(nearby_list[0], nearby_list[1]):
                 # 条件：得分大于阈值 && expanded_query当前没这个词

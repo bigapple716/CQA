@@ -43,7 +43,8 @@ class PreProcessor:
                 trim_line = [w for w in cut_line if w not in self.stopwords]
             else:
                 trim_line = cut_line
-
+            while ' ' in trim_line:
+                trim_line.remove(' ')
             uncut_line = ''.join(trim_line)
             cleaned.append(trim_line)
             uncut.append(uncut_line)
