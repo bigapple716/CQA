@@ -145,8 +145,8 @@ class TBQA:
 if __name__ == '__main__':
     tbqa = TBQA()
 
-    question = '身份证丢了怎么登机'
-    answer = tbqa.get_answer(question)
-    print('answer:', answer)
+    # question = '身份证丢了怎么登机'
+    # answer = tbqa.get_answer(question)
+    # print('answer:', answer)
 
-    # tbqa.get_multi_answers()
+    tbqa.get_multi_answers()
