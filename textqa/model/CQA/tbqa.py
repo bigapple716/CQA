@@ -54,6 +54,8 @@ class TBQA:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25(cut_query, categorized_qa)
             elif args.method == 'bm25-syn':
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_syn(cut_query)
+            elif args.method == 'bm25_new':
+                sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query)
             elif args.method == 'qq-match':
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
@@ -62,10 +64,6 @@ class TBQA:
                 questions_list.append(questions)
             elif args.method == 'tfidf-sim':
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
-            elif args.method == 'new-tfidf':
-                sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
-            # elif args.method == 'tfidf':
-            #     sorted_scores, max_pos, answers = self.baseline_model.new_tfidf(cut_query)
             # elif args.method == 'aver-embed':
             #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
             # elif args.method == 'lm':
