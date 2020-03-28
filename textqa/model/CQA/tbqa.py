@@ -7,6 +7,7 @@ from textqa.model.CQA.post_processor import PostProcessor
 from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
 import platform
+from absl import logging
 
 
 class TBQA:
@@ -143,6 +144,9 @@ class TBQA:
 
 
 if __name__ == '__main__':
+    # 设置日志级别
+    logging.set_verbosity('error')
+
     tbqa = TBQA()
 
     # question = '身份证丢了怎么登机'
