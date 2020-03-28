@@ -41,7 +41,10 @@ class NewBM25(BM25):
         for word in expanded_document:
             if word not in doc_freqs:
                 continue
-            score += doc_freqs[word] * self.idf[word] * self.__delta(word, document)
+            numerator = self.idf[word] * doc_freqs[word] * self.__delta(word, document) * (PARAM_K1 + 1)
+            denominator = (doc_freqs[word] * self.__delta(word, document) +
+                           PARAM_K1 * (1 - PARAM_B + PARAM_B * self.doc_len[index] / self.avgdl))
+            score += (numerator / denominator)
 
         return score
 
