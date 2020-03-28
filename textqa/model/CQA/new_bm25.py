@@ -56,5 +56,5 @@ class NewBM25(BM25):
             return self.__max_sim(i, q)
 
     def __max_sim(self, i, document):
-        sim_list = [synonyms.compare(i, d, seg=False, stopwords=True) for d in document]
+        sim_list = [synonyms.compare(i, d, seg=False) for d in document]
         return max(sim_list)
