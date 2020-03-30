@@ -86,6 +86,7 @@ class Utils:
     @staticmethod
     def load_embed(word2vec_file):
         word2vec = KeyedVectors.load_word2vec_format(word2vec_file, binary=False)
+        word2vec.save_word2vec_format(FilePool.word2vec_bin, binary=True)
         with open(FilePool.word2vec_pickle, 'wb') as f_pickle:
             pickle.dump(word2vec, f_pickle)
 

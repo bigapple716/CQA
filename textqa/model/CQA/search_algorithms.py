@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import json
 from gensim.summarization.bm25 import BM25
 from gensim.models import TfidfModel, KeyedVectors
@@ -80,6 +81,11 @@ class Baselines:
             self.tfidf_model = TfidfModel(bow)  # fit model
             text_tfidf = self.tfidf_model[bow]  # apply model
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
+
+        # 设置中文词向量
+        if args.method == Method.bm25_syn or args.method == Method.bm25_new:
+            os.environ["SYNONYMS_WORD2VEC_BIN_MODEL_ZH_CN"] = \
+                "/Users/mike/Documents/Senior/毕业设计/代码/Text-Based-QA/textqa/model/CQA/data/word2vec_bin.vector"
 
         if use_aver_embed:
             if use_pretrained_word2vec:

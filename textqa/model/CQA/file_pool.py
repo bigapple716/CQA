@@ -55,4 +55,6 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword/行李携带.txt'),
     ]
 
+    # 预训练中文词向量
     word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')
+    word2vec_bin = os.path.join(project_dir, 'data/word2vec_bin.vector')
