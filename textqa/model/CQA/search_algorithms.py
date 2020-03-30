@@ -50,11 +50,12 @@ class Baselines:
             text = f_ans_txt.readlines()
             self.uncut_answers = [line.rstrip('\n') for line in text]
 
-        with open(FilePool.qa_file, 'r') as f_qa:
-            self.base_questions = json.load(f_qa)
-
-        with open(FilePool.base_ques_list_file, 'r') as f_base_ques_list:
-            self.base_ques_list = json.load(f_base_ques_list)
+        # 读入QA库和已知问题库
+        if args.method == Method.mix or args.method == Method.qq_match:
+            with open(FilePool.qa_file, 'r') as f_qa:
+                self.base_questions = json.load(f_qa)
+            with open(FilePool.base_ques_list_file, 'r') as f_base_ques_list:
+                self.base_ques_list = json.load(f_base_ques_list)
 
         # 提前实例化bm25模型，提升性能
         # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
