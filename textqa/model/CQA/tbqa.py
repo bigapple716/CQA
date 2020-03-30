@@ -112,11 +112,7 @@ class TBQA:
 
     # 测试用接口，批量回答问题
     def get_multi_answers(self):
-        # 清空输出文件
-        with open(FilePool.output_csv, 'w') as f_output:
-            pass
-        with open(FilePool.output_question_csv, 'w') as f:
-            pass
+        self.__clear_output_file()
 
         # 读入输入问题
         with open(FilePool.input_txt, 'r') as f_input:
@@ -141,6 +137,13 @@ class TBQA:
                 ans.append(-1)
 
         self.post_processor.print_answers(answers_list, FilePool.output_csv)
+
+    # 清空输出文件
+    def __clear_output_file(self):
+        with open(FilePool.output_csv, 'w') as f_output:
+            pass
+        with open(FilePool.output_question_csv, 'w') as f:
+            pass
 
 
 if __name__ == '__main__':
