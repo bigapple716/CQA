@@ -8,12 +8,16 @@ from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
 import platform
 from absl import logging
+import jieba
 
 
 class TBQA:
     def __init__(self):
         if platform.system() == 'Darwin':
             args.enable_log = True
+
+        # 载入用户字典(分词用)
+        jieba.load_userdict(FilePool.user_dict)
 
         # 下面两行代码只需要运行一次
         # self.reader = Reader()  # 实例化一个Reader类
