@@ -86,7 +86,7 @@ class Utils:
     @staticmethod
     def load_embed(word2vec_file):
         word2vec = KeyedVectors.load_word2vec_format(word2vec_file, binary=False)
-        with open('data/word2vec.pickle', 'wb') as f_pickle:
+        with open(FilePool.word2vec_pickle, 'wb') as f_pickle:
             pickle.dump(word2vec, f_pickle)
 
     # 从word文档里抽取关键词
