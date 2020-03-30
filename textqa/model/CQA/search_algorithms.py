@@ -151,7 +151,7 @@ class Baselines:
         syn_list = [kw]  # 先手动把关键词自己加到列表里
         for word, score in zip(nearby_list[0], nearby_list[1]):
             # 条件：得分大于阈值
-            if score > args.syn_threshold:
+            if score > args.syn_threshold and word not in syn_list:
                 syn_list.append(word)
 
         # 找出来哪个近义词得分最高
