@@ -40,6 +40,7 @@ class FilePool:
     output_question_csv = os.path.join(project_dir, 'data/output_questions.csv')  # 被匹配上的问题，仅在QQ匹配时用
 
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
+    user_dict = os.path.join(project_dir, 'data/air_lexicon.txt')  # 分词用的字典
 
     docx_list = [raw_docx1, raw_docx2]
     keyword_list = [
@@ -56,5 +57,5 @@ class FilePool:
     ]
 
     # 预训练中文词向量
-    word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')
-    word2vec_bin = os.path.join(project_dir, 'data/word2vec_bin.vector')
+    word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')  # text格式 + pickle格式
+    word2vec_bin = os.path.join(project_dir, 'data/word2vec_bin.vector')  # 二进制格式
