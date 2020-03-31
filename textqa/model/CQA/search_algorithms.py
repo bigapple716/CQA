@@ -60,10 +60,10 @@ class Baselines:
 
         # 提前实例化bm25模型，提升性能
         # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
-        if (args.method == Method.mix or args.method == Method.bm25 or args.method == Method.bm25_syn) \
+        if (args.method == Method.bm25 or args.method == Method.bm25_syn) \
                 and (not args.categorize_question):
             self.bm25_model = BM25(self.cut_answers)
-        if args.method == Method.bm25_new:
+        if args.method == Method.mix or args.method == Method.bm25_new:
             self.bm25_model = NewBM25(self.cut_answers)
 
         # 提前实例化tfidf模型，提升性能
