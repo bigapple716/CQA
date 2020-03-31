@@ -9,6 +9,7 @@ from textqa.model.CQA import args
 import platform
 from absl import logging
 import jieba
+import warnings
 
 
 class TBQA:
@@ -153,6 +154,7 @@ class TBQA:
 if __name__ == '__main__':
     # 设置日志级别
     logging.set_verbosity('error')
+    warnings.filterwarnings('ignore')
 
     tbqa = TBQA()
 
