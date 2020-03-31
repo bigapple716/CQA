@@ -61,7 +61,7 @@ class TBQA:
             elif args.method == Method.bm25_syn:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_syn(cut_query)
             elif args.method == Method.bm25_new:
-                sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query)
+                sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query, categorized_qa)
             elif args.method == Method.qq_match:
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
