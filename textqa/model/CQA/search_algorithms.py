@@ -63,6 +63,8 @@ class Baselines:
         if (args.method == Method.mix or args.method == Method.bm25 or args.method == Method.bm25_syn) \
                 and (not args.categorize_question):
             self.bm25_model = BM25(self.cut_answers)
+        if args.method == Method.bm25_new:
+            self.bm25_model = NewBM25(self.cut_answers)
 
         # 提前实例化tfidf模型，提升性能
         if args.method == Method.mix or args.method == Method.qq_match:
@@ -83,9 +85,9 @@ class Baselines:
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
 
         # 设置中文词向量
-        if args.method == Method.bm25_syn or args.method == Method.bm25_new:
-            os.environ["SYNONYMS_WORD2VEC_BIN_MODEL_ZH_CN"] = \
-                "/Users/mike/Documents/Senior/毕业设计/代码/Text-Based-QA/textqa/model/CQA/data/word2vec_bin.vector"
+        # if args.method == Method.bm25_syn or args.method == Method.bm25_new:
+        #     os.environ["SYNONYMS_WORD2VEC_BIN_MODEL_ZH_CN"] = \
+        #         "/Users/mike/Documents/Senior/毕业设计/代码/Text-Based-QA/textqa/model/CQA/data/word2vec_bin.vector"
 
         if use_aver_embed:
             if use_pretrained_word2vec:
@@ -183,8 +185,17 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query, norm=False):
-        self.bm25_model = NewBM25(self.cut_answers)
+    def bm25_new(self, query, categorized_qa, norm=False):
+        # 只有问题分类的情况下才在这里做模型实例化，其他情况下模型已经在__init__()里实例化过了
+        if args.categorize_question:
+            if len(categorized_qa['cut_answers']) != 0:
+                # 非空的时候才用这个作corpus传进BM25
+                self.bm25_model = NewBM25(categorized_qa['cut_answers'])
+                # print(categorized_qa['classes'])
+            else:
+                # 如果为空，那么还用原来的corpus传进BM25
+                self.bm25_model = NewBM25(self.cut_answers)
+                # print('没用分类问题')
 
         expanded_query = []
         for q in query:
@@ -206,7 +217,18 @@ class Baselines:
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
 
-        answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+        # 根据max_pos从答案库里把真正的答案抽出来
+        if args.categorize_question:
+            # 答案来源是categorized的时候
+            if len(categorized_qa['cut_answers']) != 0:
+                # 非空的时候才用这个作为answer base
+                answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
+            else:
+                # 如果为空，那么还用原来的self.uncut_answers作为answer base
+                answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+        else:
+            # 答案来源不是categorized的时候，categorized_qa是None
+            answers = self.__max_pos2answers(max_pos, self.uncut_answers)
 
         return sorted_scores, max_pos, answers
 

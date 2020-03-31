@@ -17,7 +17,7 @@ class TBQA:
             args.enable_log = True
 
         # 载入用户字典(分词用)
-        jieba.load_userdict(FilePool.user_dict)
+        # jieba.load_userdict(FilePool.user_dict)
 
         # 下面两行代码只需要运行一次
         # self.reader = Reader()  # 实例化一个Reader类
