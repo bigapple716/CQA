@@ -106,7 +106,7 @@ class TBQA:
         scores = sorted_scores_list[0]
 
         if args.enable_log:
-            print('scores:', scores[:args.top_n])
+            print(scores[:args.top_n])
 
         # 如果回答列表是空的，那么说明这个问题不可回答
         if len(answers) == 0:
@@ -135,7 +135,7 @@ class TBQA:
 
         for scores, ans in zip(sorted_scores_list, answers_list):
             if args.enable_log:
-                print('scores:', scores[:args.top_n])
+                print(scores[:args.top_n])
             # 如果回答列表是空的，那么说明这个问题不可回答
             if len(ans) == 0:
                 ans.append(-1)
