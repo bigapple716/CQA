@@ -250,6 +250,7 @@ class Baselines:
 
         if len(sorted_scores) > 0:
             # QQ匹配效果不错，直接返回结果
+            # print(questions[0])
             return sorted_scores, max_pos, answers, questions
         else:
             # 截断之后啥也不剩了，说明QQ匹配没有一个得分到阈值的
