@@ -255,7 +255,7 @@ class Baselines:
             # 截断之后啥也不剩了，说明QQ匹配没有一个得分到阈值的
             # 果断放弃，改用QA匹配
             # QA匹配暂时选用bm25算法
-            sorted_scores, max_pos, answers = self.bm25(query, categorized_qa)
+            sorted_scores, max_pos, answers = self.bm25_new(query, categorized_qa)
 
             # 用QA匹配的阈值过滤一遍结果
             sorted_scores, max_pos, answers, _ = \
