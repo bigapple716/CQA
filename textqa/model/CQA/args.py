@@ -10,7 +10,8 @@ answer_base = 'small'  # 答案库来源: long, cleaned, small
 categorize_question = True  # 是否对问题进行分类
 top_n = 3  # 返回前top_n个结果
 qq_threshold = 0.7  # QQ匹配的阈值
-qa_threshold = 5  # QA匹配的阈值
+qa_threshold = 1.3  # QA匹配的阈值
+cat_threshold = -1  # 问题分类时new bm25的阈值
 syn_threshold = 0.7  # 近义词匹配的阈值
 
 enable_log = False  # 是否向控制台打印log

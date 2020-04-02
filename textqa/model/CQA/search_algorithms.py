@@ -258,9 +258,13 @@ class Baselines:
             # QA匹配暂时选用bm25算法
             sorted_scores, max_pos, answers = self.bm25_new(query, categorized_qa)
 
-            # 用QA匹配的阈值过滤一遍结果
-            sorted_scores, max_pos, answers, _ = \
-                self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.qa_threshold)
+            # 用QA匹配的阈值过滤一遍结果，注意分类和没分类的情况阈值是不一样的
+            if categorized_qa is not None and len(categorized_qa['cut_answers']) != 0:
+                sorted_scores, max_pos, answers, _ = \
+                    self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.cat_threshold)
+            else:
+                sorted_scores, max_pos, answers, _ = \
+                    self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.qa_threshold)
 
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
 
