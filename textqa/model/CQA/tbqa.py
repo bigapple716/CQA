@@ -40,6 +40,7 @@ class TBQA:
             print('return top ' + str(args.top_n) + ' results')
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
+            print('syn threshold:', args.syn_threshold)
             print('logging enabled')
             print('=====================================')
 
