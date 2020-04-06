@@ -54,7 +54,7 @@ class Baselines:
         # 读入QA库和已知问题库
         if args.method == Method.mix or args.method == Method.qq_match:
             with open(FilePool.qa_file, 'r') as f_qa:
-                self.base_questions = json.load(f_qa)
+                self.qa = json.load(f_qa)
             with open(FilePool.base_ques_list_file, 'r') as f_base_ques_list:
                 self.base_ques_list = json.load(f_base_ques_list)
 
@@ -329,8 +329,8 @@ class Baselines:
         answers = []
         questions = []
         for r in max_pos:
-            answers.append(self.base_questions[r]['sentence'])
-            questions.append(self.base_questions[r]['question'])
+            answers.append(self.qa[r]['sentence'][0])
+            questions.append(self.qa[r]['question'])
         return answers, questions
 
     # 根据阈值对结果进行截断

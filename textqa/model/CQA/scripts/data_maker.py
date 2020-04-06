@@ -45,7 +45,7 @@ class DataMaker:
                 continue
             # 只要问题不在input里面而且带答案的
             if (ques not in queries) and (gold != ''):
-                base_questions.append({'question': ques, 'sentence': gold})
+                base_questions.append({'question': ques, 'sentence': [gold]})
 
         # 写到json里
         with open(FilePool.qa_file, 'w') as f_out:
