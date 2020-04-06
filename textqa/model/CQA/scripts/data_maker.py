@@ -20,8 +20,8 @@ class DataMaker:
     match_gold_file = 'textqa/model/CQA/data/match_gold.txt'
     input_txt = 'textqa/model/CQA/data/input.txt'
 
-    # 根据问题ID找问答对
-    def qid2qa(self, query_file=FilePool.input_txt, output_file=FilePool.qa_file):
+    # make qa data
+    def make_qa_data(self, query_file=FilePool.input_txt):
         # 读文件
         with open(query_file, 'r') as f_query:
             queries = f_query.readlines()
@@ -48,7 +48,7 @@ class DataMaker:
                 base_questions.append({'question': ques, 'sentence': gold})
 
         # 写到json里
-        with open(output_file, 'w') as f_out:
+        with open(FilePool.qa_file, 'w') as f_out:
             json.dump(base_questions, f_out, ensure_ascii=False)
 
     def qa_match(self):
@@ -225,6 +225,6 @@ class DataMaker:
 if __name__ == "__main__":
     data_maker = DataMaker()
 
-    data_maker.qid2qa()
+    data_maker.make_qa_data()
     # pre_processor.qq_match()
     # pre_processor.qa_match()
