@@ -18,7 +18,6 @@ class DataMaker:
 
     match_question_file = 'textqa/model/CQA/data/match_question.txt'
     match_gold_file = 'textqa/model/CQA/data/match_gold.txt'
-    input_txt = 'textqa/model/CQA/data/input.txt'
 
     # make qa data
     def make_qa_data(self, query_file=FilePool.input_txt):
@@ -37,19 +36,19 @@ class DataMaker:
         if not len(ques_list) == len(gold_list):
             raise Exception('数据长度不一致！')
 
-        # 制作字典
-        base_questions = []
+        # 制作QA字典
+        qa = []
         for ques, gold in zip(ques_list, gold_list):
             if '五一广场' in gold or '黄花' in gold or '小吃' in gold or '宜居' in gold or '长沙' in gold:
                 # print(gold)
                 continue
             # 只要问题不在input里面而且带答案的
             if (ques not in queries) and (gold != ''):
-                base_questions.append({'question': ques, 'sentence': [gold]})
+                qa.append({'question': ques, 'sentence': [gold]})
 
         # 写到json里
         with open(FilePool.qa_file, 'w') as f_out:
-            json.dump(base_questions, f_out, ensure_ascii=False)
+            json.dump(qa, f_out, ensure_ascii=False)
 
     def qa_match(self):
         questions, golds, answers = self.__read(self.question_file, self.gold_file, self.answer_file,
