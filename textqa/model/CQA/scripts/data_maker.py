@@ -103,14 +103,19 @@ class DataMaker:
                 # 把Q和A分别加到各个集合里
                 queries.append(sentences[0])
                 answers.append([sentences[1]])
-                qa.append({'question': sentences[0], 'sentence': sentences[1]})
+                qa.append({'question': sentences[0], 'sentence': [sentences[1]]})
                 cat_answers.add(sentences[1])
 
-            print(filename)
-            for ans in cat_answers:
-                print(ans)
-            print('\n\n\n\n\n')
+            # print(filename)
+            # for ans in cat_answers:
+            #     print(ans)
+            # print('\n\n\n\n\n')
 
+        with open(FilePool.qa_file, 'r') as f_qa_in:
+            kunming_qa = json.load(f_qa_in)
+        new_qa = kunming_qa + qa
+        with open(FilePool.qa_file, 'w') as f_qa_out:
+            json.dump(obj=new_qa, fp=f_qa_out, ensure_ascii=False)
 
     def __read(self, question_file, gold_file, answer_file, read_gold=True, read_answer=True):
         # read questions
