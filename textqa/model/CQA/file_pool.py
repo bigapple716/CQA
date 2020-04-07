@@ -63,6 +63,18 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword/行李携带.txt'),
     ]
 
+    # 意图识别QA对
+    intention_qa_list = [
+        os.path.join(project_dir, 'data/intention/中转服务.txt'),
+        os.path.join(project_dir, 'data/intention/值机.txt'),
+        os.path.join(project_dir, 'data/intention/其他.txt'),
+        os.path.join(project_dir, 'data/intention/安全检查.txt'),
+        os.path.join(project_dir, 'data/intention/有效证件.txt'),
+        os.path.join(project_dir, 'data/intention/物品遗失.txt'),
+        os.path.join(project_dir, 'data/intention/特殊旅客.txt'),
+        os.path.join(project_dir, 'data/intention/行李携带.txt'),
+    ]
+
     # 预训练中文词向量
     word2vec_pickle = os.path.join(project_dir, 'data/word2vec.pickle')  # text格式 + pickle格式
     word2vec_bin = os.path.join(project_dir, 'data/word2vec_bin.vector')  # 二进制格式
