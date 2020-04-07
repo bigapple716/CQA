@@ -3,6 +3,7 @@
 import json
 import csv
 from textqa.model.CQA.file_pool import FilePool
+from textqa.model.CQA.utils import Utils
 
 
 # 自动化测试
@@ -11,7 +12,7 @@ class Evaluate:
         # 读入问题
         with open(FilePool.input_txt, 'r') as f_q:
             doc = f_q.readlines()
-            self.queries = [line.rstrip('\n') for line in doc]
+            self.queries = Utils.clean_text(doc)  # 清洗输入
         # 读入top1和top3的回答
         with open(FilePool.output_csv, 'r') as f_res:
             reader = csv.reader(f_res, lineterminator='\n')
@@ -23,6 +24,9 @@ class Evaluate:
         # 读入问答对
         with open(FilePool.qa_file, 'r') as f_qa:
             self.qa = json.load(f_qa)
+            # 清洗问题
+            for dict in self.qa:
+                dict['question'] = Utils.clean_line(dict['question'])
 
         # 校验问题数量和答案数量是否相等
         if len(self.queries) != len(self.top1_answers):
@@ -37,10 +41,12 @@ class Evaluate:
             answers = self.top3_answers
 
         hit = 0
+        found = 0
 
         for query, ans_list in zip(self.queries, answers):
             for dict in self.qa:  # 遍历QA库
                 if query == dict['question']:
+                    found += 1
                     # 在QA库里找到这个问题了，看看有没有gold在top1/top3里面的
                     for gold in dict['sentence']:
                         if gold in ans_list:
@@ -52,6 +58,7 @@ class Evaluate:
             print('hit1:', hit / len(answers))
         else:
             print('hit3:', hit / len(answers))
+        print(found)
 
 
 if __name__ == "__main__":

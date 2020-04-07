@@ -108,6 +108,26 @@ class Utils:
             cut_text.append(cut_line)
         return cut_text
 
+    # 清洗text(输入为list of str)
+    @staticmethod
+    def clean_text(text):
+        cleaned = []
+        for line in text:
+            line = Utils.clean_line(line)
+            cleaned.append(line)
+        return cleaned
+
+    # 清洗text(输入为list of str)
+    @staticmethod
+    def clean_line(line):
+        line = line.lstrip()  # 去掉行首空格
+        line = line.rstrip()  # 去掉行尾换行符
+        line = line.replace('\t', '')  # 去掉\t
+        line = Utils.full2half(line)  # 全角转半角
+        line = Utils.str2cn(line)  # 阿拉伯数字转中文
+        ret = line.replace(' ', '')
+        return ret
+
     '''以下均为私有方法'''
 
     @staticmethod
