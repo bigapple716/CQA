@@ -86,6 +86,32 @@ class DataMaker:
         with open('base_questions.json', 'w') as f_base_ques:
             json.dump(base_questions, f_base_ques, ensure_ascii=False)
 
+    # 读入意图识别数据
+    def read_intent(self):
+        queries = []
+        answers = []
+        qa = []
+
+        for filename in FilePool.intention_qa_list:
+            with open(filename, 'r') as f_raw:
+                cat_answers = set()
+                doc = f_raw.readlines()
+            for line in doc:
+                line = line.rstrip()
+                sentences = line.split('\t')
+
+                # 把Q和A分别加到各个集合里
+                queries.append(sentences[0])
+                answers.append([sentences[1]])
+                qa.append({'question': sentences[0], 'sentence': sentences[1]})
+                cat_answers.add(sentences[1])
+
+            print(filename)
+            for ans in cat_answers:
+                print(ans)
+            print('\n\n\n\n\n')
+
+
     def __read(self, question_file, gold_file, answer_file, read_gold=True, read_answer=True):
         # read questions
         with open(question_file, 'r') as f_q:
@@ -221,6 +247,5 @@ class DataMaker:
 if __name__ == "__main__":
     data_maker = DataMaker()
 
-    data_maker.make_qa_data()
-    # pre_processor.qq_match()
-    # pre_processor.qa_match()
+    # data_maker.make_qa_data()
+    data_maker.read_intent()
