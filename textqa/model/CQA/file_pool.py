@@ -27,11 +27,13 @@ class FilePool:
     long_answers_json = os.path.join(project_dir, 'data/long_answers.json')  # 长答案(已分词)
 
     # QA库
+    qa_question_file = os.path.join(project_dir, 'data/match_question.txt')  # QA对里的原始问题集合
+    # QA对里的原始答案集合
     qa_gold_list = [
-
+        os.path.join(project_dir, 'data/match_gold.txt')
     ]
     qa_file = os.path.join(project_dir, 'data/qa.json')  # QA对
-    base_ques_list_file = os.path.join(project_dir, 'data/base_ques_list.json')
+    base_ques_list_file = os.path.join(project_dir, 'data/base_ques_list.json')  # QA对里的问题集合
 
     keyword_database_json = os.path.join(project_dir, 'data/keyword_database.json')  # 关键词库
     keyword_of_answer = os.path.join(project_dir, 'data/keyword_of_answer.pickle')  # 关键词to答案的字典

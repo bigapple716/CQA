@@ -16,19 +16,16 @@ class DataMaker:
     answer_file = 'textqa/model/CQA/data/long_answers.txt'
     queries_file = 'textqa/model/CQA/data/queries.txt'
 
-    match_question_file = 'textqa/model/CQA/data/match_question.txt'
-    match_gold_file = 'textqa/model/CQA/data/match_gold.txt'
-
     # make qa data
     def make_qa_data(self, query_file=FilePool.input_txt):
         # 读文件
         with open(query_file, 'r') as f_query:
             queries = f_query.readlines()
             queries = [line.rstrip('\n') for line in queries]
-        with open(self.match_question_file, 'r') as f_ques:
+        with open(FilePool.qa_question_file, 'r') as f_ques:
             ques_list = f_ques.readlines()
             ques_list = [line.rstrip('\n') for line in ques_list]
-        with open(self.match_gold_file, 'r') as f_gold:
+        with open(FilePool.qa_gold_list[0], 'r') as f_gold:
             gold_list = f_gold.readlines()
             gold_list = [line.rstrip('\n') for line in gold_list]
 
