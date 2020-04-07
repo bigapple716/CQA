@@ -111,11 +111,13 @@ class DataMaker:
             #     print(ans)
             # print('\n\n\n\n\n')
 
-        with open(FilePool.qa_file, 'r') as f_qa_in:
-            kunming_qa = json.load(f_qa_in)
-        new_qa = kunming_qa + qa
-        with open(FilePool.qa_file, 'w') as f_qa_out:
-            json.dump(obj=new_qa, fp=f_qa_out, ensure_ascii=False)
+        # 以下代码只运行一次，作用是在现有的qa.json后面补充意图识别的qa对
+        # with open(FilePool.qa_file, 'r') as f_qa_in:
+        #     kunming_qa = json.load(f_qa_in)
+        #     print(len(kunming_qa))
+        # new_qa = kunming_qa + qa
+        # with open(FilePool.qa_file, 'w') as f_qa_out:
+        #     json.dump(obj=new_qa, fp=f_qa_out, ensure_ascii=False)
 
     def __read(self, question_file, gold_file, answer_file, read_gold=True, read_answer=True):
         # read questions
@@ -253,4 +255,4 @@ if __name__ == "__main__":
     data_maker = DataMaker()
 
     # data_maker.make_qa_data()
-    data_maker.read_intent()
+    # data_maker.read_intent()
