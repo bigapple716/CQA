@@ -50,6 +50,7 @@ class FilePool:
 
     docx_list = [raw_docx1, raw_docx2]
     keyword_list = [
+        # 从昆明机场文档里划分的
         os.path.join(project_dir, 'data/keyword/乘机证件.txt'),
         os.path.join(project_dir, 'data/keyword/中转服务.txt'),
         os.path.join(project_dir, 'data/keyword/值机.txt'),
@@ -60,6 +61,15 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword/物品遗失.txt'),
         os.path.join(project_dir, 'data/keyword/特殊旅客.txt'),
         os.path.join(project_dir, 'data/keyword/行李携带.txt'),
+        # 从意图识别数据里划分的
+        os.path.join(project_dir, 'data/keyword2/有效证件.txt'),
+        os.path.join(project_dir, 'data/keyword2/中转服务.txt'),
+        os.path.join(project_dir, 'data/keyword2/值机.txt'),
+        os.path.join(project_dir, 'data/keyword2/其他.txt'),
+        os.path.join(project_dir, 'data/keyword2/安全检查.txt'),
+        os.path.join(project_dir, 'data/keyword2/物品遗失.txt'),
+        os.path.join(project_dir, 'data/keyword2/特殊旅客.txt'),
+        os.path.join(project_dir, 'data/keyword2/行李携带.txt'),
     ]
 
     # 预训练中文词向量
