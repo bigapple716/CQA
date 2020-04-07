@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import platform
 
 
 # 文件名集合
@@ -35,7 +34,8 @@ class FilePool:
     qa_file = os.path.join(project_dir, 'data/qa.json')  # QA对
     base_ques_list_file = os.path.join(project_dir, 'data/base_ques_list.json')  # QA对里的问题集合
 
-    keyword_database_json = os.path.join(project_dir, 'data/keyword_database.json')  # 关键词库
+    # 关键词库
+    keyword_database_json = os.path.join(project_dir, 'data/keyword_database.json')
 
     # 输入
     input_txt = os.path.join(project_dir, 'data/input.txt')  # 问题queries，仅在批量测试时用
