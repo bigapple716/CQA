@@ -92,7 +92,7 @@ class TBQA:
     # 对外接口，输入1个问题给出1个回答
     def get_answer(self, question):
         # 清洗输入
-        cleaned_input, uncut_input = self.pre_processor.clean_input([question])
+        cleaned_input, uncut_input = self.pre_processor.clean_cut_trim([question])
 
         # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
@@ -123,7 +123,7 @@ class TBQA:
         questions = [line.rstrip('\n') for line in doc]
 
         # 清洗输入
-        cleaned_input, uncut_input = self.pre_processor.clean_input(questions)
+        cleaned_input, uncut_input = self.pre_processor.clean_cut_trim(questions)
 
         # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)

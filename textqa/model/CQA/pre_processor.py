@@ -20,7 +20,7 @@ class PreProcessor:
             self.keyword_database = json.load(f_kwdb)
 
     # 清洗text
-    def clean_input(self, text):
+    def clean_cut_trim(self, text):
         """
         Returns
         -------

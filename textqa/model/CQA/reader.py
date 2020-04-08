@@ -13,13 +13,13 @@ class Reader:
     # 预处理数据(下面方法的集合)
     def preprocess(self):
         self.__read_keywords()  # 读入各类的关键词
-        self.__clean_txt(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
+        self.__clean_cut(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
         self.__make_base_que_list()  # 制作base_ques_list
 
         # 以下方法有先后依赖关系
         self.__read_docs()
-        self.__clean_txt(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
-        self.__clean_txt(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
+        self.__clean_cut(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
+        self.__clean_cut(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
         self.__merge_add()
         self.__add_extra()
 
@@ -37,7 +37,7 @@ class Reader:
                     f_answers.write('\n')
 
     # 清洗数据
-    def __clean_txt(self, ans_file, cleaned_txt_file, cleaned_json_file):
+    def __clean_cut(self, ans_file, cleaned_txt_file, cleaned_json_file):
         cleaned_json = []  # 清洗过后的数据(json格式)
         cleaned_txt = []  # 清洗过后的数据(txt格式)
 
