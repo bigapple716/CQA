@@ -73,10 +73,6 @@ class TBQA:
                 questions_list.append(questions)
             elif args.method == Method.tfidf_sim:
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)
-            # elif args.method == Method.aver_embed:
-            #     sorted_scores, max_pos, answers = self.baseline_model.aver_embed(cut_query)
-            # elif args.method == Method.lm:
-            #     sorted_scores, max_pos, answers = self.baseline_model.language_model(cut_query)
             else:
                 raise Exception('尚未支持该搜索算法！')
     

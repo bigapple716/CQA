@@ -110,6 +110,7 @@ class Baselines:
                 # print('没用分类问题')
         else:
             bm25_model = self.bm25_model_uncat
+            # print('没用分类问题')
 
         bm25_weights = bm25_model.get_scores(query)
 
@@ -284,43 +285,6 @@ class Baselines:
             answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         else:
             answers = []  # 没人关心answers
-        return sorted_scores, max_pos, answers
-
-    # 词向量平均(暂停维护)
-    def aver_embed(self, query):
-        doc_score = []
-
-        words = [w for w in query if w in self.word2vec.vocab]  # remove out-of-vocabulary words
-        query_token = np.mean(self.word2vec[words], axis=0)  # average embedding of words in the query
-        for ans in self.cut_answers:
-            words = [w for w in ans if w in self.word2vec.vocab]
-            ans_token = np.mean(self.word2vec[words], axis=0)
-            cos_sim = cosine_similarity(query_token.reshape(1, -1), ans_token.reshape(1, -1))
-            doc_score.append(np.asscalar(cos_sim))
-
-        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
-        max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
-        return sorted_scores, max_pos, answers
-
-    # Language Model(暂停维护)
-    def language_model(self, query):
-        doc_score = []
-        for text in self.cut_answers:
-            train, vocab = padded_everygram_pipeline(order=1, text=text)
-
-            lm = KneserNeyInterpolated(1)  # 实例化模型
-            lm.fit(train, vocab)  # 喂训练数据
-
-            score = 1
-            for word in query:
-                score *= lm.score(word)
-
-            doc_score.append(score)
-
-        sorted_scores = sorted(doc_score, reverse=True)  # 将得分从大到小排序
-        max_pos = np.argsort(doc_score)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
         return sorted_scores, max_pos, answers
 
     # 根据max_pos从答案库里把真正的答案抽出来
