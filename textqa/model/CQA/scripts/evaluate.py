@@ -85,7 +85,7 @@ class Evaluate:
             print('hit3:', hit / self.valid_answer_size)
         print('queries found in QA base:', found)
         with open(self.eval_res_file, 'w') as f_res:
-            f_res.write('hit' + '\t' + 'gold_answer' +'\n')
+            f_res.write('hit' + '\t' + 'gold_answer' + '\n')
             for h, g in zip(hit_result, gold_answers):
                 f_res.write(h + '\t' + g + '\n')
 
