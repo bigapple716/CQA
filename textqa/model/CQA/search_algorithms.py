@@ -8,7 +8,6 @@ from gensim.corpora import Dictionary
 from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.preprocessing import normalize
 import pickle
 import synonyms
 from nltk.lm.preprocessing import *
@@ -61,9 +60,9 @@ class Baselines:
         # 提前实例化bm25模型，提升性能
         # 如果提前对问题分类了，那也要提前实例化模型，给分类为空的问题兜底
         if (args.method == Method.bm25 or args.method == Method.bm25_syn):
-            self.bm25_model = BM25(self.cut_answers)
+            self.bm25_model_uncat = BM25(self.cut_answers)
         if args.method == Method.mix or args.method == Method.bm25_new:
-            self.bm25_model = NewBM25(self.cut_answers)
+            self.bm25_model_uncat = NewBM25(self.cut_answers)
 
         # 提前实例化tfidf模型，提升性能
         if args.method == Method.mix or args.method == Method.qq_match:
@@ -103,14 +102,16 @@ class Baselines:
         if args.categorize_question:
             if len(categorized_qa['cut_answers']) != 0:
                 # 非空的时候才用这个作corpus传进BM25
-                self.bm25_model = BM25(categorized_qa['cut_answers'])
+                bm25_model = BM25(categorized_qa['cut_answers'])
                 # print(categorized_qa['classes'])
             else:
                 # 如果为空，那么还用原来的corpus传进BM25
-                self.bm25_model = BM25(self.cut_answers)
+                bm25_model = self.bm25_model_uncat
                 # print('没用分类问题')
+        else:
+            bm25_model = self.bm25_model_uncat
 
-        bm25_weights = self.bm25_model.get_scores(query)
+        bm25_weights = bm25_model.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
@@ -132,8 +133,11 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # bm25 with synonym module
+    # 不支持问题分类
     def bm25_syn(self, query):
-        query_weights = self.bm25_model.get_scores(query)  # 普通的bm25算法
+        bm25_model = self.bm25_model_uncat
+
+        query_weights = bm25_model.get_scores(query)  # 普通的bm25算法
         max_pos = np.argsort(query_weights)[::-1][0]  # 最高得分所在的index(而不是真正的value)
 
         # 找出来query里哪个词是最关键的
@@ -141,7 +145,7 @@ class Baselines:
         kw = ''  # 最关键的那个词
         kw_idx = -1
         for idx, word in enumerate(query):
-            word_weight = self.bm25_model.get_score([word], index=max_pos)
+            word_weight = bm25_model.get_score([word], index=max_pos)
             if word_weight > max_score:
                 max_score = word_weight
                 kw = word
@@ -160,7 +164,7 @@ class Baselines:
         best_kw = ''  # 得分最高的词
         for syn in syn_list:
             query[kw_idx] = syn  # 替换query中的那个最关键的词
-            weights = self.bm25_model.get_scores(query)  # 普通的bm25算法
+            weights = bm25_model.get_scores(query)  # 普通的bm25算法
             score = sorted(weights, reverse=True)[0]  # 将得分从大到小排序，取第1个
             if score > max_score:
                 max_score = score
@@ -174,7 +178,7 @@ class Baselines:
 
         # 找到最合适的关键词了，回到正规，返回sorted_scores, max_pos, answers
         query[kw_idx] = best_kw
-        bm25_weights = self.bm25_model.get_scores(query)
+        bm25_weights = bm25_model.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
@@ -189,12 +193,14 @@ class Baselines:
         if args.categorize_question:
             if len(categorized_qa['cut_answers']) != 0:
                 # 非空的时候才用这个作corpus传进BM25
-                self.bm25_model = NewBM25(categorized_qa['cut_answers'])
+                bm25_model = NewBM25(categorized_qa['cut_answers'])
                 # print(categorized_qa['classes'])
             else:
                 # 如果为空，那么还用在__init__()里实例化过的模型
-                pass
+                bm25_model = self.bm25_model_uncat
                 # print('没用分类问题')
+        else:
+            bm25_model = self.bm25_model_uncat
 
         expanded_query = []
         for q in query:
@@ -206,7 +212,7 @@ class Baselines:
                 if score > args.syn_threshold and word not in expanded_query:
                     expanded_query.append(word)
 
-        bm25_weights = self.bm25_model.get_new_scores(query, expanded_query)
+        bm25_weights = bm25_model.get_new_scores(query, expanded_query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
