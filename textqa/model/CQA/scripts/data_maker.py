@@ -87,6 +87,14 @@ class DataMaker:
         with open('base_questions.json', 'w') as f_base_ques:
             json.dump(base_questions, f_base_ques, ensure_ascii=False)
 
+    def select_randomly(self):
+        with open(FilePool.input_txt, 'r') as f:
+            doc = f.readlines()
+        random.shuffle(doc)
+        doc = list(dict.fromkeys(doc[:5000]))
+        with open(FilePool.input_txt, 'w') as f_out:
+            f_out.writelines(doc)
+
     # 读入意图识别数据
     def read_intent(self):
         queries = []
@@ -258,4 +266,5 @@ if __name__ == "__main__":
     data_maker = DataMaker()
 
     # data_maker.make_qa_data()
-    data_maker.read_intent()
+    # data_maker.read_intent()
+    # data_maker.select_randomly()

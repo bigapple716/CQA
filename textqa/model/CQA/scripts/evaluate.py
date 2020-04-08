@@ -32,7 +32,6 @@ class Evaluate:
         if len(self.queries) != len(self.top1_answers):
             raise Exception('问题和答案数量不相等！')
 
-    # 这个类里的主方法
     def evaluate(self, hit1=True):
         # 选择统计top1还是top3
         if hit1:
@@ -60,7 +59,41 @@ class Evaluate:
             print('hit3:', hit / len(answers))
         print(found)
 
+    # 从txt文件中获取gold，进行评价
+    def evaluate_from_txt(self):
+        gold_file1 = 'textqa/model/CQA/scripts/tmp_gold1.txt'
+        gold_file2 = 'textqa/model/CQA/scripts/tmp_gold2.txt'
+        gold_file3 = 'textqa/model/CQA/scripts/tmp_gold3.txt'
+        query_file = 'textqa/model/CQA/data/input.txt'
+        result_file = 'textqa/model/CQA/scripts/results.txt'
+
+        with open(gold_file1, 'r') as f_gold1:
+            doc = f_gold1.readlines()
+            gold1 = [line.rstrip('\n') for line in doc]
+        with open(gold_file2, 'r') as f_gold2:
+            doc = f_gold2.readlines()
+            gold2 = [line.rstrip('\n') for line in doc]
+        with open(gold_file3, 'r') as f_gold3:
+            doc = f_gold3.readlines()
+            gold3 = [line.rstrip('\n') for line in doc]
+        with open(query_file, 'r') as f_q:
+            doc = f_q.readlines()
+            queries = [line.rstrip('\n') for line in doc]
+        with open(result_file, 'r') as f_ans:
+            doc = f_ans.readlines()
+            results = [line.rstrip('\n') for line in doc]
+
+        if not len(gold1) == len(gold2) == len(gold3) == len(queries) == len(results):
+            raise Exception('数据长度不一致！')
+
+        hit1 = 0
+        hit3 = 0
+        for res, g1, g2, g3 in zip(results, gold1, gold2, gold3):
+            if res == g1 or res == g2 or res == g3:
+                hit1 += 1
+                hit3 += 1
+
 
 if __name__ == "__main__":
     evaluator = Evaluate()
-    evaluator.evaluate()
+    evaluator.evaluate_from_txt()
