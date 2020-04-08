@@ -9,11 +9,11 @@ class FilePool:
     project_dir = os.path.join(os.getcwd(), relative_path)
 
     # 原始文档
-    raw_docx1 = os.path.join(project_dir, 'data/长沙机场知识库(没目录图片表格).docx')  # 长沙机场知识文档
-    raw_docx2 = os.path.join(project_dir, 'data/96566机场问询资料.docx')  # 昆明机场知识文档
+    raw_docx1 = os.path.join(project_dir, 'data/raw_data/长沙机场知识库(没目录图片表格).docx')  # 长沙机场知识文档
+    raw_docx2 = os.path.join(project_dir, 'data/raw_data/96566机场问询资料.docx')  # 昆明机场知识文档
     answers_txt = os.path.join(project_dir, 'data/answers.txt')  # 全部机场知识文档的txt格式集合(不含补充知识文档)
-    extra_txt = os.path.join(project_dir, 'data/extra_answers.txt')  # 补充知识文档
-    raw_small_answers_txt = os.path.join(project_dir, 'data/raw_small_answers.txt')  # 全部答案 - 长沙机场
+    extra_txt = os.path.join(project_dir, 'data/raw_data/extra_answers.txt')  # 补充知识文档
+    raw_small_answers_txt = os.path.join(project_dir, 'data/raw_data/raw_small_answers.txt')  # 全部答案 - 长沙机场
 
     # 清洗过的答案库
     small_answers_txt = os.path.join(project_dir, 'data/small_answers.txt')  # 全部答案 - 长沙机场(没分词)
