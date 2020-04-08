@@ -128,6 +128,11 @@ class Utils:
         ret = line.replace(' ', '')
         return ret
 
+    # 去重
+    @staticmethod
+    def remove_dup(list_in):
+        return list(dict.fromkeys(list_in))
+
     '''以下均为私有方法'''
 
     @staticmethod

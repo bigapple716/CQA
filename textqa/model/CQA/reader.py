@@ -99,7 +99,7 @@ class Reader:
             # 把短答案存档
             long_answers += short_answers
 
-        long_answers = self.__remove_dup(long_answers)  # 去重
+        long_answers = Utils.remove_dup(long_answers)  # 去重
 
         # 将长答案存为txt格式
         with open(FilePool.long_answers_txt, 'w') as f_out_txt:
@@ -142,10 +142,6 @@ class Reader:
             merged_json = cleaned_ans_json + cleaned_extra_json
         with open(FilePool.long_answers_json, 'w') as f_long_ans_json:
             json.dump(obj=merged_json, fp=f_long_ans_json, ensure_ascii=False)
-
-    # 去重
-    def __remove_dup(self, list_in):
-        return list(dict.fromkeys(list_in))
 
     # 读入各类的关键词
     def __read_keywords(self):
