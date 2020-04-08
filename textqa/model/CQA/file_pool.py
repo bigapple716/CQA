@@ -8,10 +8,13 @@ class FilePool:
     relative_path = 'textqa/model/CQA/'
     project_dir = os.path.join(os.getcwd(), relative_path)
 
-    # 原始文档
+    # 机场文档
     raw_docx1 = os.path.join(project_dir, 'data/raw_data/长沙机场知识库(没目录图片表格).docx')  # 长沙机场知识文档
     raw_docx2 = os.path.join(project_dir, 'data/raw_data/96566机场问询资料.docx')  # 昆明机场知识文档
+    docx_list = [raw_docx1, raw_docx2]  # 机场文档列表
+
     answers_txt = os.path.join(project_dir, 'data/answers.txt')  # 全部机场知识文档的txt格式集合(不含补充知识文档)
+
     extra_txt = os.path.join(project_dir, 'data/raw_data/extra_answers.txt')  # 补充知识文档
     raw_small_answers_txt = os.path.join(project_dir, 'data/raw_data/raw_small_answers.txt')  # 全部答案 - 长沙机场
 
@@ -31,8 +34,9 @@ class FilePool:
     qa_gold_list = [
         os.path.join(project_dir, 'data/match_gold.txt')
     ]
-    qa_file = os.path.join(project_dir, 'data/qa.json')  # QA对
+    qa_file = os.path.join(project_dir, 'data/qa.json')  # QA对(QQ匹配用的)
     base_ques_list_file = os.path.join(project_dir, 'data/base_ques_list.json')  # QA对里的问题集合
+    whole_qa_file = os.path.join(project_dir, 'data/whole_qa.json')  # 全部QA对(自动评测用的)
 
     # 关键词库
     keyword_database_json = os.path.join(project_dir, 'data/keyword_database.json')
@@ -47,7 +51,7 @@ class FilePool:
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
     user_dict = os.path.join(project_dir, 'data/air_lexicon.txt')  # 分词用的字典
 
-    docx_list = [raw_docx1, raw_docx2]
+    # 按照关键词分类的答案库
     keyword_list = [
         os.path.join(project_dir, 'data/keyword/乘机证件.txt'),
         os.path.join(project_dir, 'data/keyword/中转服务.txt'),
