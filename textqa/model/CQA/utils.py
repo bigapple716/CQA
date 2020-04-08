@@ -117,7 +117,7 @@ class Utils:
             cleaned.append(line)
         return cleaned
 
-    # 清洗text(输入为list of str)
+    # 清洗text(输入为str)
     @staticmethod
     def clean_line(line):
         line = line.lstrip()  # 去掉行首空格
