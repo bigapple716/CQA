@@ -85,7 +85,7 @@ class TBQA:
             answers_index_list.append(max_pos[:args.top_n])
 
             # 输出实时进度
-            if args.enable_log and i % 50 == 0:
+            if args.enable_log and i % 100 == 0:
                 print('line ' + str(i) + ' processed')
 
         if args.method == Method.qq_match or args.method == Method.mix:
