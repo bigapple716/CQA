@@ -59,9 +59,8 @@ class Baselines:
                 self.base_ques_list = json.load(f_base_ques_list)
 
         # 提前实例化bm25模型，提升性能
-        # 如果提前对问题分类了，那么没必要提前实例化模型，因为每个问题对应的答案库都不一样
-        if (args.method == Method.bm25 or args.method == Method.bm25_syn) \
-                and (not args.categorize_question):
+        # 如果提前对问题分类了，那也要提前实例化模型，给分类为空的问题兜底
+        if (args.method == Method.bm25 or args.method == Method.bm25_syn):
             self.bm25_model = BM25(self.cut_answers)
         if args.method == Method.mix or args.method == Method.bm25_new:
             self.bm25_model = NewBM25(self.cut_answers)
@@ -185,16 +184,16 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query, categorized_qa, norm=False):
-        # 只有问题分类的情况下才在这里做模型实例化，其他情况下模型已经在__init__()里实例化过了
+    def bm25_new(self, query, categorized_qa):
+        # 只有问题分类且分类不为空的情况下才在这里做模型实例化，其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question:
             if len(categorized_qa['cut_answers']) != 0:
                 # 非空的时候才用这个作corpus传进BM25
                 self.bm25_model = NewBM25(categorized_qa['cut_answers'])
                 # print(categorized_qa['classes'])
             else:
-                # 如果为空，那么还用原来的corpus传进BM25
-                self.bm25_model = NewBM25(self.cut_answers)
+                # 如果为空，那么还用在__init__()里实例化过的模型
+                pass
                 # print('没用分类问题')
 
         expanded_query = []
@@ -208,10 +207,6 @@ class Baselines:
                     expanded_query.append(word)
 
         bm25_weights = self.bm25_model.get_new_scores(query, expanded_query)
-
-        # 是否进行normalize
-        if norm:
-            bm25_weights = normalize([bm25_weights], norm='max')[0].tolist()
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
