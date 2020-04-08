@@ -131,6 +131,20 @@ class DataMaker:
         # with open(FilePool.qa_file, 'w') as f_qa_out:
         #     json.dump(obj=new_qa, fp=f_qa_out, ensure_ascii=False)
 
+    # 划分qa库，一部分作为QQ匹配中的qa库，一部分作为queries
+    def divide(self, ratio=0.7):
+        with open(FilePool.whole_qa_file, 'r') as f_whqa:
+            whole_qa = json.load(f_whqa)
+        random.shuffle(whole_qa)
+        split_point = round(len(whole_qa) * ratio)
+        qa = whole_qa[:split_point]
+        q = whole_qa[split_point:]
+        with open(FilePool.input_txt, 'w') as f_q:
+            for dict in q:
+                f_q.write(dict['question'] + '\n')
+        with open(FilePool.qa_file, 'w') as f_qa:
+            json.dump(obj=qa, fp=f_qa, ensure_ascii=False)
+
     def __read(self, question_file, gold_file, answer_file, read_gold=True, read_answer=True):
         # read questions
         with open(question_file, 'r') as f_q:
@@ -266,6 +280,7 @@ class DataMaker:
 if __name__ == "__main__":
     data_maker = DataMaker()
 
+    # data_maker.divide()
     # data_maker.make_qa_data()
     # data_maker.read_intent()
     # data_maker.select_randomly()
