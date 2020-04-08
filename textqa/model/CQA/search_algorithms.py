@@ -201,6 +201,7 @@ class Baselines:
                 # print('没用分类问题')
         else:
             bm25_model = self.bm25_model_uncat
+            # print('没用分类问题')
 
         expanded_query = []
         for q in query:
