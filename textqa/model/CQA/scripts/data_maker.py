@@ -114,6 +114,7 @@ class DataMaker:
                 answers.add(sentences[1])
                 qa.append({'question': sentences[0], 'sentence': [sentences[1]]})
                 cat_answers.add(sentences[1])
+                print(sentences[0] + '\t' + sentences[1])
 
             for line in answers:
                 print(line)
