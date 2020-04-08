@@ -9,6 +9,8 @@ from textqa.model.CQA.utils import Utils
 # 自动化测试
 class Evaluate:
     def __init__(self):
+        self.eval_res_file = 'textqa/model/CQA/scripts/eval_result.txt'
+
         # 读入问题
         with open(FilePool.input_txt, 'r') as f_q:
             doc = f_q.readlines()
@@ -18,15 +20,21 @@ class Evaluate:
             reader = csv.reader(f_res, lineterminator='\n')
             self.top1_answers = []
             self.top3_answers = []
+            self.valid_answer_size = 0
             for row in reader:
+                if row[0] != '-1':
+                    self.valid_answer_size += 1
+                row = Utils.clean_text(row)
                 self.top1_answers.append([row[0]])
                 self.top3_answers.append(row)
+
         # 读入问答对
-        with open(FilePool.qa_file, 'r') as f_qa:
+        with open(FilePool.whole_qa_file, 'r') as f_qa:
             self.qa = json.load(f_qa)
-            # 清洗问题
+            # 清洗问题和答案
             for dict in self.qa:
                 dict['question'] = Utils.clean_line(dict['question'])
+                dict['sentence'] = Utils.clean_text(dict['sentence'])
 
         # 校验问题数量和答案数量是否相等
         if len(self.queries) != len(self.top1_answers):
@@ -41,23 +49,45 @@ class Evaluate:
 
         hit = 0
         found = 0
+        hit_result = []
+        gold_answers = []
 
         for query, ans_list in zip(self.queries, answers):
+            has_found = False
+            has_hit = False
+            first_gold = ''
             for dict in self.qa:  # 遍历QA库
                 if query == dict['question']:
-                    found += 1
                     # 在QA库里找到这个问题了，看看有没有gold在top1/top3里面的
+                    found += 1
+                    has_found = True
+                    first_gold = dict['sentence'][0]
                     for gold in dict['sentence']:
                         if gold in ans_list:
                             hit += 1
+                            has_hit = True
                             break
+                if has_found:
+                    break
+            if not has_found:
+                print('query not found:', query)
+
+            if has_hit:
+                hit_result.append('1')
+            else:
+                hit_result.append('0')
+            gold_answers.append(first_gold)
 
         # 输出结果
         if hit1:
-            print('hit1:', hit / len(answers))
+            print('hit1:', hit / self.valid_answer_size)
         else:
-            print('hit3:', hit / len(answers))
-        print(found)
+            print('hit3:', hit / self.valid_answer_size)
+        print('queries found in QA base:', found)
+        with open(self.eval_res_file, 'w') as f_res:
+            f_res.write('hit' + '\t' + 'gold_answer' +'\n')
+            for h, g in zip(hit_result, gold_answers):
+                f_res.write(h + '\t' + g + '\n')
 
     # 从txt文件中获取gold，进行评价
     def evaluate_from_txt(self):
@@ -96,4 +126,4 @@ class Evaluate:
 
 if __name__ == "__main__":
     evaluator = Evaluate()
-    evaluator.evaluate_from_txt()
+    evaluator.evaluate()
