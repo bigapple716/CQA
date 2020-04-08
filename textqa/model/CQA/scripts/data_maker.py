@@ -3,6 +3,7 @@
 import random
 import json
 from textqa.model.CQA.file_pool import FilePool
+from textqa.model.CQA.utils import Utils
 
 # set random seed
 random.seed(0)
@@ -89,7 +90,7 @@ class DataMaker:
     # 读入意图识别数据
     def read_intent(self):
         queries = []
-        answers = []
+        answers = set()
         qa = []
 
         for filename in FilePool.intention_qa_list:
@@ -102,10 +103,12 @@ class DataMaker:
 
                 # 把Q和A分别加到各个集合里
                 queries.append(sentences[0])
-                answers.append([sentences[1]])
+                answers.add(sentences[1])
                 qa.append({'question': sentences[0], 'sentence': [sentences[1]]})
                 cat_answers.add(sentences[1])
 
+            for line in answers:
+                print(line)
             # print(filename)
             # for ans in cat_answers:
             #     print(ans)
@@ -255,4 +258,4 @@ if __name__ == "__main__":
     data_maker = DataMaker()
 
     # data_maker.make_qa_data()
-    # data_maker.read_intent()
+    data_maker.read_intent()
