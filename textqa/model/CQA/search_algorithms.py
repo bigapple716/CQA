@@ -235,7 +235,7 @@ class Baselines:
     # 问题-问题匹配
     def qq_match(self, query):
         # 输入tf-idf，得到从大到小排列的index list
-        sorted_scores, max_pos, _ = self.tfidf_sim(query)
+        sorted_scores, max_pos, _ = self.tfidf_sim(query, direct_call=False)
         answers, questions = self.__max_pos2answers_questions(max_pos)
 
         # 用QQ匹配的阈值过滤一遍结果
@@ -269,14 +269,19 @@ class Baselines:
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
 
     # tf-idf相似度算法搜索
-    def tfidf_sim(self, query):
+    # direct_call = True 代表直接调用tfidf-sim()做答案选择
+    # direct_call = False 代表qq-match()调用tfidf-sim()做QQ匹配
+    def tfidf_sim(self, query, direct_call=True):
         query_bow = [self.tfidf_dict.doc2bow(query)]  # 用query做一个bag of words
         query_tfidf = self.tfidf_model[query_bow]  # 用tfidf model编码
         similarities = self.sim_index[query_tfidf][0]  # 算相似度
 
         sorted_scores = sorted(similarities, reverse=True)  # 将得分从大到小排序
         max_pos = np.argsort(similarities)[::-1]  # 从大到小排序，返回index(而不是真正的value)
-        answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        if direct_call:
+            answers = self.__max_pos2answers(max_pos, self.uncut_answers)  # 根据max_pos从答案库里把真正的答案抽出来
+        else:
+            answers = []  # 没人关心answers
         return sorted_scores, max_pos, answers
 
     # 词向量平均(暂停维护)
