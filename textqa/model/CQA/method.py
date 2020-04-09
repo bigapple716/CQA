@@ -10,5 +10,3 @@ class Method(Enum):
     qq_match = 3  # 问题-问题匹配
     mix = 4  # QQ匹配 + QA匹配
     tfidf_sim = 5  # TF-IDF向量相似度
-    aver_embed = 6  # 平均词向量
-    lm = 7  # 语言模型
