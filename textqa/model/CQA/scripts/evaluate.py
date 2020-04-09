@@ -28,17 +28,15 @@ class Evaluate:
             doc = f_q.readlines()
             self.queries = Utils.clean_text(doc)  # 清洗输入
 
-        # 读入top1和top3的回答
+        # 读入top3的回答
         with open(FilePool.output_csv, 'r') as f_res:
             reader = csv.reader(f_res, lineterminator='\n')
-            self.top1_answers = []
             self.top3_answers = []
             self.valid_answer_size = 0
             for row in reader:
                 if row[0] != '-1':
                     self.valid_answer_size += 1
                 row = Utils.clean_text(row)
-                self.top1_answers.append([row[0]])
                 self.top3_answers.append(row)
 
         # 读入问答对
@@ -50,7 +48,7 @@ class Evaluate:
                 dict['sentence'] = Utils.clean_text(dict['sentence'])
 
         # 校验问题数量和答案数量是否相等
-        if len(self.queries) != len(self.top1_answers):
+        if len(self.queries) != len(self.top3_answers):
             raise Exception('问题和答案数量不相等！')
 
         # 读入答案库
@@ -64,21 +62,18 @@ class Evaluate:
         bow = [self.tfidf_dict.doc2bow(line) for line in self.cut_answers]  # convert corpus to BoW format
         self.tfidf_model = TfidfModel(bow)  # fit model
 
-    def evaluate(self, hit1=True):
-        # 选择统计top1还是top3
-        if hit1:
-            answers = self.top1_answers
-        else:
-            answers = self.top3_answers
-
-        hit = 0
+    def evaluate(self):
+        hit1 = 0
+        hit3 = 0
         found = 0
-        hit_result = []
+        hit1_result = []
+        hit3_result = []
         gold_answers = []
 
-        for query, ans_list in zip(self.queries, answers):
+        for query, ans_list in zip(self.queries, self.top3_answers):
             has_found = False
-            has_hit = False
+            has_hit1 = False
+            has_hit3 = False
             first_gold = ''
             for dict in self.qa:  # 遍历QA库
                 if query == dict['question']:
@@ -87,31 +82,35 @@ class Evaluate:
                     has_found = True
                     first_gold = dict['sentence'][0]
                     for gold in dict['sentence']:
+                        if self.__match(gold, [ans_list[0]]):
+                            hit1 += 1
+                            has_hit1 = True
                         if self.__match(gold, ans_list):
-                            hit += 1
-                            has_hit = True
+                            hit3 += 1
+                            has_hit3 = True
                             break
-                if has_found:
                     break
             if not has_found:
                 print('query not found:', query)
 
-            if has_hit:
-                hit_result.append('1')
+            if has_hit1:
+                hit1_result.append('1')
             else:
-                hit_result.append('0')
+                hit1_result.append('0')
+            if has_hit3:
+                hit3_result.append('1')
+            else:
+                hit3_result.append('0')
             gold_answers.append(first_gold)
 
         # 输出结果
-        if hit1:
-            print('hit1:', hit / self.valid_answer_size)
-        else:
-            print('hit3:', hit / self.valid_answer_size)
+        print('hit1:', hit1 / self.valid_answer_size)
+        print('hit3:', hit3 / self.valid_answer_size)
         print('queries found in QA base:', found)
         with open(self.eval_res_file, 'w') as f_res:
-            f_res.write('hit' + '\t' + 'gold_answer' + '\n')
-            for h, g in zip(hit_result, gold_answers):
-                f_res.write(h + '\t' + g + '\n')
+            f_res.write('hit1' + '\t' + 'hit3' + '\t' + 'gold_answer' + '\n')
+            for h1, h3, g in zip(hit1_result, hit3_result, gold_answers):
+                f_res.write(h1 + '\t' + h3 + '\t' + g + '\n')
 
     # 从txt文件中获取gold，进行评价
     def evaluate_from_txt(self):
@@ -158,7 +157,7 @@ class Evaluate:
             return self.__tfidf_sim_match(gold, ans_list)
 
     # 用tfidf-sim扩充标准答案集合
-    def __tfidf_sim_match(self, query, ans_list, threshold=0):
+    def __tfidf_sim_match(self, query, ans_list, threshold=0.10):
         cut_query, _ = self.pre_processor.clean_cut_trim([query])  # 清洗query
         cut_ans_list, _ = self.pre_processor.clean_cut_trim(ans_list)  # 清洗ans_list
 
