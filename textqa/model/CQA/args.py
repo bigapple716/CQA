@@ -12,5 +12,6 @@ qq_threshold = 0.7  # QQ匹配的阈值
 qa_threshold = 1.5  # QA匹配的阈值
 cat_threshold = 0.9  # 问题分类时new bm25的阈值
 syn_threshold = 0.7  # 近义词匹配的阈值
+kw_from_graph = False  # 从知识图谱读取分类答案(而不是从本地文件读取)
 
 enable_log = False  # 是否向控制台打印log

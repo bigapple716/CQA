@@ -3,10 +3,14 @@
 import docx
 import jieba
 import json
-import pickle
+from py2neo import Graph
 from textqa.model.CQA.utils import Utils
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA import args
+
+addr = 'http://10.1.1.28:7979'
+username = 'neo4j'
+password = '123456'
 
 
 class Reader:
@@ -146,20 +150,40 @@ class Reader:
     # 读入各类的关键词
     def __read_keywords(self):
         keyword_database = []  # 关键词库
-        for keyword_file in FilePool.keyword_list:
-            with open(keyword_file, 'r') as f_kw:
-                lines = f_kw.readlines()
-                lines = [line.rstrip() for line in lines]
-                keywords = lines[1].split(' ')
-                uncut_answers = lines[2:]
-                cut_answers = Utils.cut_text(uncut_answers)
-                dict = {
-                    'class': lines[0],
-                    'keywords': keywords,
-                    'uncut_answers': uncut_answers,
-                    'cut_answers': cut_answers
-                }
-                keyword_database.append(dict)
+
+        if args.kw_from_graph:
+            # 载入知识图谱
+            graph = Graph(addr, username=username, password=password)
+            cls = '特殊旅客服务'
+            # 拼一个查询语句，查询name为特殊旅客服务的'textqa答案'属性
+            match = 'match(n{name:"' + cls + '"}) return n.textqa答案'
+            # 执行数据库查询
+            result = graph.run(match).data()[0]
+            uncut_answers = result['n.textqa答案'].split(';')
+            cut_answers = Utils.cut_text(uncut_answers)
+            dict = {
+                'class': cls,
+                'keywords': keywords,
+                'uncut_answers': uncut_answers,
+                'cut_answers': cut_answers
+            }
+            keyword_database.append(dict)
+        else:
+            for keyword_file in FilePool.keyword_list:
+                with open(keyword_file, 'r') as f_kw:
+                    lines = f_kw.readlines()
+                    lines = [line.rstrip() for line in lines]
+                    keywords = lines[1].split(' ')
+                    uncut_answers = lines[2:]
+                    cut_answers = Utils.cut_text(uncut_answers)
+                    dict = {
+                        'class': lines[0],
+                        'keywords': keywords,
+                        'uncut_answers': uncut_answers,
+                        'cut_answers': cut_answers
+                    }
+                    keyword_database.append(dict)
+
         # 写到json里
         with open(FilePool.keyword_database_json, 'w') as f_kwdb:
             json.dump(obj=keyword_database, fp=f_kwdb, ensure_ascii=False)
@@ -181,3 +205,4 @@ class Reader:
 # for test purpose
 if __name__ == '__main__':
     reader = Reader()
+    reader.preprocess()
