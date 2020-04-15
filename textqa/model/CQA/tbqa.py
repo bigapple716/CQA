@@ -56,7 +56,7 @@ class TBQA:
             if args.categorize_question:
                 categorized_qa = self.pre_processor.categorize(query)
             else:
-                categorized_qa = {}
+                categorized_qa = None
 
             # 用不同算法搜索
             if args.method == Method.bm25:
