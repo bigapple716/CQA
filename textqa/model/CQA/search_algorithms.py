@@ -185,16 +185,11 @@ class Baselines:
 
     # 改进版的bm25
     def bm25_new(self, query, categorized_qa):
-        # 只有问题分类且分类不为空的情况下才在这里做模型实例化，其他情况下模型已经在__init__()里实例化过了
-        if args.categorize_question:
-            if len(categorized_qa['cut_answers']) != 0:
-                # 非空的时候才用这个作corpus传进BM25
-                bm25_model = NewBM25(categorized_qa['cut_answers'])
-                # print(categorized_qa['classes'])
-            else:
-                # 如果为空，那么还用在__init__()里实例化过的模型
-                bm25_model = self.bm25_model_uncat
-                # print('没用分类问题')
+        # 只有 问题分类 且 分类不为空 且 不用uni_idf 的情况下才在这里做模型实例化
+        # 其他情况下模型已经在__init__()里实例化过了
+        if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
+            bm25_model = NewBM25(categorized_qa['cut_answers'])
+            # print(categorized_qa['classes'])
         else:
             bm25_model = self.bm25_model_uncat
             # print('没用分类问题')
@@ -216,16 +211,11 @@ class Baselines:
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
 
         # 根据max_pos从答案库里把真正的答案抽出来
-        if args.categorize_question:
-            # 答案来源是categorized的时候
-            if len(categorized_qa['cut_answers']) != 0:
-                # 非空的时候才用这个作为answer base
-                answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
-            else:
-                # 如果为空，那么还用原来的self.uncut_answers作为answer base
-                answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+        # 只有 问题分类 且 分类不为空 且 不用uni_idf 的情况下才在用categorized_qa作为答案库
+        # 其他情况下用self.uncut_answers作为答案库
+        if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
+            answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
         else:
-            # 答案来源不是categorized的时候，categorized_qa是None
             answers = self.__max_pos2answers(max_pos, self.uncut_answers)
 
         return sorted_scores, max_pos, answers
