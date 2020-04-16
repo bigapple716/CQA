@@ -51,7 +51,7 @@ class FilePool:
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
     user_dict = os.path.join(project_dir, 'data/air_lexicon.txt')  # 分词用的字典
 
-    # 按照关键词分类的答案库
+    # 按照关键词分类的答案库(本地文件)
     keyword_list = [
         os.path.join(project_dir, 'data/keyword/乘机证件.txt'),
         os.path.join(project_dir, 'data/keyword/中转服务.txt'),
@@ -64,6 +64,17 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword/特殊旅客.txt'),
         os.path.join(project_dir, 'data/keyword/行李携带.txt'),
         os.path.join(project_dir, 'data/keyword/其他.txt'),  # 这个文件里只有意图识别的数据
+    ]
+    # 按照关键词分类的答案库(位于知识图谱)
+    keyword_from_graph_list = [
+        os.path.join(project_dir, 'data/keyword_from_graph/中转柜台.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/临时身份证办理.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/值机柜台.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/失物招领处.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/安检通道.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/特殊旅客服务.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/行李.txt'),
+        os.path.join(project_dir, 'data/keyword_from_graph/行李安检.txt'),
     ]
 
     # 意图识别QA对
