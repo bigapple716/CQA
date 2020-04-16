@@ -154,30 +154,36 @@ class Reader:
         if args.kw_from_graph:
             # 载入知识图谱
             graph = Graph(addr, username=username, password=password)
-            cls = '特殊旅客服务'
-            # 拼一个查询语句，查询name为特殊旅客服务的'textqa答案'属性
-            match = 'match(n{name:"' + cls + '"}) return n.textqa答案'
-            # 执行数据库查询
-            result = graph.run(match).data()[0]
-            uncut_answers = result['n.textqa答案'].split(';')
-            cut_answers = Utils.cut_text(uncut_answers)
-            dict = {
-                'class': cls,
-                'keywords': keywords,
-                'uncut_answers': uncut_answers,
-                'cut_answers': cut_answers
-            }
-            keyword_database.append(dict)
+            for keyword_file in FilePool.keyword_from_graph_list:
+                with open(keyword_file, 'r') as f_kw:
+                    lines = f_kw.readlines()
+                    lines = [line.rstrip() for line in lines]
+                    cls = lines[0]
+                    keywords = lines[1].split(' ')
+                    # 拼一个查询语句，查询name为特殊旅客服务的'textqa答案'属性
+                    match = 'match(n{name:"' + cls + '"}) return n.textqa答案'
+                    # 执行数据库查询
+                    result = graph.run(match).data()[0]
+                    uncut_answers = result['n.textqa答案'].split(';')
+                    cut_answers = Utils.cut_text(uncut_answers)
+                    dict = {
+                        'class': cls,
+                        'keywords': keywords,
+                        'uncut_answers': uncut_answers,
+                        'cut_answers': cut_answers
+                    }
+                    keyword_database.append(dict)
         else:
             for keyword_file in FilePool.keyword_list:
                 with open(keyword_file, 'r') as f_kw:
                     lines = f_kw.readlines()
                     lines = [line.rstrip() for line in lines]
+                    cls = lines[0]
                     keywords = lines[1].split(' ')
                     uncut_answers = lines[2:]
                     cut_answers = Utils.cut_text(uncut_answers)
                     dict = {
-                        'class': lines[0],
+                        'class': cls,
                         'keywords': keywords,
                         'uncut_answers': uncut_answers,
                         'cut_answers': cut_answers
