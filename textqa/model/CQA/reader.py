@@ -163,9 +163,12 @@ class Reader:
                     # 拼一个查询语句，查询name为特殊旅客服务的'textqa答案'属性
                     match = 'match(n{name:"' + cls + '"}) return n.textqa答案'
                     # 执行数据库查询
-                    result = graph.run(match).data()[0]
-                    uncut_answers = result['n.textqa答案'].split(';')
-                    cut_answers = Utils.cut_text(uncut_answers)
+                    result = graph.run(match).data()[0]  # 每条答案用';'分隔的
+                    uncut_answers = result['n.textqa答案'].split(';')  # 未分词的答案集合
+                    # 去掉空答案
+                    if '' in uncut_answers:
+                        uncut_answers.remove('')
+                    cut_answers = Utils.cut_text(uncut_answers)  # 已分词的答案集合
                     dict = {
                         'class': cls,
                         'keywords': keywords,
@@ -180,8 +183,8 @@ class Reader:
                     lines = [line.rstrip() for line in lines]
                     cls = lines[0]
                     keywords = lines[1].split(' ')
-                    uncut_answers = lines[2:]
-                    cut_answers = Utils.cut_text(uncut_answers)
+                    uncut_answers = lines[2:]  # 未分词的答案集合
+                    cut_answers = Utils.cut_text(uncut_answers)  # 已分词的答案集合
                     dict = {
                         'class': cls,
                         'keywords': keywords,
