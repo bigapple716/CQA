@@ -50,6 +50,8 @@ class FilePool:
 
     stopword_txt = os.path.join(project_dir, 'data/stopword.txt')  # 停用词表
     user_dict = os.path.join(project_dir, 'data/air_lexicon.txt')  # 分词用的字典
+    stanford_parser = '/Users/mike/Documents/stanford-parser-full-2018-10-17/stanford-parser.jar'
+    stanford_chinese_model = '/Users/mike/Documents/stanford-chinese-corenlp-2018-10-05-models.jar'
 
     # 按照关键词分类的答案库(本地文件)
     keyword_list = [

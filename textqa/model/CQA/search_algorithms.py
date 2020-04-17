@@ -12,6 +12,7 @@ import pickle
 import synonyms
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
+from nltk.parse.stanford import StanfordDependencyParser
 from textqa.model.CQA.new_bm25 import NewBM25
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.method import Method
@@ -82,14 +83,12 @@ class Baselines:
             text_tfidf = self.tfidf_model[bow]  # apply model
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
 
-        if use_aver_embed:
-            if use_pretrained_word2vec:
-                # 用预训练好的word2vec
-                with open(FilePool.word2vec_pickle, 'rb') as f_pickle:
-                    self.word2vec = pickle.load(f_pickle)
-            else:
-                # 用机场文档训练出的word2vec
-                self.word2vec = KeyedVectors.load(self_trained_word2vec, mmap='r')
+        # 实例化Parser
+        # parser = StanfordDependencyParser(path_to_jar=FilePool.stanford_parser,
+        #                                   path_to_models_jar=FilePool.stanford_chinese_model)
+        # result = parser.raw_parse('I shot an elephant in my sleep')
+        # dep = result.__next__()
+        # list(dep.triples())
 
     # bm25算法搜索
     def bm25(self, query, categorized_qa):
@@ -184,7 +183,7 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query, categorized_qa):
+    def bm25_new(self, query, categorized_qa, advanced_norm=False):
         # 只有 问题分类 且 分类不为空 且 不用uni_idf 的情况下才在这里做模型实例化
         # 其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
@@ -207,7 +206,15 @@ class Baselines:
         bm25_weights = bm25_model.get_new_scores(query, expanded_query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
-        sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
+        # 选择不同的normalize方式
+        if not advanced_norm:
+            sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
+        else:
+            k1 = 0
+            k2 = 0
+            content_word_cnt = 0
+            depend_relation_cnt = 0
+            sorted_scores = [s / (content_word_cnt * k1 + depend_relation_cnt * k2) for s in sorted_scores]
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
 
         # 根据max_pos从答案库里把真正的答案抽出来
@@ -217,6 +224,20 @@ class Baselines:
             answers = self.__max_pos2answers(max_pos, categorized_qa['uncut_answers'])
         else:
             answers = self.__max_pos2answers(max_pos, self.uncut_answers)
+
+        # 如果用全集答案库计算IDF的话，相当于模型得分和不分类是一样的，只是现在需要筛掉不在categorized_qa中的答案
+        if args.uni_idf:
+            filtered_sorted_scores = []
+            filtered_max_pos = []
+            filtered_answers = []
+            for s, m, a in zip(sorted_scores, max_pos, answers):
+                if a in answers:
+                    filtered_sorted_scores.append(s)
+                    filtered_max_pos.append(m)
+                    filtered_answers.append(a)
+            sorted_scores = filtered_sorted_scores
+            max_pos = filtered_max_pos
+            answers = filtered_answers
 
         return sorted_scores, max_pos, answers
 
@@ -247,7 +268,7 @@ class Baselines:
             sorted_scores, max_pos, answers = self.bm25_new(query, categorized_qa)
 
             # 用QA匹配的阈值过滤一遍结果，注意分类和没分类的情况阈值是不一样的
-            if categorized_qa is not None and len(categorized_qa['cut_answers']) != 0:
+            if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
                 sorted_scores, max_pos, answers, _ = \
                     self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.cat_threshold)
             else:
