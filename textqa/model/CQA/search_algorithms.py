@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
 import json
 from gensim.summarization.bm25 import BM25
 from gensim.models import TfidfModel, KeyedVectors
@@ -8,7 +7,6 @@ from gensim.corpora import Dictionary
 from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-import pickle
 import synonyms
 from nltk.lm.preprocessing import *
 from nltk.lm.models import KneserNeyInterpolated
@@ -18,7 +16,9 @@ from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
 
-self_trained_word2vec = 'train_embed/word2vec.kv'
+# 常量
+k1 = 4
+k2 = 2
 
 
 class Baselines:
@@ -207,8 +207,6 @@ class Baselines:
         if not advanced_norm:
             sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         else:
-            k1 = 4
-            k2 = 2
             normed_sorted_scores = []
             for s in sorted_scores:
                 content_word_cnt = len(query)
