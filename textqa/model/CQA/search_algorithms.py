@@ -85,7 +85,7 @@ class Baselines:
 
         # 实例化Parser
         self.parser = StanfordDependencyParser(path_to_jar=FilePool.stanford_parser,
-                                          path_to_models_jar=FilePool.stanford_chinese_model)
+                                               path_to_models_jar=FilePool.stanford_chinese_model)
 
     # bm25算法搜索
     def bm25(self, query, categorized_qa):
