@@ -37,11 +37,13 @@ class TBQA:
             print('trim stop words:', args.trim_stop)
             print('answer base:', args.answer_base)
             print('categorize questions:', args.categorize_question)
+            print('universal IDF:', args.uni_idf)
             print('return top ' + str(args.top_n) + ' results')
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
             print('cat threshold:', args.cat_threshold)
             print('syn threshold:', args.syn_threshold)
+            print('read from graph:', args.kw_from_graph)
             print('logging enabled')
             print('=====================================')
 
