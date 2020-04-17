@@ -22,7 +22,7 @@ k2 = 2
 
 
 class Baselines:
-    def __init__(self, use_aver_embed=False, use_pretrained_word2vec=True):
+    def __init__(self):
         # 读入停用词表
         with open(FilePool.stopword_txt, 'r') as f_stopword:
             doc = f_stopword.readlines()
