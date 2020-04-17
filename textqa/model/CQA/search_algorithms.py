@@ -84,11 +84,8 @@ class Baselines:
             self.sim_index = SparseMatrixSimilarity(text_tfidf, n_features)
 
         # 实例化Parser
-        # parser = StanfordDependencyParser(path_to_jar=FilePool.stanford_parser,
-        #                                   path_to_models_jar=FilePool.stanford_chinese_model)
-        # result = parser.raw_parse('I shot an elephant in my sleep')
-        # dep = result.__next__()
-        # list(dep.triples())
+        self.parser = StanfordDependencyParser(path_to_jar=FilePool.stanford_parser,
+                                          path_to_models_jar=FilePool.stanford_chinese_model)
 
     # bm25算法搜索
     def bm25(self, query, categorized_qa):
@@ -183,7 +180,7 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query, categorized_qa, advanced_norm=False):
+    def bm25_new(self, query, categorized_qa, advanced_norm=True):
         # 只有 问题分类 且 分类不为空 且 不用uni_idf 的情况下才在这里做模型实例化
         # 其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
@@ -210,11 +207,15 @@ class Baselines:
         if not advanced_norm:
             sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         else:
-            k1 = 0
-            k2 = 0
-            content_word_cnt = 0
-            depend_relation_cnt = 0
-            sorted_scores = [s / (content_word_cnt * k1 + depend_relation_cnt * k2) for s in sorted_scores]
+            k1 = 4
+            k2 = 2
+            normed_sorted_scores = []
+            for s in sorted_scores:
+                content_word_cnt = len(query)
+                result = self.parser.parse(query).__next__()
+                depend_relation_cnt = len(list(result.triples()))
+                normed_sorted_scores.append(s / (content_word_cnt * k1 + depend_relation_cnt * k2))
+            sorted_scores = normed_sorted_scores
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
 
         # 根据max_pos从答案库里把真正的答案抽出来
