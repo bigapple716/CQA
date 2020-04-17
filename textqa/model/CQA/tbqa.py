@@ -4,6 +4,7 @@ from textqa.model.CQA.search_algorithms import *
 from textqa.model.CQA.reader import Reader
 from textqa.model.CQA.pre_processor import PreProcessor
 from textqa.model.CQA.post_processor import PostProcessor
+from textqa.model.CQA.scripts.evaluate import Evaluate
 from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
 import platform
@@ -163,3 +164,7 @@ if __name__ == '__main__':
     # print('answer:', answer)
 
     tbqa.get_multi_answers()
+
+    # 自动评测
+    evaluator = Evaluate()
+    evaluator.evaluate()
