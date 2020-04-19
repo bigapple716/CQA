@@ -54,10 +54,10 @@ class TBQA:
         answers_index_list = []
         questions_list = []
     
-        for i, (cut_query, query) in enumerate(zip(cleaned_in, uncut_in)):
+        for i, (cut_query, uncut_query) in enumerate(zip(cleaned_in, uncut_in)):
             # 答案来源
             if args.categorize_question:
-                categorized_qa = self.pre_processor.categorize(query)
+                categorized_qa = self.pre_processor.categorize(uncut_query)
             else:
                 categorized_qa = None
 
@@ -67,12 +67,13 @@ class TBQA:
             elif args.method == Method.bm25_syn:
                 sorted_scores, max_pos, answers = self.baseline_model.bm25_syn(cut_query)
             elif args.method == Method.bm25_new:
-                sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query, categorized_qa)
+                sorted_scores, max_pos, answers = self.baseline_model.bm25_new(cut_query, uncut_query, categorized_qa)
             elif args.method == Method.qq_match:
                 sorted_scores, max_pos, answers, questions = self.baseline_model.qq_match(cut_query)
                 questions_list.append(questions)
             elif args.method == Method.mix:
-                sorted_scores, max_pos, answers, questions = self.baseline_model.qq_qa_mix(cut_query, categorized_qa)
+                sorted_scores, max_pos, answers, questions = \
+                    self.baseline_model.qq_qa_mix(cut_query, uncut_query, categorized_qa)
                 questions_list.append(questions)
             elif args.method == Method.tfidf_sim:
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)

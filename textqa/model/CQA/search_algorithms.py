@@ -207,13 +207,10 @@ class Baselines:
         if not advanced_norm:
             sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         else:
-            normed_sorted_scores = []
-            for s in sorted_scores:
-                content_word_cnt = len(query)
-                result = self.parser.parse(query).__next__()
-                depend_relation_cnt = len(list(result.triples()))
-                normed_sorted_scores.append(s / (content_word_cnt * k1 + depend_relation_cnt * k2))
-            sorted_scores = normed_sorted_scores
+            content_word_cnt = len(query)
+            parse_result = self.parser.parse(query).__next__()
+            depend_relation_cnt = len(list(parse_result.triples()))
+            sorted_scores = [s / (content_word_cnt * k1 + depend_relation_cnt * k2) for s in sorted_scores]
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
 
         # 根据max_pos从答案库里把真正的答案抽出来
@@ -253,7 +250,7 @@ class Baselines:
         return sorted_scores, max_pos, answers, questions
 
     # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, categorized_qa):
+    def qq_qa_mix(self, query, uncut_query, categorized_qa):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
 
         if len(sorted_scores) > 0:
@@ -264,7 +261,7 @@ class Baselines:
             # 截断之后啥也不剩了，说明QQ匹配没有一个得分到阈值的
             # 果断放弃，改用QA匹配
             # QA匹配暂时选用bm25算法
-            sorted_scores, max_pos, answers = self.bm25_new(query, categorized_qa)
+            sorted_scores, max_pos, answers = self.bm25_new(query, uncut_query, categorized_qa)
 
             # 用QA匹配的阈值过滤一遍结果，注意分类和没分类的情况阈值是不一样的
             if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
