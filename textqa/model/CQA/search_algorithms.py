@@ -207,6 +207,7 @@ class Baselines:
         if not advanced_norm:
             sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         else:
+            # 一种高级的normalize方法
             content_word_cnt = len(query)
             parse_result = self.parser.parse(query).__next__()
             depend_relation_cnt = len(list(parse_result.triples()))
