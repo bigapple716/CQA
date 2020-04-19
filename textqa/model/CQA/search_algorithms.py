@@ -180,7 +180,7 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query, categorized_qa, advanced_norm=False):
+    def bm25_new(self, query, uncut_query, categorized_qa, advanced_norm=False):
         # 只有 问题分类 且 分类不为空 且 不用uni_idf 的情况下才在这里做模型实例化
         # 其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
