@@ -106,7 +106,7 @@ class Evaluate:
         # 输出结果
         print('hit1:', hit1 / self.valid_answer_size)
         print('hit3:', hit3 / self.valid_answer_size)
-        print('queries found in QA base:', found)
+        # print('queries found in QA base:', found)
         with open(self.eval_res_file, 'w') as f_res:
             f_res.write('hit1' + '\t' + 'hit3' + '\n')
             for h1, h3 in zip(hit1_result, hit3_result):
