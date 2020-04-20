@@ -12,11 +12,11 @@ if __name__ == '__main__':
     logging.set_verbosity('error')
     warnings.filterwarnings('ignore')
 
-    args.qa_threshold = 2.0
-    while args.qa_threshold > 0:
-        print('qa_threshold:', args.qa_threshold)
+    args.cat_threshold = 0.8
+    while args.cat_threshold > 0:
+        print('cat_threshold:', args.cat_threshold)
         tbqa = TBQA()
         tbqa.get_multi_answers()
         evaluator = Evaluate()
         evaluator.evaluate()
-        args.qa_threshold -= 0.1
+        args.cat_threshold -= 0.1

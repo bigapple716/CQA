@@ -15,6 +15,7 @@ from textqa.model.CQA.new_bm25 import NewBM25
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
+from multiprocessing import Pool
 
 # 常量
 k1 = 4
@@ -180,7 +181,7 @@ class Baselines:
         return sorted_scores, max_pos, answers
 
     # 改进版的bm25
-    def bm25_new(self, query, uncut_query, categorized_qa, advanced_norm=False):
+    def bm25_new(self, query, uncut_query, categorized_qa):
         # 只有 问题分类 且 分类不为空 且 不用uni_idf 的情况下才在这里做模型实例化
         # 其他情况下模型已经在__init__()里实例化过了
         if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
@@ -204,7 +205,7 @@ class Baselines:
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
         # 选择不同的normalize方式
-        if not advanced_norm:
+        if not args.advanced_norm:
             sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
         else:
             # 一种高级的normalize方法
@@ -266,11 +267,17 @@ class Baselines:
 
             # 用QA匹配的阈值过滤一遍结果，注意分类和没分类的情况阈值是不一样的
             if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
-                sorted_scores, max_pos, answers, _ = \
-                    self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.cat_threshold)
+                if args.advanced_norm:
+                    # new bm25用高级归一化方法
+                    threshold = args.cat_adv_norm_threshold
+                else:
+                    # new bm25用普通归一化方法
+                    threshold = args.cat_threshold
             else:
-                sorted_scores, max_pos, answers, _ = \
-                    self.__filter_by_threshold(sorted_scores, max_pos, answers, [], args.qa_threshold)
+                # new bm25不用问题分类
+                threshold = args.qa_threshold
+            sorted_scores, max_pos, answers, _ = \
+                self.__filter_by_threshold(sorted_scores, max_pos, answers, [], threshold)
 
             return sorted_scores, max_pos, answers, []  # questions的位置返回一个空list
 

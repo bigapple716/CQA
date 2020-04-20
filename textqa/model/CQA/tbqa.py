@@ -43,8 +43,10 @@ class TBQA:
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
             print('cat threshold:', args.cat_threshold)
+            print('cat with advanced norm threshold:', args.cat_adv_norm_threshold)
             print('syn threshold:', args.syn_threshold)
             print('read from graph:', args.kw_from_graph)
+            print('new BM25 uses advanced normalization:', args.advanced_norm)
             print('logging enabled')
             print('=====================================')
 
