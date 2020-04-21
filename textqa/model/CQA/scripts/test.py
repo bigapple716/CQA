@@ -5,6 +5,7 @@ import time
 import json
 
 
+# 性能测试
 def performance_test(text):
     start = time.time()
     tbqa = TBQA()
@@ -18,4 +19,6 @@ def performance_test(text):
     return json_data
 
 
-performance_test('身份证丢了如何乘机？')
+# 测试脚本
+if __name__ == '__main__':
+    performance_test('身份证丢了如何乘机？')
