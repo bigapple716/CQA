@@ -3,6 +3,8 @@
 from textqa.model.CQA.tbqa import TBQA
 import time
 import json
+from absl import logging
+import warnings
 
 
 # 性能测试
@@ -21,4 +23,8 @@ def performance_test(text):
 
 # 测试脚本
 if __name__ == '__main__':
-    performance_test('身份证丢了如何乘机？')
+    # 设置日志级别
+    logging.set_verbosity('error')
+    warnings.filterwarnings('ignore')
+
+    performance_test('出生证明证件号')
