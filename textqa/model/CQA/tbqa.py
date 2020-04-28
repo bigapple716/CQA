@@ -42,6 +42,7 @@ class TBQA:
             print('return top ' + str(args.top_n) + ' results')
             print('QQ threshold:', args.qq_threshold)
             print('QA threshold:', args.qa_threshold)
+            print('QA with advanced norm threshold:', args.qa_adv_norm_threshold)
             print('cat threshold:', args.cat_threshold)
             print('cat with advanced norm threshold:', args.cat_adv_norm_threshold)
             print('syn threshold:', args.syn_threshold)

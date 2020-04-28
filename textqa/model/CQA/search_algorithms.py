@@ -38,10 +38,14 @@ class Baselines:
             # 使用短答案
             ans_json = FilePool.cleaned_answers_json
             ans_txt = FilePool.cleaned_answers_txt
-        else:
+        elif args.answer_base == 'small':
             # 使用small answers
             ans_json = FilePool.small_answers_json
             ans_txt = FilePool.small_answers_txt
+        else:
+            # 使用common sense answers
+            ans_json = FilePool.cs_answers_json
+            ans_txt = FilePool.cs_answers_txt
         with open(ans_json, 'r') as f_json:
             text = json.load(f_json)
             if args.trim_stop:
@@ -267,6 +271,7 @@ class Baselines:
 
             # 用QA匹配的阈值过滤一遍结果，注意分类和没分类的情况阈值是不一样的
             if args.categorize_question and len(categorized_qa['cut_answers']) != 0 and not args.uni_idf:
+                # new bm25用问题分类
                 if args.advanced_norm:
                     # new bm25用高级归一化方法
                     threshold = args.cat_adv_norm_threshold
@@ -275,7 +280,12 @@ class Baselines:
                     threshold = args.cat_threshold
             else:
                 # new bm25不用问题分类
-                threshold = args.qa_threshold
+                if args.advanced_norm:
+                    # new bm25用高级归一化方法
+                    threshold = args.qa_adv_norm_threshold
+                else:
+                    # new bm25用普通归一化方法
+                    threshold = args.qa_threshold
             sorted_scores, max_pos, answers, _ = \
                 self.__filter_by_threshold(sorted_scores, max_pos, answers, [], threshold)
 

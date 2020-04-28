@@ -18,6 +18,10 @@ class FilePool:
     extra_txt = os.path.join(project_dir, 'data/raw_data/extra_answers.txt')  # 补充知识文档
     raw_small_answers_txt = os.path.join(project_dir, 'data/raw_data/raw_small_answers.txt')  # 全部答案 - 长沙机场
 
+    # 航空常识原始数据
+    raw_cs_questions = os.path.join(project_dir, 'data/raw_data/raw_cs_questions.txt')
+    raw_cs_golds = os.path.join(project_dir, 'data/raw_data/raw_cs_golds.txt')
+
     # 清洗过的答案库
     small_answers_txt = os.path.join(project_dir, 'data/small_answers.txt')  # 全部答案 - 长沙机场(没分词)
     small_answers_json = os.path.join(project_dir, 'data/small_answers.json')  # 全部答案 - 长沙机场(已分词)
@@ -27,6 +31,8 @@ class FilePool:
     cleaned_extra_json = os.path.join(project_dir, 'data/cleaned_extra.json')  # 补充答案(已分词)
     long_answers_txt = os.path.join(project_dir, 'data/long_answers.txt')  # 长答案(没分词)
     long_answers_json = os.path.join(project_dir, 'data/long_answers.json')  # 长答案(已分词)
+    cs_answers_txt = os.path.join(project_dir, 'data/cs_answers.txt')  # 航空常识(没分词)
+    cs_answers_json = os.path.join(project_dir, 'data/cs_answers.json')  # 航空常识(已分词)
 
     # QA库
     qa_question_file = os.path.join(project_dir, 'data/match_question.txt')  # QA对里的原始问题集合
@@ -77,18 +83,6 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword_from_graph/特殊旅客服务.txt'),
         os.path.join(project_dir, 'data/keyword_from_graph/行李.txt'),
         os.path.join(project_dir, 'data/keyword_from_graph/行李安检.txt'),
-    ]
-
-    # 意图识别QA对
-    intention_qa_list = [
-        os.path.join(project_dir, 'data/intention/中转服务.txt'),
-        os.path.join(project_dir, 'data/intention/值机.txt'),
-        os.path.join(project_dir, 'data/intention/其他.txt'),
-        os.path.join(project_dir, 'data/intention/安全检查.txt'),
-        os.path.join(project_dir, 'data/intention/有效证件.txt'),
-        os.path.join(project_dir, 'data/intention/物品遗失.txt'),
-        os.path.join(project_dir, 'data/intention/特殊旅客.txt'),
-        os.path.join(project_dir, 'data/intention/行李携带.txt'),
     ]
 
     # 预训练中文词向量
