@@ -17,6 +17,25 @@ class DataMaker:
     answer_file = 'textqa/model/CQA/data/long_answers.txt'
     queries_file = 'textqa/model/CQA/data/queries.txt'
 
+    # 构造航空常识数据
+    def make_cs_data(self):
+        with open(FilePool.raw_cs_questions, 'r') as f_q:
+            doc = f_q.readlines()
+            questions = [line.rstrip('\n') for line in doc]
+        with open(FilePool.raw_cs_golds, 'r') as f_g:
+            doc = f_g.readlines()
+            golds = [line.rstrip('\n') for line in doc]
+
+        qa = []
+        for q, g in zip(questions, golds):
+            dict = {'question': q, 'sentence': g}
+            qa.append(dict)
+
+        with open(FilePool.whole_qa_file, 'w') as f_qa:
+            json.dump(obj=qa, fp=f_qa, ensure_ascii=False)
+
+        self.divide()
+
     # make qa data
     def make_qa_data(self, query_file=FilePool.input_txt):
         # 读文件
@@ -94,42 +113,6 @@ class DataMaker:
         doc = list(dict.fromkeys(doc[:5000]))
         with open(FilePool.input_txt, 'w') as f_out:
             f_out.writelines(doc)
-
-    # 读入意图识别数据
-    def read_intent(self):
-        queries = []
-        answers = set()
-        qa = []
-
-        for filename in FilePool.intention_qa_list:
-            with open(filename, 'r') as f_raw:
-                cat_answers = set()
-                doc = f_raw.readlines()
-            for line in doc:
-                line = line.rstrip()
-                sentences = line.split('\t')
-
-                # 把Q和A分别加到各个集合里
-                queries.append(sentences[0])
-                answers.add(sentences[1])
-                qa.append({'question': sentences[0], 'sentence': [sentences[1]]})
-                cat_answers.add(sentences[1])
-                print(sentences[0] + '\t' + sentences[1])
-
-            for line in answers:
-                print(line)
-            # print(filename)
-            # for ans in cat_answers:
-            #     print(ans)
-            # print('\n\n\n\n\n')
-
-        # 以下代码只运行一次，作用是在现有的qa.json后面补充意图识别的qa对
-        # with open(FilePool.qa_file, 'r') as f_qa_in:
-        #     kunming_qa = json.load(f_qa_in)
-        #     print(len(kunming_qa))
-        # new_qa = kunming_qa + qa
-        # with open(FilePool.qa_file, 'w') as f_qa_out:
-        #     json.dump(obj=new_qa, fp=f_qa_out, ensure_ascii=False)
 
     # 划分qa库，一部分作为QQ匹配中的qa库，一部分作为queries
     def divide(self, ratio=0.7):
@@ -280,6 +263,7 @@ class DataMaker:
 if __name__ == "__main__":
     data_maker = DataMaker()
 
+    data_maker.make_cs_data()
     # data_maker.divide()
     # data_maker.make_qa_data()
     # data_maker.read_intent()
