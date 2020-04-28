@@ -16,16 +16,17 @@ password = '123456'
 class Reader:
     # 预处理数据(下面方法的集合)
     def preprocess(self):
-        self.__read_keywords()  # 读入各类的关键词
-        self.__clean_cut(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
+        # self.__read_keywords()  # 读入各类的关键词
+        # self.__clean_cut(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
+        self.__clean_cut(FilePool.raw_cs_golds, FilePool.cs_answers_txt, FilePool.cs_answers_json)
         self.__make_base_que_list()  # 制作base_ques_list
 
         # 以下方法有先后依赖关系
-        self.__read_docs()
-        self.__clean_cut(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
-        self.__clean_cut(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
-        self.__merge_add()
-        self.__add_extra()
+        # self.__read_docs()
+        # self.__clean_cut(FilePool.answers_txt, FilePool.cleaned_answers_txt, FilePool.cleaned_answers_json)
+        # self.__clean_cut(FilePool.extra_txt, FilePool.cleaned_extra_txt, FilePool.cleaned_extra_json)
+        # self.__merge_add()
+        # self.__add_extra()
 
     '''以下均为私有方法'''
 
