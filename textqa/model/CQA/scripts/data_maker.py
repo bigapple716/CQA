@@ -28,7 +28,7 @@ class DataMaker:
 
         qa = []
         for q, g in zip(questions, golds):
-            dict = {'question': q, 'sentence': g}
+            dict = {'question': q, 'sentence': [g]}
             qa.append(dict)
 
         with open(FilePool.whole_qa_file, 'w') as f_qa:
