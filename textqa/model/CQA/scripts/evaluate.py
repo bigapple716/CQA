@@ -123,7 +123,7 @@ class Evaluate:
             return self.__tfidf_sim_match(gold, ans_list)
 
     # 用tfidf-sim扩充标准答案集合
-    def __tfidf_sim_match(self, query, ans_list, threshold=0.10):
+    def __tfidf_sim_match(self, query, ans_list, threshold=0.5):
         cut_query, _ = self.pre_processor.clean_cut_trim([query])  # 清洗query
         cut_ans_list, _ = self.pre_processor.clean_cut_trim(ans_list)  # 清洗ans_list
 
