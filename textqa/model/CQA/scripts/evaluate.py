@@ -8,7 +8,7 @@ from gensim.corpora import Dictionary
 from gensim.similarities import SparseMatrixSimilarity
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.utils import Utils
-from textqa.model.CQA.pre_processor import PreProcessor
+from textqa.model.CQA.reader import Reader
 
 
 # 自动化测试
@@ -16,7 +16,7 @@ class Evaluate:
     def __init__(self):
         self.eval_res_file = 'textqa/model/CQA/scripts/eval_result.txt'
 
-        self.pre_processor = PreProcessor()
+        self.reader = Reader()
 
         # 读入停用词表
         with open(FilePool.stopword_txt, 'r') as f_stopword:
@@ -158,8 +158,8 @@ class Evaluate:
 
     # 用tfidf-sim扩充标准答案集合
     def __tfidf_sim_match(self, query, ans_list, threshold=0.10):
-        cut_query, _ = self.pre_processor.clean_cut_trim([query])  # 清洗query
-        cut_ans_list, _ = self.pre_processor.clean_cut_trim(ans_list)  # 清洗ans_list
+        cut_query, _ = self.reader.clean_cut_trim([query])  # 清洗query
+        cut_ans_list, _ = self.reader.clean_cut_trim(ans_list)  # 清洗ans_list
 
         ans_bow = [self.tfidf_dict.doc2bow(line) for line in cut_ans_list]  # 用ans_list做一个bag of words
         text_tfidf = self.tfidf_model[ans_bow]  # apply model

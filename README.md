@@ -15,8 +15,7 @@
 * `method.py`: 方法枚举类
 * `new_bm25.py`: 改进版bm25的模型
 * `post_processor.py`: 答案清洗等后处理工作
-* `pre_processor.py`: 数据预处理
-* `reader.py`: 读入数据，构建答案集
+* `reader.py`: 读入数据和数据预处理
 * `search_algorithms.py`: 答案选择的算法
 * `text_cnn.py`: Text CNN模型
 * `utils.py`: 工具静态类

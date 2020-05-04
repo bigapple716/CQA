@@ -2,7 +2,6 @@
 
 from textqa.model.CQA.search_algorithms import *
 from textqa.model.CQA.reader import Reader
-from textqa.model.CQA.pre_processor import PreProcessor
 from textqa.model.CQA.post_processor import PostProcessor
 from textqa.model.CQA.scripts.evaluate import Evaluate
 from textqa.model.CQA.method import Method
@@ -21,11 +20,8 @@ class TBQA:
         # 载入用户字典(分词用)
         # jieba.load_userdict(FilePool.user_dict)
 
-        # 下面两行代码只需要运行一次
-        # self.reader = Reader()  # 实例化一个Reader类
-        # self.reader.preprocess()
-
-        self.pre_processor = PreProcessor()
+        self.reader = Reader()  # 实例化一个Reader类
+        # self.reader.preprocess()  # 这行代码只需要运行一次
 
         self.baseline_model = Baselines()  # 放在这里就只需要初始化一次，能提高性能
 
@@ -59,7 +55,7 @@ class TBQA:
         for i, (cut_query, uncut_query) in enumerate(zip(cleaned_in, uncut_in)):
             # 答案来源
             if args.categorize_question:
-                categorized_qa = self.pre_processor.categorize(uncut_query)
+                categorized_qa = self.reader.categorize(uncut_query)
             else:
                 categorized_qa = None
 
@@ -98,7 +94,7 @@ class TBQA:
     # 对外接口，输入1个问题给出1个回答
     def get_answer(self, question):
         # 清洗输入
-        cleaned_input, uncut_input = self.pre_processor.clean_cut_trim([question])
+        cleaned_input, uncut_input = self.reader.clean_cut_trim([question])
 
         # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
@@ -129,7 +125,7 @@ class TBQA:
         questions = [line.rstrip('\n') for line in doc]
 
         # 清洗输入
-        cleaned_input, uncut_input = self.pre_processor.clean_cut_trim(questions)
+        cleaned_input, uncut_input = self.reader.clean_cut_trim(questions)
 
         # 检索答案
         answers_list, answer_idx_list, sorted_scores_list = self.search_answers(cleaned_input, uncut_input)
