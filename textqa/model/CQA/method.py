@@ -3,6 +3,7 @@
 from enum import Enum
 
 
+# 枚举类：答案选择的全部方法
 class Method(Enum):
     bm25 = 0  # 普通的bm25
     bm25_syn = 1  # bm25 + 近义词替换

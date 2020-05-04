@@ -2,7 +2,8 @@
 
 from textqa.model.CQA.method import Method
 
-# 所有系统参数仅在该文件中可以修改，在其他文件中应为只读状态
+# 系统参数集合
+# 所有参数应该仅在该文件中可以修改，在其他文件中应为只读状态
 method = Method.mix  # 检索方法
 trim_stop = True  # 是否去停用词
 answer_base = 'small'  # 答案库来源: long, cleaned, small
