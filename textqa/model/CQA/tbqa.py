@@ -134,12 +134,16 @@ class TBQA:
         # if args.method != 'qq-match' and args.method != 'mix':
         #     answers_list = self.post_processor.clean_answers(list(answers_list), list(answer_idx_list))  # 清洗答案
 
+        empty_ans = 0
         for scores, ans in zip(sorted_scores_list, answers_list):
             if args.enable_log:
                 print(scores[:args.top_n])
             # 如果回答列表是空的，那么说明这个问题不可回答
             if len(ans) == 0:
+                empty_ans += 1
                 ans.append(-1)
+
+        print('reject rate:', empty_ans / len(sorted_scores_list))
 
         self.post_processor.print_answers(answers_list, FilePool.output_csv)
 

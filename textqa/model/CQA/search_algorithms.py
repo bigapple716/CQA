@@ -107,7 +107,15 @@ class Baselines:
         bm25_weights = bm25_model.get_scores(query)
 
         sorted_scores = sorted(bm25_weights, reverse=True)  # 将得分从大到小排序
-        sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
+        # 选择不同的normalize方式
+        if not args.advanced_norm:
+            sorted_scores = [s / (len(query) + 1) for s in sorted_scores]  # 将得分除以句长
+        else:
+            # 一种高级的normalize方法
+            content_word_cnt = len(query)
+            parse_result = self.parser.parse(query).__next__()
+            depend_relation_cnt = len(list(parse_result.triples()))
+            sorted_scores = [s / (content_word_cnt * k1 + depend_relation_cnt * k2) for s in sorted_scores]
         max_pos = np.argsort(bm25_weights)[::-1]  # 从大到小排序，返回index(而不是真正的value)
 
         # 根据max_pos从答案库里把真正的答案抽出来
