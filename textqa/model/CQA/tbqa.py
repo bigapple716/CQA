@@ -71,7 +71,7 @@ class TBQA:
                 questions_list.append(questions)
             elif args.method == Method.mix:
                 sorted_scores, max_pos, answers, questions = \
-                    self.baseline_model.qq_qa_mix(cut_query, uncut_query, categorized_qa)
+                    self.baseline_model.qq_cat_qa_filter(cut_query, uncut_query, categorized_qa)
                 questions_list.append(questions)
             elif args.method == Method.tfidf_sim:
                 sorted_scores, max_pos, answers = self.baseline_model.tfidf_sim(cut_query)

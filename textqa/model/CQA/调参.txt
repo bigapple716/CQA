@@ -1,0 +1,59 @@
+results
+
+tf-idf
+	reject rate: 0.0
+	hit1: 0.43870967741935485
+	hit3: 0.6193548387096774
+
+bm25
+	reject rate: 0.0
+	time cost: 1.560500144958496
+	hit1: 0.4666666666666667
+	hit3: 0.6344086021505376
+
+QQ匹配 + new_bm25
+	qa_threshold = 5
+	score rate: 0.6131078224101479
+	hit1: 0.819672131147541
+	hit3: 0.8360655737704918
+
+	qa_threshold = 0
+	syn_threshold = 0.8			syn_threshold = 0.78
+	reject rate: 0.0			reject rate: 0.0
+	hit1: 0.5940803382663847	hit1: 0.6043010752688172
+	hit3: 0.693446088794926		hit3: 0.6903225806451613
+
+QQ匹配 + new_bm25 + 问题分类
+	qa_threshold = 0
+	syn_threshold = 0.8			syn_threshold = 0.78
+	reject rate: 0.0
+	B = 0.75					B = 0
+	hit1: 0.5792811839323467	hit1: 0.6021505376344086
+	hit3: 0.7061310782241015	hit3: 0.7268817204301076
+
+QQ匹配 + new_bm25 + adv norm
+	score rate: 0.6109936575052854
+	hit1: 0.8097826086956522
+	hit3: 0.8260869565217391
+
+QQ匹配 + bm25
+	qa_threshold = 4.2
+	reject rate: 0.6173361522198731
+	hit1: 0.8232044198895028
+	hit3: 0.8397790055248618
+
+	qa_threshold = 0
+	reject rate: 0.0
+	hit1: 0.587737843551797		hit1: 0.5806451612903226
+	hit3: 0.693446088794926		hit3: 0.6881720430107527
+
+QQ匹配 + bm25 + adv norm 
+	score rate: 0.6236786469344608
+	hit1: 0.8202247191011236
+	hit3: 0.8370786516853933
+
+QQ匹配 + 近义词替换
+	syn_threshold = 0.75
+	reject rate: 0.0
+	hit1: 0.582
+	hit3: 0.688

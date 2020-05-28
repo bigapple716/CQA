@@ -258,8 +258,8 @@ class Baselines:
 
         return sorted_scores, max_pos, answers, questions
 
-    # QQ匹配和QA匹配混合
-    def qq_qa_mix(self, query, uncut_query, categorized_qa):
+    # QQ匹配+问题分类+QA匹配+可回答性判断
+    def qq_cat_qa_filter(self, query, uncut_query, categorized_qa):
         sorted_scores, max_pos, answers, questions = self.qq_match(query)  # 先用QQ匹配试试
 
         if len(sorted_scores) > 0:
