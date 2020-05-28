@@ -15,7 +15,6 @@ from textqa.model.CQA.new_bm25 import NewBM25
 from textqa.model.CQA.file_pool import FilePool
 from textqa.model.CQA.method import Method
 from textqa.model.CQA import args
-from multiprocessing import Pool
 
 # 常量
 k1 = 4
