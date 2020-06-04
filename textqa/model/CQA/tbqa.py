@@ -10,12 +10,13 @@ import platform
 from absl import logging
 import jieba
 import warnings
+import time
 
 
 class TBQA:
     def __init__(self):
-        if platform.system() == 'Darwin':
-            args.enable_log = True
+        if platform.system() != 'Darwin':
+            args.enable_log = False
 
         # 载入用户字典(分词用)
         # jieba.load_userdict(FilePool.user_dict)
@@ -43,6 +44,7 @@ class TBQA:
             print('syn threshold:', args.syn_threshold)
             print('read from graph:', args.kw_from_graph)
             print('new BM25 uses advanced normalization:', args.advanced_norm)
+            print('cat threshold under new BM25:', args.bm25_new_cat_threshold)
             print('logging enabled')
             print('=====================================')
 
@@ -162,12 +164,15 @@ if __name__ == '__main__':
 
     tbqa = TBQA()
 
-    # question = '身份证丢了怎么登机'
+    # 单次测试 + 计时
+    # question = str = input("请输入问题：")
+    # start_time = time.time()  # 计时开始
     # answer = tbqa.get_answer(question)
+    # end_time = time.time()  # 计时结束
+    # print('time cost:', end_time - start_time)
     # print('answer:', answer)
 
+    # 批量测试 + 自动评测
     tbqa.get_multi_answers()
-
-    # 自动评测
     evaluator = Evaluate()
     evaluator.evaluate()
