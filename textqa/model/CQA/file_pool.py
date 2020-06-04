@@ -67,6 +67,18 @@ class FilePool:
         os.path.join(project_dir, 'data/keyword/行李携带.txt'),
         os.path.join(project_dir, 'data/keyword/其他.txt'),  # 这个文件里只有意图识别的数据
     ]
+    # 按照关键词分类的答案库(本地文件，新一版，增加了更多分类答案，对应毕业论文实验结果)
+    large_keyword_list = [
+        os.path.join(project_dir, 'data/keyword_large/中转柜台.txt'),
+        os.path.join(project_dir, 'data/keyword_large/临时身份证办理.txt'),
+        os.path.join(project_dir, 'data/keyword_large/值机柜台.txt'),
+        os.path.join(project_dir, 'data/keyword_large/失物招领处.txt'),
+        os.path.join(project_dir, 'data/keyword_large/安检通道.txt'),
+        os.path.join(project_dir, 'data/keyword_large/特殊旅客服务.txt'),
+        os.path.join(project_dir, 'data/keyword_large/行李.txt'),
+        os.path.join(project_dir, 'data/keyword_large/行李安检.txt'),
+        os.path.join(project_dir, 'data/keyword_large/其他.txt'),
+    ]
     # 按照关键词分类的答案库(位于知识图谱)
     keyword_from_graph_list = [
         os.path.join(project_dir, 'data/keyword_from_graph/中转柜台.txt'),
