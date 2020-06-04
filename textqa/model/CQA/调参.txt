@@ -40,7 +40,9 @@ QQ匹配 + new_bm25 + 新的问题分类
 
 QQ匹配 + new_bm25 + 新的问题分类 + 可回答性判断
 	qa_threshold = 0
-	syn_threshold = 0.78	
+	syn_threshold = 0.78
+	qa_threshold = 0	
+	cat_threshold = 0.9
 	reject rate: 0.22365591397849463
 	hit1: 0.6869806094182825
 	hit3: 0.7479224376731302
