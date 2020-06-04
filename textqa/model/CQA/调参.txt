@@ -23,13 +23,30 @@ QQ匹配 + new_bm25
 	hit1: 0.5940803382663847	hit1: 0.6043010752688172
 	hit3: 0.693446088794926		hit3: 0.6903225806451613
 
-QQ匹配 + new_bm25 + 问题分类
+QQ匹配 + new_bm25 + 原来的问题分类
 	qa_threshold = 0
 	syn_threshold = 0.8			syn_threshold = 0.78
 	reject rate: 0.0
 	B = 0.75					B = 0
 	hit1: 0.5792811839323467	hit1: 0.6021505376344086
 	hit3: 0.7061310782241015	hit3: 0.7268817204301076
+
+QQ匹配 + new_bm25 + 新的问题分类
+	qa_threshold = 0
+	syn_threshold = 0.78	
+	reject rate: 0.0
+	hit1: 0.6129032258064516
+	hit3: 0.7376344086021506
+
+QQ匹配 + new_bm25 + 新的问题分类 + 可回答性判断
+	qa_threshold = 0
+	syn_threshold = 0.78	
+	reject rate: 0.22365591397849463
+	hit1: 0.6869806094182825
+	hit3: 0.7479224376731302
+
+
+
 
 QQ匹配 + new_bm25 + adv norm
 	score rate: 0.6109936575052854

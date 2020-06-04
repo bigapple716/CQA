@@ -10,6 +10,7 @@
     * `evaluate.py`: 自动评测
     * `eval_result.txt`: 评测结果
     * `test.py`: 测试代码
+    * `find_best_threshold.py`: 调参用代码
 * `args.py`: 参数设置
 * `file_pool.py`: 文件名的集合
 * `method.py`: 方法枚举类
