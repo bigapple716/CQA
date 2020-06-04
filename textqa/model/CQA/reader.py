@@ -21,8 +21,8 @@ class Reader:
         self.stopwords = [line.rstrip('\n') for line in doc]
 
         # 关键词库
-        with open(FilePool.keyword_database_json, 'r') as f_kwdb:
-            self.keyword_database = json.load(f_kwdb)
+        self.keyword_database = None  # 初始化这个私有变量，该变量在self.__read_keywords()里被赋值
+        self.__read_keywords()  # 读入各类的关键词
 
     '''以下为公共方法'''
 
@@ -73,7 +73,6 @@ class Reader:
 
     # 预处理数据(下面方法的集合)
     def preprocess(self):
-        self.__read_keywords()  # 读入各类的关键词
         self.__clean_cut(FilePool.raw_small_answers_txt, FilePool.small_answers_txt, FilePool.small_answers_json)
         self.__make_base_que_list()  # 制作base_ques_list
 
@@ -235,7 +234,7 @@ class Reader:
                     }
                     keyword_database.append(dict)
         else:
-            for keyword_file in FilePool.keyword_list:
+            for keyword_file in FilePool.large_keyword_list:
                 with open(keyword_file, 'r') as f_kw:
                     lines = f_kw.readlines()
                     lines = [line.rstrip() for line in lines]
@@ -255,6 +254,8 @@ class Reader:
         # 写到json里
         with open(FilePool.keyword_database_json, 'w') as f_kwdb:
             json.dump(obj=keyword_database, fp=f_kwdb, ensure_ascii=False)
+
+        self.keyword_database = keyword_database
 
     def __make_base_que_list(self):
         with open(FilePool.qa_file, 'r') as f_base_ques:
