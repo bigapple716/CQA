@@ -164,15 +164,17 @@ if __name__ == '__main__':
 
     tbqa = TBQA()
 
-    # 单次测试 + 计时
-    # question = str = input("请输入问题：")
-    # start_time = time.time()  # 计时开始
-    # answer = tbqa.get_answer(question)
-    # end_time = time.time()  # 计时结束
-    # print('time cost:', end_time - start_time)
-    # print('answer:', answer)
+    # 单次测试
+    question = str = input("请输入问题：")
+    while question != 'exit':
+        answer = tbqa.get_answer(question)
+        if answer[0] == -1:
+            print('answer: none')
+        else:
+            print('answer:', answer[0])
+        question = str = input("请输入问题：")
 
     # 批量测试 + 自动评测
-    tbqa.get_multi_answers()
-    evaluator = Evaluate()
-    evaluator.evaluate()
+    # tbqa.get_multi_answers()
+    # evaluator = Evaluate()
+    # evaluator.evaluate()
