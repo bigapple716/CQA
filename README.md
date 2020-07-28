@@ -1,4 +1,4 @@
-# 张明辉毕业设计全部代码集合
+# 张明辉毕业设计全部代码集合 Code of my graduation design
 
 # 文件列表：
 * `/data`: 数据目录
